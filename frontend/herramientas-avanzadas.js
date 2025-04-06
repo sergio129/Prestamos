@@ -1713,43 +1713,22 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ===============================================================
-    // Mejorar formato de moneda en todos los inputs y resultados
+    // Eliminar formato de moneda de los inputs para evitar problemas
     // ===============================================================
     
-    // Convertir los inputs numéricos a formato de moneda
+    // Eliminar los eventos que están causando problemas con la entrada de números
     document.querySelectorAll('input[type="number"]').forEach(input => {
-        if (input.id.includes('monto') || input.id.includes('valor') || 
-            input.id.includes('ingresos') || input.id.includes('gastos') || 
-            input.id.includes('deudas') || input.id.includes('ahorro') || 
-            input.id.includes('salario') || input.id.includes('descuentos')) {
-            
-            input.addEventListener('focus', function() {
-                // Al enfocar, convertir a número simple para editar
-                const valor = this.value.replace(/[^\d.-]/g, '');
-                this.value = valor;
-            });
-            
-            input.addEventListener('blur', function() {
-                // Al perder el foco, formatear como moneda si tiene valor
-                if (this.value && !isNaN(parseFloat(this.value))) {
-                    const formatter = new Intl.NumberFormat('es-CO', {
-                        style: 'decimal',
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 0
-                    });
-                    this.value = formatter.format(parseFloat(this.value));
-                }
-            });
-            
-            // Formatear valores existentes al cargar
-            if (input.value && !isNaN(parseFloat(input.value))) {
-                const formatter = new Intl.NumberFormat('es-CO', {
-                    style: 'decimal',
-                    minimumFractionDigits: 0,
-                    maximumFractionDigits: 0
-                });
-                input.value = formatter.format(parseFloat(input.value));
-            }
+        // Eliminar cualquier atributo data-valor-original para evitar conflictos
+        if (input.hasAttribute('data-valor-original')) {
+            input.removeAttribute('data-valor-original');
         }
+        
+        // Remover eventos de formateo que puedan estar causando problemas
+        input.removeEventListener('focus', () => {});
+        input.removeEventListener('blur', () => {});
+        input.removeEventListener('input', () => {});
+        
+        // Resetear el tipo a number para asegurar que funcione correctamente
+        input.type = 'number';
     });
 });
