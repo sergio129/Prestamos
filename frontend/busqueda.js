@@ -263,21 +263,58 @@ function verSimulacion(id) {
 function eliminarSimulacion(id) {
     console.log("Eliminar simulación:", id);
     
-    if (confirm("¿Está seguro de eliminar esta simulación?")) {
+    // Crear un toast de confirmación personalizado
+    const confirmToast = document.createElement('div');
+    confirmToast.className = 'confirm-toast';
+    confirmToast.innerHTML = `
+        <div class="confirm-toast-content">
+            <p>¿Desea eliminar esta simulación?</p>
+            <div class="confirm-toast-buttons">
+                <button class="confirm-yes">Eliminar</button>
+                <button class="confirm-no">Cancelar</button>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(confirmToast);
+    
+    // Mostrar el toast
+    setTimeout(() => {
+        confirmToast.classList.add('show');
+    }, 10);
+    
+    // Manejadores de eventos para los botones
+    confirmToast.querySelector('.confirm-yes').addEventListener('click', function() {
+        // Eliminar el toast de confirmación
+        confirmToast.classList.remove('show');
+        setTimeout(() => confirmToast.remove(), 300);
+        
+        // Realizar la eliminación
         fetch(`http://localhost:3000/eliminar-simulacion?id=${id}`, {
             method: 'DELETE'
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al eliminar');
+            }
+            return response.json();
+        })
         .then(data => {
-            mostrarMensajeToast("Simulación eliminada con éxito", "success");
-            // Volver a buscar para actualizar la lista
+            mostrarMensajeToast("Simulación eliminada correctamente", "success");
+            
+            // Refrescar la lista de simulaciones
             buscarSimulacionesDirecto();
         })
         .catch(error => {
-            console.error("Error:", error);
+            console.error("Error al eliminar:", error);
             mostrarMensajeToast("Error al eliminar la simulación", "error");
         });
-    }
+    });
+    
+    confirmToast.querySelector('.confirm-no').addEventListener('click', function() {
+        // Solo eliminar el toast de confirmación
+        confirmToast.classList.remove('show');
+        setTimeout(() => confirmToast.remove(), 300);
+    });
 }
 
 // Función simple para mostrar mensajes toast

@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const interesMensual = parseFloat(document.getElementById('interes-mensual')?.value || 0);
         
         // Validar entradas
-        if (monto <= 0 || plazo <= 0 || interesMensual <= 0) {
+        if (isNaN(monto) || monto <= 0 || isNaN(plazo) || plazo <= 0 || isNaN(interesMensual) || interesMensual <= 0) {
             mostrarToast("Por favor, complete todos los campos con valores válidos", "error");
             return;
         }
