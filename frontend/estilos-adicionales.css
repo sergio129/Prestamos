@@ -1,0 +1,76 @@
+/* Estilos adicionales para confirmación de eliminación */
+
+.confirm-toast {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background-color: white;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+  padding: 20px;
+  min-width: 300px;
+  max-width: 90%;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 9999;
+}
+
+.confirm-toast.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.confirm-toast-content {
+  text-align: center;
+}
+
+.confirm-toast-content p {
+  margin-bottom: 20px;
+  font-weight: 500;
+  color: #333;
+}
+
+.confirm-toast-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+}
+
+.confirm-toast-buttons button {
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.confirm-yes {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.confirm-yes:hover {
+  background-color: #c0392b;
+}
+
+.confirm-no {
+  background-color: #7f8c8d;
+  color: white;
+}
+
+.confirm-no:hover {
+  background-color: #95a5a6;
+}
+
+/* Estilos para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .confirm-toast {
+    background-color: #252A41;
+  }
+  
+  .confirm-toast-content p {
+    color: #f0f0f0;
+  }
+}

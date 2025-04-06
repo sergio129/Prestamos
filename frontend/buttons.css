@@ -1,0 +1,46 @@
+/* Estilos adicionales para botones y elementos de acción */
+
+.buttons-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.buttons-group .btn {
+  flex: 1 1 45%;
+  min-width: 200px;
+}
+
+/* Botones con iconos */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon span {
+  margin-right: 8px;
+}
+
+/* Animación de confirmación en botones */
+@keyframes confirmAction {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.confirm-action {
+  animation: confirmAction 0.5s ease-in-out;
+}
+
+/* Mejoras para responsividad */
+@media (max-width: 576px) {
+  .buttons-group {
+    flex-direction: column;
+  }
+  
+  .buttons-group .btn {
+    width: 100%;
+  }
+}

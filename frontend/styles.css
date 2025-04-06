@@ -248,16 +248,24 @@ input:focus {
 }
 
 .modal-content {
-  background-color: rgb(0, 0, 0);
-  padding: 20px;
-  border-radius: 8px;
-  width: 90%;
-  max-width: 500px;
-  position: relative;
+  background-color: white;
+  padding: 25px;
+  border-radius: 12px;
+  max-width: 90%;
+  width: 600px;
+  max-height: 80vh;
+  overflow-y: auto;
 }
 
-.modal:not(.hidden) .modal-content {
-  transform: translateY(0);
+.modal::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: -1;
 }
 
 .close-modal {
@@ -369,35 +377,171 @@ tr:hover {
   margin-top: 20px;
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 15px;
-    margin: 20px auto;
-  }
-  
-  .calculator, .results {
-    padding: 25px 20px;
-  }
-  
-  #amortization-table-container {
-    padding: 25px 15px;
-  }
-  
-  #amortization-table th,
-  #amortization-table td {
-    padding: 10px 8px;
-    font-size: 14px;
-  }
+/* Estilos mejorados para la tabla de resultados */
+#results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  font-size: 14px;
 }
 
-/* Animaciones */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+#results-table th {
+  background: linear-gradient(to right, rgba(110, 142, 251, 0.2), rgba(167, 119, 227, 0.2));
+  color: #333;
+  padding: 16px 12px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 15px;
 }
 
-.calculator, .results {
-  animation: fadeIn 0.6s ease-out forwards;
+#results-table td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+#results-table tr:hover {
+  background-color: rgba(110, 142, 251, 0.05);
+}
+
+/* Botones en la tabla */
+.action-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-small {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.btn-view {
+  background: linear-gradient(to right, #3498db, #2980b9);
+  color: white;
+}
+
+.btn-view:hover {
+  background: linear-gradient(to right, #2980b9, #2471a3);
+  transform: translateY(-2px);
+}
+
+.btn-delete {
+  background: linear-gradient(to right, #e74c3c, #c0392b);
+  color: white;
+}
+
+.btn-delete:hover {
+  background: linear-gradient(to right, #c0392b, #a93226);
+  transform: translateY(-2px);
+}
+
+/* Modal para detalles de simulación */
+.detail-modal .modal-content {
+  width: 90%;
+  max-width: 800px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.simulation-header {
+  margin-bottom: 25px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 15px;
+}
+
+.simulation-header h3 {
+  margin-bottom: 10px;
+  font-size: 18px;
+  color: #333;
+}
+
+.simulation-info {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.simulation-info-item {
+  font-size: 15px;
+}
+
+.simulation-info-item .label {
+  font-weight: 600;
+  margin-right: 8px;
+  color: #555;
+}
+
+.simulation-info-item .value {
+  font-weight: 500;
+  color: #2980b9;
+}
+
+.amortization-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 25px;
+  margin-bottom: 15px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.detail-table th {
+  background-color: rgba(110, 142, 251, 0.1);
+  padding: 12px 10px;
+  text-align: left;
+  color: #333;
+  font-weight: 600;
+}
+
+.detail-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.detail-table tr:nth-child(even) {
+  background-color: rgba(245, 247, 250, 0.7);
+}
+
+/* Estilos para las acciones del modal */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+}
+
+.btn-modal {
+  padding: 10px 20px;
+  font-size: 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-close-detail {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.btn-close-detail:hover {
+  background-color: #7f8c8d;
 }
 
 /* Estilo para modo oscuro */
@@ -500,6 +644,54 @@ tr:hover {
     background-color: rgba(110, 142, 251, 0.2);
     color: #f0f0f0;
   }
+  
+  #results-table th {
+    background: linear-gradient(to right, rgba(110, 142, 251, 0.3), rgba(167, 119, 227, 0.3));
+    color: #f0f0f0;
+  }
+  
+  #results-table td {
+    border-bottom-color: #333;
+    color: #e0e0e0;
+  }
+  
+  .simulation-header {
+    border-bottom-color: #333;
+  }
+  
+  .simulation-header h3 {
+    color: #f0f0f0;
+  }
+  
+  .simulation-info-item .label {
+    color: #bbb;
+  }
+  
+  .simulation-info-item .value {
+    color: #3498db;
+  }
+  
+  .amortization-title {
+    color: #f0f0f0;
+    border-bottom-color: #333;
+  }
+  
+  .detail-table th {
+    background-color: rgba(110, 142, 251, 0.2);
+    color: #f0f0f0;
+  }
+  
+  .detail-table td {
+    border-bottom-color: #333;
+  }
+  
+  .detail-table tr:nth-child(even) {
+    background-color: rgba(30, 30, 40, 0.3);
+  }
+  
+  .modal-actions {
+    border-top-color: #333;
+  }
 }
 
 /* Asegurar que botones sean clickeables */
@@ -507,7 +699,146 @@ button, input[type="submit"], .close-modal {
   cursor: pointer !important;
 }
 
+form button[type="submit"] {
+  cursor: pointer !important;
+  position: relative;
+  z-index: 2;
+}
+
 /* Quitar posibles estilos que bloqueen interacción */
 body, .container, form, input, button {
   pointer-events: auto !important;
+}
+
+.form-actions {
+  margin-top: 20px;
+}
+
+#save-form .btn-save {
+  margin-top: 10px;
+  position: relative;
+  z-index: 1001;
+  pointer-events: auto !important;
+}
+
+/* Nuevo estilo para el mensaje de éxito persistente */
+.success-message, .error-message {
+  margin: 15px auto;
+  padding: 12px 15px;
+  border-radius: 8px;
+  text-align: center;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.4s ease-out;
+}
+
+.success-message {
+  background-color: rgba(39, 174, 96, 0.1);
+  color: #27ae60;
+  border-left: 4px solid #27ae60;
+}
+
+.error-message {
+  background-color: rgba(231, 76, 60, 0.1);
+  color: #e74c3c;
+  border-left: 4px solid #e74c3c;
+}
+
+.message-icon {
+  margin-right: 10px;
+  font-size: 20px;
+}
+
+/* Contenedor específico para mensajes dentro de la sección de resultados */
+.message-container {
+  margin-top: 20px;
+  transition: all 0.3s ease;
+}
+
+/* Estilos para toast */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 0;
+  min-width: 300px;
+  max-width: 90%;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast-content {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+}
+
+.toast-icon {
+  margin-right: 12px;
+  font-size: 20px;
+}
+
+.toast-message {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.toast-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.toast-close:hover {
+  opacity: 1;
+}
+
+/* Variantes de toast */
+.toast-success {
+  border-left: 4px solid #27ae60;
+}
+
+.toast-error {
+  border-left: 4px solid #e74c3c;
+}
+
+.toast-info {
+  border-left: 4px solid #3498db;
+}
+
+/* Estilos para toast en modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .toast {
+    background-color: #252A41;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .toast-message {
+    color: #f0f0f0;
+  }
+  
+  .toast-close {
+    color: #aaa;
+  }
+  
+  .toast-close:hover {
+    color: #fff;
+  }
 }
