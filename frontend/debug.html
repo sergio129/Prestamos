@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico - Simulador de Préstamos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diagnóstico del Simulador de Préstamos</h1>
+    
+    <div>
+        <h2>Prueba de interactividad básica</h2>
+        <button id="test-btn">Haz clic aquí para probar</button>
+        <div class="output" id="test-output">Resultado aparecerá aquí...</div>
+    </div>
+    
+    <div>
+        <h2>Verificar carga de JavaScript</h2>
+        <button id="check-js">Verificar JavaScript</button>
+        <div class="output" id="js-output">Resultado aparecerá aquí...</div>
+    </div>
+    
+    <div>
+        <h2>Probar cálculo simple</h2>
+        <input type="number" id="test-monto" value="1000000" placeholder="Monto">
+        <input type="number" id="test-plazo" value="12" placeholder="Plazo">
+        <input type="number" id="test-interes" value="1.5" placeholder="Interés mensual">
+        <button id="test-calc">Calcular</button>
+        <div class="output" id="calc-output">Resultado aparecerá aquí...</div>
+    </div>
+    
+    <script>
+        // Script de diagnóstico
+        document.getElementById('test-btn').addEventListener('click', function() {
+            document.getElementById('test-output').textContent = 'El botón funciona correctamente. Interactividad básica OK.';
+        });
+        
+        document.getElementById('check-js').addEventListener('click', function() {
+            const jsOutput = document.getElementById('js-output');
+            try {
+                // Probar funcionalidad básica
+                const num = 5 + 5;
+                jsOutput.textContent = `JavaScript está funcionando correctamente. 5+5=${num}`;
+            } catch(e) {
+                jsOutput.textContent = `Error: ${e.message}`;
+            }
+        });
+        
+        document.getElementById('test-calc').addEventListener('click', function() {
+            const calcOutput = document.getElementById('calc-output');
+            try {
+                const monto = parseFloat(document.getElementById('test-monto').value);
+                const plazo = parseInt(document.getElementById('test-plazo').value);
+                const interes = parseFloat(document.getElementById('test-interes').value) / 100;
+                
+                const cuotaMensual = monto * (interes / (1 - Math.pow(1 + interes, -plazo)));
+                
+                calcOutput.innerHTML = `
+                    <p>Cálculo realizado correctamente:</p>
+                    <p>Cuota mensual: $${cuotaMensual.toFixed(2)}</p>
+                    <p>Total a pagar: $${(cuotaMensual * plazo).toFixed(2)}</p>
+                `;
+            } catch(e) {
+                calcOutput.textContent = `Error en cálculo: ${e.message}`;
+            }
+        });
+    </script>
+    
+    <div>
+        <h2>Recomendaciones para solucionar problemas:</h2>
+        <ol>
+            <li>Verifica si esta página de diagnóstico funciona correctamente</li>
+            <li>Si esta página funciona pero la principal no, hay un problema específico en tu código principal</li>
+            <li>Intenta usar un navegador diferente</li>
+            <li>Asegúrate de que no haya errores en la consola de desarrollador (F12)</li>
+            <li>Prueba la versión simplificada del simulador que se ha creado para depuración</li>
+        </ol>
+    </div>
+</body>
+</html>
