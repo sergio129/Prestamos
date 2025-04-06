@@ -60,6 +60,7 @@
     display: flex;
     border-bottom: 1px solid #dee2e6;
     background-color: #f8f9fa;
+    flex-wrap: wrap;
 }
 
 .herramientas-tab {
@@ -117,6 +118,7 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 .btn-herramientas-avanzadas:hover {
@@ -142,18 +144,18 @@
 }
 
 .tir-result {
-    background-color: #e9f7fe;
-    border-left: 4px solid #4a6fa5;
-    padding: 15px;
-    border-radius: 4px;
     margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-left: 4px solid #4a6fa5;
+    border-radius: 4px;
 }
 
 .tir-value {
-    font-size: 28px;
+    font-size: 24px;
     font-weight: bold;
     color: #2c3e50;
-    margin-bottom: 5px;
+    margin-bottom: 8px;
 }
 
 .tir-interpretation {
@@ -313,7 +315,238 @@
     background-color: #3b5998;
 }
 
-/* Estilos responsive */
+/* Estilos para Hipotecario */
+.hipoteca-detalles {
+    margin-top: 20px;
+}
+
+.hipoteca-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.hipoteca-card {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.hipoteca-card-title {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.hipoteca-card-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.hipoteca-table-container {
+    margin-top: 15px;
+    overflow-x: auto;
+}
+
+.hipoteca-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.hipoteca-table th, .hipoteca-table td {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    text-align: right;
+}
+
+.hipoteca-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+.hipoteca-viabilidad {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.hipoteca-viabilidad-mensaje {
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.hipoteca-recomendaciones li {
+    margin-bottom: 5px;
+}
+
+/* Estilos para Vehículo */
+.vehiculo-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.vehiculo-card {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.vehiculo-card-title {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.vehiculo-card-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.capacidad-pago-barra {
+    height: 20px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.capacidad-pago-progreso {
+    height: 100%;
+    width: 0;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.capacidad-pago-mensaje {
+    margin-bottom: 15px;
+    font-weight: 500;
+}
+
+/* Estilos para Leasing */
+.leasing-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.leasing-card {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.leasing-card-title {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.leasing-card-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.leasing-table-container {
+    margin-top: 15px;
+    overflow-x: auto;
+}
+
+.leasing-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leasing-table th, .leasing-table td {
+    padding: 10px;
+    border: 1px solid #dee2e6;
+    text-align: right;
+}
+
+.leasing-table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+/* Estilos para Libranza */
+.libranza-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.libranza-card {
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.libranza-card-title {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.libranza-card-value {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.libranza-meter-container {
+    margin: 15px 0;
+}
+
+.libranza-meter {
+    height: 20px;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.libranza-meter-fill {
+    height: 100%;
+    width: 0;
+    border-radius: 10px;
+    transition: width 0.5s ease;
+}
+
+.libranza-viabilidad-texto {
+    margin: 10px 0;
+    font-weight: 500;
+}
+
+.libranza-alternativas {
+    margin-top: 15px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* General styles for panels */
+.panel-description {
+    margin-bottom: 20px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #4a6fa5;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
     .herramientas-container {
         width: 95%;
@@ -321,14 +554,43 @@
     }
     
     .herramientas-tabs {
-        flex-wrap: wrap;
+        overflow-x: auto;
+        white-space: nowrap;
+        display: flex;
+        flex-wrap: nowrap;
     }
     
     .herramientas-tab {
         padding: 10px 15px;
+        min-width: auto;
     }
     
-    .prestamos-grid {
+    .herramientas-content {
+        padding: 15px;
+        max-height: 80vh;
+    }
+    
+    .hipoteca-resumen,
+    .vehiculo-resumen,
+    .leasing-resumen,
+    .libranza-resumen {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .hipoteca-resumen,
+    .vehiculo-resumen,
+    .leasing-resumen,
+    .libranza-resumen {
         grid-template-columns: 1fr;
+    }
+    
+    .hipoteca-table th, 
+    .hipoteca-table td,
+    .leasing-table th, 
+    .leasing-table td {
+        padding: 8px 5px;
+        font-size: 14px;
     }
 }
