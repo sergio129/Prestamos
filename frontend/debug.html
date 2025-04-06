@@ -21,6 +21,26 @@
             border: 1px solid #ddd;
             background-color: #f9f9f9;
         }
+        
+        /* Estilos para tabla */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        /* Estilos para ocultar/mostrar */
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -45,6 +65,35 @@
         <input type="number" id="test-interes" value="1.5" placeholder="Interés mensual">
         <button id="test-calc">Calcular</button>
         <div class="output" id="calc-output">Resultado aparecerá aquí...</div>
+    </div>
+    
+    <div>
+        <h2>Prueba de Tabla de Amortización</h2>
+        <p>Esta prueba verifica si el problema está en la lógica de generación de la tabla o en los selectores DOM.</p>
+        <button id="test-table-btn">Generar Tabla de Prueba</button>
+        
+        <div id="test-table-container" class="hidden">
+            <h3>Tabla de Amortización de Prueba</h3>
+            <div class="table-responsive">
+                <table id="test-amortization-table">
+                    <thead>
+                        <tr>
+                            <th>Cuota</th>
+                            <th>Capital</th>
+                            <th>Intereses</th>
+                            <th>Pago Mensual</th>
+                            <th>Saldo Restante</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Filas generadas dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+            <button id="hide-test-table-btn">Ocultar Tabla</button>
+        </div>
+        
+        <div class="output" id="test-table-output">Resultado aparecerá aquí...</div>
     </div>
     
     <script>
@@ -82,6 +131,98 @@
                 calcOutput.textContent = `Error en cálculo: ${e.message}`;
             }
         });
+        
+        // Prueba específica para la tabla de amortización
+        document.getElementById('test-table-btn').addEventListener('click', function() {
+            const output = document.getElementById('test-table-output');
+            try {
+                // Obtener referencia al contenedor y a la tabla
+                const tableContainer = document.getElementById('test-table-container');
+                const tableBody = document.querySelector('#test-amortization-table tbody');
+                
+                if (!tableContainer || !tableBody) {
+                    output.textContent = 'ERROR: No se encontró el contenedor de la tabla o el cuerpo de la tabla';
+                    return;
+                }
+                
+                // Limpiar tabla existente
+                tableBody.innerHTML = '';
+                
+                // Generar datos de prueba
+                const monto = 1000000;
+                const plazo = 12;
+                const interesMensual = 0.015; // 1.5%
+                
+                let saldo = monto;
+                const cuotaMensual = monto * (interesMensual / (1 - Math.pow(1 + interesMensual, -plazo)));
+                
+                // Generar filas de la tabla
+                for (let i = 1; i <= plazo; i++) {
+                    const interesCuota = saldo * interesMensual;
+                    const capitalCuota = cuotaMensual - interesCuota;
+                    saldo -= capitalCuota;
+                    
+                    if (i === plazo) saldo = 0;
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${i}</td>
+                        <td>$${capitalCuota.toFixed(2)}</td>
+                        <td>$${interesCuota.toFixed(2)}</td>
+                        <td>$${cuotaMensual.toFixed(2)}</td>
+                        <td>$${saldo.toFixed(2)}</td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+                
+                // Mostrar la tabla
+                tableContainer.classList.remove('hidden');
+                output.textContent = 'Tabla de amortización generada correctamente.';
+            } catch(e) {
+                output.textContent = `Error al generar tabla de amortización: ${e.message}`;
+                console.error(e);
+            }
+        });
+        
+        document.getElementById('hide-test-table-btn').addEventListener('click', function() {
+            const tableContainer = document.getElementById('test-table-container');
+            if (tableContainer) {
+                tableContainer.classList.add('hidden');
+                document.getElementById('test-table-output').textContent = 'Tabla ocultada correctamente.';
+            }
+        });
+        
+        document.getElementById('test-dom-btn').addEventListener('click', function() {
+            const output = document.getElementById('test-dom-output');
+            output.innerHTML = '';
+            
+            // Lista de selectores a verificar
+            const selectors = {
+                'test-table-container': 'Contenedor de tabla de prueba',
+                'test-amortization-table': 'Tabla de amortización de prueba',
+                'test-table-btn': 'Botón para generar tabla',
+                'hide-test-table-btn': 'Botón para ocultar tabla'
+            };
+            
+            // Verificar cada selector
+            let allFound = true;
+            for (const [id, desc] of Object.entries(selectors)) {
+                const element = document.getElementById(id);
+                if (element) {
+                    output.innerHTML += `✅ Encontrado: ${desc} (ID: ${id})<br>`;
+                } else {
+                    output.innerHTML += `❌ NO ENCONTRADO: ${desc} (ID: ${id})<br>`;
+                    allFound = false;
+                }
+            }
+            
+            // Conclusión
+            if (allFound) {
+                output.innerHTML += '<br><strong>Todos los selectores funcionan correctamente en esta página.</strong>';
+            } else {
+                output.innerHTML += '<br><strong>Algunos selectores no funcionan. Esto podría indicar un problema con el DOM.</strong>';
+            }
+        });
     </script>
     
     <div>
@@ -92,6 +233,17 @@
             <li>Intenta usar un navegador diferente</li>
             <li>Asegúrate de que no haya errores en la consola de desarrollador (F12)</li>
             <li>Prueba la versión simplificada del simulador que se ha creado para depuración</li>
+        </ol>
+    </div>
+    
+    <div>
+        <h2>Recomendaciones para solucionar el problema de la tabla de amortización:</h2>
+        <ol>
+            <li>Verifica si esta página de diagnóstico puede generar la tabla de prueba</li>
+            <li>Si la tabla de prueba funciona aquí pero no en la página principal, copia el código de generación de esta tabla</li>
+            <li>Revisa la consola del navegador (F12) para ver errores específicos</li>
+            <li>Asegúrate de que todos los IDs en tu HTML principal coincidan con los que se buscan en el JavaScript</li>
+            <li>Considera utilizar la solución simplificada de JavaScript que se ha proporcionado</li>
         </ol>
     </div>
 </body>

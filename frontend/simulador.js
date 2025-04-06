@@ -9,14 +9,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const interesMensualInput = document.getElementById('interes-mensual');
     const interesAnualEl = document.getElementById('interes-anual');
     const resultsContainer = document.getElementById('results');
+    const cuotaMensualEl = document.getElementById('cuota-mensual');
+    const totalPagarEl = document.getElementById('total-pagar');
+    const totalInteresesEl = document.getElementById('total-intereses');
+    const saveBtn = document.getElementById('save-btn');
+    const saveMessage = document.getElementById('save-message');
     
-    // Registrar en consola si falta algún elemento esencial
-    if (!loanForm) console.error("No se encontró el formulario de préstamos");
-    if (!montoInput) console.error("No se encontró el campo de monto");
-    if (!plazoInput) console.error("No se encontró el campo de plazo");
-    if (!interesMensualInput) console.error("No se encontró el campo de interés mensual");
+    // Referencias específicas para la tabla de amortización
+    const showAmortizationBtn = document.getElementById('show-amortization-btn');
+    const hideAmortizationBtn = document.getElementById('hide-amortization-btn');
+    const amortizationTableContainer = document.getElementById('amortization-table-container');
+    const amortizationTableBody = document.getElementById('amortization-table')?.querySelector('tbody');
     
-    // Variables para cálculos
+    // Verificar componentes de la tabla de amortización
+    console.log("Verificando componentes de la tabla de amortización:");
+    console.log("- Botón mostrar tabla:", showAmortizationBtn ? "Encontrado" : "NO ENCONTRADO");
+    console.log("- Contenedor tabla:", amortizationTableContainer ? "Encontrado" : "NO ENCONTRADO");
+    console.log("- Tabla:", document.getElementById('amortization-table') ? "Encontrada" : "NO ENCONTRADA");
+    console.log("- Cuerpo tabla:", amortizationTableBody ? "Encontrado" : "NO ENCONTRADO");
+    
+    // Otras referencias a modales
+    const saveModal = document.getElementById('save-modal');
+    const searchModal = document.getElementById('search-modal');
+
+    // Variables para almacenar los resultados del cálculo
     let resultadoActual = {};
     let tablaAmortizacion = [];
     
@@ -43,11 +59,10 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Listeners para botones adicionales - solo si existen
-    if (document.getElementById('save-btn')) {
-        document.getElementById('save-btn').addEventListener('click', function() {
+    if (saveBtn) {
+        saveBtn.addEventListener('click', function() {
             console.log("Botón guardar presionado");
-            const modal = document.getElementById('save-modal');
-            if (modal) modal.classList.remove('hidden');
+            if (saveModal) saveModal.classList.remove('hidden');
         });
     }
     
@@ -55,8 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('search-btn').addEventListener('click', function(e) {
             e.preventDefault();
             console.log("Botón buscar presionado");
-            const modal = document.getElementById('search-modal');
-            if (modal) modal.classList.remove('hidden');
+            if (searchModal) searchModal.classList.remove('hidden');
         });
     }
     
@@ -68,6 +82,23 @@ document.addEventListener('DOMContentLoaded', function() {
             modales.forEach(modal => modal.classList.add('hidden'));
         });
     });
+    
+    // Event listener específico para la tabla de amortización
+    if (showAmortizationBtn) {
+        showAmortizationBtn.addEventListener('click', function() {
+            console.log("Botón de tabla de amortización presionado");
+            mostrarTablaAmortizacion();
+        });
+    } else {
+        console.error("El botón para mostrar la tabla de amortización no se encontró en el DOM");
+    }
+    
+    if (hideAmortizationBtn && amortizationTableContainer) {
+        hideAmortizationBtn.addEventListener('click', function() {
+            console.log("Ocultando tabla de amortización");
+            amortizationTableContainer.classList.add('hidden');
+        });
+    }
     
     // Función para actualizar tasa anual
     function actualizarTasaAnual() {
@@ -105,14 +136,14 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalIntereses = totalPagar - monto;
             
             // Mostrar resultados
-            if (document.getElementById('cuota-mensual'))
-                document.getElementById('cuota-mensual').textContent = formatoPeso.format(cuotaMensual);
+            if (cuotaMensualEl)
+                cuotaMensualEl.textContent = formatoPeso.format(cuotaMensual);
             
-            if (document.getElementById('total-pagar'))
-                document.getElementById('total-pagar').textContent = formatoPeso.format(totalPagar);
+            if (totalPagarEl)
+                totalPagarEl.textContent = formatoPeso.format(totalPagar);
             
-            if (document.getElementById('total-intereses'))
-                document.getElementById('total-intereses').textContent = formatoPeso.format(totalIntereses);
+            if (totalInteresesEl)
+                totalInteresesEl.textContent = formatoPeso.format(totalIntereses);
             
             // Guardar para uso posterior
             resultadoActual = {
@@ -153,6 +184,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 saldo: saldo
             });
         }
+    }
+    
+    // Función para mostrar la tabla de amortización - CORREGIDA
+    function mostrarTablaAmortizacion() {
+        console.log("Iniciando función mostrarTablaAmortizacion");
+        
+        // Verificar que el contenedor de la tabla exista
+        if (!amortizationTableContainer) {
+            console.error("ERROR: No se encontró el contenedor de la tabla de amortización.");
+            alert("Error: No se puede mostrar la tabla de amortización.");
+            return;
+        }
+        
+        // Verificar que haya datos para mostrar
+        if (tablaAmortizacion.length === 0) {
+            console.error("ERROR: No hay datos de amortización para mostrar.");
+            alert("Primero debe calcular un préstamo.");
+            return;
+        }
+        
+        // Obtener la referencia al cuerpo de la tabla directamente
+        const tbody = document.querySelector('#amortization-table tbody');
+        if (!tbody) {
+            console.error("ERROR: No se encontró el cuerpo de la tabla de amortización.");
+            alert("Error: No se puede mostrar la tabla de amortización.");
+            return;
+        }
+        
+        console.log("Generando tabla con", tablaAmortizacion.length, "filas");
+        
+        // Limpiar tabla existente
+        tbody.innerHTML = '';
+        
+        // Agregar filas a la tabla
+        tablaAmortizacion.forEach(cuota => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${cuota.numeroCuota}</td>
+                <td>${formatoPeso.format(cuota.capital)}</td>
+                <td>${formatoPeso.format(cuota.interes)}</td>
+                <td>${formatoPeso.format(cuota.cuota)}</td>
+                <td>${formatoPeso.format(cuota.saldo)}</td>
+            `;
+            tbody.appendChild(row);
+        });
+        
+        // Mostrar la tabla
+        amortizationTableContainer.classList.remove('hidden');
+        console.log("Tabla de amortización mostrada correctamente");
     }
     
     // Función simple para mostrar mensajes

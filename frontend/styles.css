@@ -78,7 +78,7 @@ input:focus {
   width: 100%;
   padding: 14px;
   background: linear-gradient(to right, #6e8efb, #a777e3);
-  color: white;
+  color: rgb(255, 255, 255);
   border: none;
   border-radius: 8px;
   font-size: 16px;
@@ -248,7 +248,7 @@ input:focus {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: rgb(0, 0, 0);
   padding: 20px;
   border-radius: 8px;
   width: 90%;
@@ -296,7 +296,7 @@ th {
 }
 
 tr:hover {
-  background-color: rgba(110, 142, 251, 0.05);
+  background-color: rgba(110, 142, 251, 0.1);
 }
 
 #amortization-table-container {
@@ -307,6 +307,66 @@ tr:hover {
   backdrop-filter: blur(10px);
   margin-top: 30px;
   animation: fadeIn 0.6s ease-out forwards;
+  transition: all 0.3s ease;
+}
+
+#amortization-table-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+}
+
+#amortization-table-container h2 {
+  margin-bottom: 30px;
+  color: #333;
+  text-align: center;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+#amortization-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#amortization-table th {
+  background: linear-gradient(to right, rgba(110, 142, 251, 0.2), rgba(167, 119, 227, 0.2));
+  color: #333;
+  font-weight: 600;
+  padding: 15px;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
+}
+
+#amortization-table td {
+  padding: 14px 15px;
+  border-bottom: 1px solid #eee;
+  color: #444;
+}
+
+#amortization-table tr:last-child td {
+  border-bottom: none;
+}
+
+#amortization-table tr:nth-child(even) {
+  background-color: rgba(245, 247, 250, 0.7);
+}
+
+#amortization-table tr:hover {
+  background-color: rgba(110, 142, 251, 0.05);
+}
+
+/* Highlight the last row (final payment) */
+#amortization-table tr:last-child {
+  font-weight: 600;
+  background-color: rgba(110, 142, 251, 0.1);
+}
+
+/* Add some space between the table and buttons */
+#hide-amortization-btn {
+  margin-top: 20px;
 }
 
 @media (max-width: 768px) {
@@ -317,6 +377,16 @@ tr:hover {
   
   .calculator, .results {
     padding: 25px 20px;
+  }
+  
+  #amortization-table-container {
+    padding: 25px 15px;
+  }
+  
+  #amortization-table th,
+  #amortization-table td {
+    padding: 10px 8px;
+    font-size: 14px;
   }
 }
 
@@ -396,6 +466,39 @@ tr:hover {
   
   .close-modal:hover {
     color: #fff;
+  }
+  
+  #amortization-table-container {
+    background-color: #252A41;
+    color: #e0e0e0;
+  }
+  
+  #amortization-table-container h2 {
+    color: #f0f0f0;
+  }
+  
+  #amortization-table th {
+    background: linear-gradient(to right, rgba(110, 142, 251, 0.3), rgba(167, 119, 227, 0.3));
+    color: #f0f0f0;
+    border-bottom-color: #444;
+  }
+  
+  #amortization-table td {
+    border-bottom-color: #333;
+    color: #c0c0c0;
+  }
+  
+  #amortization-table tr:nth-child(even) {
+    background-color: rgba(26, 28, 45, 0.5);
+  }
+  
+  #amortization-table tr:hover {
+    background-color: rgba(110, 142, 251, 0.1);
+  }
+  
+  #amortization-table tr:last-child {
+    background-color: rgba(110, 142, 251, 0.2);
+    color: #f0f0f0;
   }
 }
 
