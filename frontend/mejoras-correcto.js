@@ -49,6 +49,10 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.export-detail-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 console.log("Botón exportar PDF presionado");
+                
+                // Capturar datos actuales antes de abrir modal
+                hookSimulacionData();
+                
                 if (exportModal) {
                     exportModal.classList.remove('hidden');
                 } else {
@@ -87,37 +91,42 @@ document.addEventListener('DOMContentLoaded', function() {
             const tablaAmortizacion = [];
             const filas = document.querySelectorAll('#amortization-table tbody tr');
             
-            filas.forEach((fila, index) => {
-                const celdas = fila.querySelectorAll('td');
-                if (celdas.length >= 5) {
-                    tablaAmortizacion.push({
-                        numeroCuota: index + 1,
-                        capital: extraerNumeroDesdeMoneda(celdas[1]?.textContent || "0"),
-                        interes: extraerNumeroDesdeMoneda(celdas[2]?.textContent || "0"),
-                        cuota: extraerNumeroDesdeMoneda(celdas[3]?.textContent || "0"),
-                        saldo: extraerNumeroDesdeMoneda(celdas[4]?.textContent || "0")
-                    });
-                }
-            });
+            console.log("Encontradas " + filas.length + " filas en la tabla de amortización");
             
-            // Si no hay datos en la tabla de amortización pero hay un monto y cuota mensual,
-            // podemos generar una tabla básica
-            if (tablaAmortizacion.length === 0 && monto > 0 && cuotaMensual > 0 && plazo > 0) {
-                console.log("Generando tabla de amortización básica");
-                let saldoRestante = monto;
+            if (filas.length > 0) {
+                filas.forEach((fila, index) => {
+                    const celdas = fila.querySelectorAll('td');
+                    if (celdas.length >= 5) {
+                        tablaAmortizacion.push({
+                            numeroCuota: index + 1,
+                            capital: extraerNumeroDesdeMoneda(celdas[1]?.textContent || "0"),
+                            interes: extraerNumeroDesdeMoneda(celdas[2]?.textContent || "0"),
+                            cuota: extraerNumeroDesdeMoneda(celdas[3]?.textContent || "0"),
+                            saldo: extraerNumeroDesdeMoneda(celdas[4]?.textContent || "0")
+                        });
+                    }
+                });
+            } else {
+                // Si no hay tabla visible, pero tenemos los datos básicos, generar una tabla
+                console.log("Generando tabla de amortización básica...");
                 
-                for (let i = 1; i <= plazo; i++) {
-                    const interesCuota = saldoRestante * (interesMensual / 100);
-                    const capitalCuota = cuotaMensual - interesCuota;
-                    saldoRestante -= capitalCuota;
+                if (monto > 0 && plazo > 0 && interesMensual > 0 && cuotaMensual > 0) {
+                    let saldoRestante = monto;
+                    const tasaMensual = interesMensual / 100;
                     
-                    tablaAmortizacion.push({
-                        numeroCuota: i,
-                        capital: capitalCuota,
-                        interes: interesCuota,
-                        cuota: cuotaMensual,
-                        saldo: i === plazo ? 0 : saldoRestante
-                    });
+                    for (let i = 1; i <= plazo; i++) {
+                        const interesCuota = saldoRestante * tasaMensual;
+                        const capitalCuota = cuotaMensual - interesCuota;
+                        saldoRestante = Math.max(0, saldoRestante - capitalCuota);
+                        
+                        tablaAmortizacion.push({
+                            numeroCuota: i,
+                            capital: capitalCuota,
+                            interes: interesCuota,
+                            cuota: cuotaMensual,
+                            saldo: i === plazo ? 0 : saldoRestante
+                        });
+                    }
                 }
             }
             
@@ -137,6 +146,7 @@ document.addEventListener('DOMContentLoaded', function() {
             };
             
             console.log("Datos capturados para PDF:", datosPDFGlobal);
+            console.log("Filas de amortización capturadas:", tablaAmortizacion.length);
         } catch (error) {
             console.error("Error al capturar datos para PDF:", error);
         }
@@ -147,11 +157,12 @@ document.addEventListener('DOMContentLoaded', function() {
         if (!texto) return 0;
         
         // Eliminar símbolos de moneda, puntos de miles y espacios
-        const textoLimpio = texto.replace(/[$,.€\s]/g, '');
+        const textoLimpio = texto.replace(/[$€]/g, '').replace(/\./g, '').trim();
         // Reemplazar coma decimal por punto si existe
         const numeroTexto = textoLimpio.replace(/,/g, '.');
         
-        return parseFloat(numeroTexto) || 0;
+        const valor = parseFloat(numeroTexto);
+        return isNaN(valor) ? 0 : valor;
     }
     
     // Inicializar sistema de exportación a PDF
@@ -278,7 +289,9 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Añadir tabla de amortización si está seleccionada
         if (includeAmortization && datosPDFGlobal.amortizacion && datosPDFGlobal.amortizacion.length > 0) {
-            pdfContainer.innerHTML += `
+            console.log("Añadiendo tabla de amortización al PDF con " + datosPDFGlobal.amortizacion.length + " filas");
+            
+            let amortizacionHTML = `
                 <h2>Tabla de Amortización</h2>
                 <table class="table">
                     <thead>
@@ -294,7 +307,7 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             
             datosPDFGlobal.amortizacion.forEach(row => {
-                pdfContainer.innerHTML += `
+                amortizacionHTML += `
                     <tr>
                         <td>${row.numeroCuota}</td>
                         <td>${formatMoney(row.capital)}</td>
@@ -305,10 +318,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 `;
             });
             
-            pdfContainer.innerHTML += `
+            amortizacionHTML += `
                     </tbody>
                 </table>
             `;
+            
+            pdfContainer.innerHTML += amortizacionHTML;
         }
         
         // Pie de página
@@ -334,6 +349,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 throw new Error("Biblioteca html2pdf no encontrada");
             }
             
+            // Añadir container al DOM temporalmente para mejor renderizado
+            document.body.appendChild(pdfContainer);
+            pdfContainer.style.position = 'absolute';
+            pdfContainer.style.left = '-9999px';
+            
             html2pdf().from(pdfContainer).set(options).save()
                 .then(() => {
                     mostrarMensajeToast("PDF generado correctamente", "success");
@@ -341,14 +361,26 @@ document.addEventListener('DOMContentLoaded', function() {
                     if (exportModal) {
                         exportModal.classList.add('hidden');
                     }
+                    // Eliminar contenedor temporal
+                    if (document.body.contains(pdfContainer)) {
+                        document.body.removeChild(pdfContainer);
+                    }
                 })
                 .catch(err => {
                     console.error("Error al generar PDF:", err);
                     mostrarMensajeToast("Error al generar el PDF: " + err.message, "error");
+                    // Eliminar contenedor temporal
+                    if (document.body.contains(pdfContainer)) {
+                        document.body.removeChild(pdfContainer);
+                    }
                 });
         } catch (error) {
             console.error("Error al iniciar generación de PDF:", error);
             mostrarMensajeToast("Error al generar el PDF: " + error.message, "error");
+            // Eliminar contenedor temporal si existe
+            if (document.body.contains(pdfContainer)) {
+                document.body.removeChild(pdfContainer);
+            }
         }
     }
     

@@ -753,34 +753,39 @@ tr:hover {
   position: fixed;
   bottom: 20px;
   left: 20px;
-  width: 40px;
-  height: 40px;
-  background-color: rgba(0, 0, 0, 0.7);
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(to right, #6e8efb, #a777e3);
   color: white;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  z-index: 1000;
+  z-index: 9000;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
 }
 
 .a11y-help:hover {
-  background-color: rgba(0, 0, 0, 0.9);
   transform: scale(1.1);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.25);
+}
+
+.a11y-help i {
+  font-size: 20px;
 }
 
 .a11y-menu {
   position: fixed;
-  bottom: 70px;
+  bottom: 80px;
   left: 20px;
   background-color: white;
-  border-radius: 12px;
+  border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
   padding: 15px;
-  z-index: 1000;
-  min-width: 200px;
+  z-index: 9000;
+  min-width: 220px;
   transform: translateY(20px);
   opacity: 0;
   visibility: hidden;
@@ -794,17 +799,86 @@ tr:hover {
 }
 
 .a11y-option {
-  padding: 8px 12px;
+  padding: 10px 15px;
+  margin-bottom: 5px;
   cursor: pointer;
   display: flex;
   align-items: center;
-  gap: 10px;
+  border-radius: 6px;
   transition: all 0.2s ease;
 }
 
 .a11y-option:hover {
   background-color: rgba(110, 142, 251, 0.1);
-  border-radius: 6px;
+}
+
+.a11y-option.active {
+  background-color: rgba(110, 142, 251, 0.2);
+  font-weight: 600;
+}
+
+.a11y-option i {
+  margin-right: 10px;
+  font-size: 16px;
+  color: #6e8efb;
+}
+
+/* Estilos aplicados cuando las opciones están activas */
+body.high-contrast {
+  filter: contrast(1.4);
+}
+
+body.larger-text {
+  font-size: 110%;
+}
+
+body.larger-text input, 
+body.larger-text button {
+  font-size: 110%;
+}
+
+body.wider-spacing {
+  line-height: 1.6;
+  letter-spacing: 0.5px;
+}
+
+body.wider-spacing p, 
+body.wider-spacing label, 
+body.wider-spacing input {
+  margin-bottom: 1.2em;
+}
+
+body.focus-mode .container > div:not(.calculator):not(.results):not(.modal) {
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+body.focus-mode .container > div:hover {
+  opacity: 1;
+}
+
+/* Modo oscuro para accesibilidad */
+@media (prefers-color-scheme: dark) {
+  .a11y-menu {
+    background-color: #252A41;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+  }
+  
+  .a11y-option {
+    color: #e0e0e0;
+  }
+  
+  .a11y-option:hover {
+    background-color: rgba(110, 142, 251, 0.15);
+  }
+  
+  .a11y-option.active {
+    background-color: rgba(110, 142, 251, 0.25);
+  }
+  
+  .a11y-option i {
+    color: #a777e3;
+  }
 }
 
 /* Estilos para modo oscuro - ampliados */
