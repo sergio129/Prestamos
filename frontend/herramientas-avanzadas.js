@@ -1139,4 +1139,617 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }, 3000);
     }
+    
+    // ===============================================================
+    // Implementación de eventos para módulos adicionales
+    // ===============================================================
+    
+    // Evento para calcular préstamos hipotecarios
+    document.getElementById('calcular-hipoteca').addEventListener('click', function() {
+        const valorInmueble = parseFloat(document.getElementById('hipo-valor-inmueble').value);
+        const montoPrestamo = parseFloat(document.getElementById('hipo-monto-prestamo').value);
+        const tipoTasa = document.getElementById('hipo-tipo-tasa').value;
+        const tasaAnual = parseFloat(document.getElementById('hipo-tasa').value);
+        const plazoAnios = parseInt(document.getElementById('hipo-plazo').value);
+        const ingresosMensuales = parseFloat(document.getElementById('hipo-ingresos').value);
+        
+        // Validar datos
+        if (!valorInmueble || valorInmueble <= 0) {
+            mostrarMensaje("Ingrese un valor válido para el inmueble", "error");
+            return;
+        }
+        
+        if (!montoPrestamo || montoPrestamo <= 0) {
+            mostrarMensaje("Ingrese un monto válido a financiar", "error");
+            return;
+        }
+        
+        if (montoPrestamo > valorInmueble * 0.8) {
+            mostrarMensaje("El monto a financiar no debe superar el 80% del valor del inmueble", "warning");
+            return;
+        }
+        
+        if (!tasaAnual || tasaAnual <= 0) {
+            mostrarMensaje("Ingrese una tasa de interés válida", "error");
+            return;
+        }
+        
+        if (!ingresosMensuales || ingresosMensuales <= 0) {
+            mostrarMensaje("Ingrese sus ingresos mensuales", "error");
+            return;
+        }
+        
+        // Conversión a meses y tasa mensual
+        const plazoMeses = plazoAnios * 12;
+        const tasaMensual = tipoTasa === 'fija' 
+            ? Math.pow(1 + tasaAnual/100, 1/12) - 1 
+            : tasaAnual / 1200;
+        
+        // Cálculos hipotecarios
+        const cuotaMensual = calcularCuotaMensual(montoPrestamo, tasaMensual, plazoMeses);
+        const totalPagar = cuotaMensual * plazoMeses;
+        const totalIntereses = totalPagar - montoPrestamo;
+        const relacionCuotaIngreso = (cuotaMensual / ingresosMensuales) * 100;
+        
+        // Generar tabla de amortización
+        const tablaAmortizacion = [];
+        let saldoRestante = montoPrestamo;
+        
+        for (let anio = 1; anio <= plazoAnios; anio++) {
+            let capitalAnual = 0;
+            let interesAnual = 0;
+            let pagoAnual = 0;
+            
+            for (let mes = 1; mes <= 12 && saldoRestante > 0; mes++) {
+                const interesMes = saldoRestante * tasaMensual;
+                let capitalMes = cuotaMensual - interesMes;
+                
+                if (capitalMes > saldoRestante) capitalMes = saldoRestante;
+                
+                const pagoMes = capitalMes + interesMes;
+                
+                capitalAnual += capitalMes;
+                interesAnual += interesMes;
+                pagoAnual += pagoMes;
+                
+                saldoRestante -= capitalMes;
+                if (saldoRestante < 0) saldoRestante = 0;
+            }
+            
+            tablaAmortizacion.push({
+                anio: anio,
+                capital: capitalAnual,
+                interes: interesAnual,
+                pago: pagoAnual,
+                saldo: saldoRestante
+            });
+        }
+        
+        // Formatear moneda colombiana
+        const formatoMoneda = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        
+        // Actualizar interface con resultados
+        document.getElementById('hipo-cuota').textContent = formatoMoneda.format(cuotaMensual);
+        document.getElementById('hipo-intereses').textContent = formatoMoneda.format(totalIntereses);
+        document.getElementById('hipo-relacion').textContent = relacionCuotaIngreso.toFixed(1) + '%';
+        document.getElementById('hipo-total').textContent = formatoMoneda.format(totalPagar);
+        
+        // Mostrar tabla de amortización
+        const tablaElement = document.getElementById('hipo-amortizacion');
+        tablaElement.innerHTML = '';
+        
+        tablaAmortizacion.forEach(row => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${row.anio}</td>
+                <td>${formatoMoneda.format(row.pago)}</td>
+                <td>${formatoMoneda.format(row.capital)}</td>
+                <td>${formatoMoneda.format(row.interes)}</td>
+                <td>${formatoMoneda.format(row.saldo)}</td>
+            `;
+            tablaElement.appendChild(tr);
+        });
+        
+        // Analizar viabilidad
+        let mensajeViabilidad;
+        let recomendaciones = [];
+        
+        if (relacionCuotaIngreso > 40) {
+            mensajeViabilidad = '<span style="color: #e74c3c;">Riesgo Alto:</span> La cuota supera el 40% de tus ingresos.';
+            recomendaciones.push("Considera un monto menor o un plazo más largo para reducir la cuota.");
+            recomendaciones.push("Evalúa aumentar tu cuota inicial para reducir el monto a financiar.");
+        } else if (relacionCuotaIngreso > 30) {
+            mensajeViabilidad = '<span style="color: #f39c12;">Precaución:</span> La cuota está entre el 30% y 40% de tus ingresos.';
+            recomendaciones.push("Tu capacidad de pago es aceptable, pero deberías tener un fondo de emergencia.");
+            recomendaciones.push("Considera opciones para mejorar tu flujo de caja.");
+        } else {
+            mensajeViabilidad = '<span style="color: #2ecc71;">Viable:</span> La cuota está por debajo del 30% de tus ingresos.';
+            recomendaciones.push("Tu capacidad de pago es adecuada para este préstamo hipotecario.");
+            recomendaciones.push("Considera hacer pagos adicionales a capital para reducir intereses.");
+        }
+        
+        if (tipoTasa === 'uvr') {
+            recomendaciones.push("Con sistema UVR, tu cuota aumentará con la inflación. Asegúrate que tus ingresos también aumenten.");
+        }
+        
+        // Mostrar análisis y recomendaciones
+        document.getElementById('hipo-viabilidad-mensaje').innerHTML = mensajeViabilidad;
+        
+        const recomendacionesList = document.getElementById('hipo-recomendaciones');
+        recomendacionesList.innerHTML = '';
+        
+        recomendaciones.forEach(rec => {
+            const li = document.createElement('li');
+            li.textContent = rec;
+            recomendacionesList.appendChild(li);
+        });
+        
+        // Mostrar resultados
+        document.getElementById('resultado-hipoteca').style.display = 'block';
+        mostrarMensaje("Cálculo hipotecario completado", "success");
+    });
+    
+    // Evento para calcular préstamos de vehículos
+    document.getElementById('calcular-vehiculo').addEventListener('click', function() {
+        const valorVehiculo = parseFloat(document.getElementById('vehiculo-valor').value);
+        const porcentajeCuotaInicial = parseFloat(document.getElementById('vehiculo-cuota-inicial').value);
+        const tasaAnual = parseFloat(document.getElementById('vehiculo-tasa').value);
+        const plazoMeses = parseInt(document.getElementById('vehiculo-plazo').value);
+        const ingresosMensuales = parseFloat(document.getElementById('vehiculo-ingresos').value);
+        const tipoVehiculo = document.getElementById('vehiculo-tipo').value;
+        
+        // Validaciones
+        if (!valorVehiculo || valorVehiculo <= 0) {
+            mostrarMensaje("Ingrese un valor válido para el vehículo", "error");
+            return;
+        }
+        
+        if (isNaN(porcentajeCuotaInicial) || porcentajeCuotaInicial < 0 || porcentajeCuotaInicial > 100) {
+            mostrarMensaje("La cuota inicial debe estar entre 0% y 100%", "error");
+            return;
+        }
+        
+        if (!tasaAnual || tasaAnual <= 0) {
+            mostrarMensaje("Ingrese una tasa de interés válida", "error");
+            return;
+        }
+        
+        if (!ingresosMensuales || ingresosMensuales <= 0) {
+            mostrarMensaje("Ingrese sus ingresos mensuales", "error");
+            return;
+        }
+        
+        // Cálculos
+        const cuotaInicial = valorVehiculo * (porcentajeCuotaInicial / 100);
+        const montoFinanciar = valorVehiculo - cuotaInicial;
+        const tasaMensual = Math.pow(1 + tasaAnual/100, 1/12) - 1;
+        const cuotaMensual = calcularCuotaMensual(montoFinanciar, tasaMensual, plazoMeses);
+        const totalIntereses = (cuotaMensual * plazoMeses) - montoFinanciar;
+        const porcentajeCapacidad = (cuotaMensual / ingresosMensuales) * 100;
+        
+        // Formatear moneda
+        const formatoMoneda = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        
+        // Actualizar resultados
+        document.getElementById('vehiculo-monto-financiar').textContent = formatoMoneda.format(montoFinanciar);
+        document.getElementById('vehiculo-cuota').textContent = formatoMoneda.format(cuotaMensual);
+        document.getElementById('vehiculo-intereses-total').textContent = formatoMoneda.format(totalIntereses);
+        document.getElementById('vehiculo-total').textContent = formatoMoneda.format(montoFinanciar + totalIntereses);
+        
+        // Análisis de capacidad de pago
+        const barraCapacidad = document.getElementById('vehiculo-barra-capacidad');
+        let mensajeCapacidad;
+        let colorBarra;
+        
+        if (porcentajeCapacidad > 30) {
+            mensajeCapacidad = "La cuota excede el 30% recomendado de tus ingresos.";
+            colorBarra = "#e74c3c"; // Rojo
+        } else if (porcentajeCapacidad > 20) {
+            mensajeCapacidad = "La cuota es manejable pero ocupa una porción significativa de tus ingresos.";
+            colorBarra = "#f39c12"; // Naranja
+        } else {
+            mensajeCapacidad = "La cuota se encuentra dentro de un rango saludable respecto a tus ingresos.";
+            colorBarra = "#2ecc71"; // Verde
+        }
+        
+        // Actualizar barra visual
+        barraCapacidad.style.width = Math.min(porcentajeCapacidad * 3, 100) + '%';
+        barraCapacidad.style.backgroundColor = colorBarra;
+        document.getElementById('vehiculo-capacidad-mensaje').textContent = mensajeCapacidad;
+        
+        // Generar recomendaciones
+        const recomendaciones = [];
+        
+        if (porcentajeCapacidad > 30) {
+            recomendaciones.push("Aumenta la cuota inicial para reducir el monto financiado.");
+            recomendaciones.push("Considera un plazo más largo para reducir la cuota mensual.");
+            recomendaciones.push("Busca un vehículo de menor valor más acorde a tu capacidad de pago.");
+        } else if (porcentajeCapacidad > 20) {
+            recomendaciones.push("Ten un fondo de emergencia para cubrir al menos 3 meses de cuotas.");
+            recomendaciones.push("No olvides incluir en tu presupuesto gastos de seguro, impuestos y mantenimiento.");
+        } else {
+            recomendaciones.push("Tu capacidad de pago es excelente para este préstamo.");
+            recomendaciones.push("Podrías considerar un plazo más corto para pagar menos intereses en total.");
+        }
+        
+        // Agregar recomendaciones específicas por tipo de vehículo
+        if (tipoVehiculo === 'usado') {
+            recomendaciones.push("Para vehículos usados, considera un presupuesto adicional para posibles reparaciones.");
+            recomendaciones.push("Revisa el historial del vehículo y realiza una revisión técnica completa.");
+        } else {
+            recomendaciones.push("Para vehículos nuevos, consulta si hay descuentos por pago de contado parcial.");
+            recomendaciones.push("Compara el financiamiento del concesionario con otras entidades financieras.");
+        }
+        
+        // Mostrar recomendaciones
+        const listaRecomendaciones = document.getElementById('vehiculo-recomendaciones-lista');
+        listaRecomendaciones.innerHTML = '';
+        
+        recomendaciones.forEach(rec => {
+            const li = document.createElement('li');
+            li.textContent = rec;
+            listaRecomendaciones.appendChild(li);
+        });
+        
+        // Mostrar resultados
+        document.getElementById('resultado-vehiculo').style.display = 'block';
+        mostrarMensaje("Cálculo de préstamo de vehículo completado", "success");
+    });
+    
+    // Evento para calcular leasing
+    document.getElementById('calcular-leasing').addEventListener('click', function() {
+        const valorActivo = parseFloat(document.getElementById('leasing-valor-activo').value);
+        const tipoLeasing = document.getElementById('leasing-tipo').value;
+        const plazoMeses = parseInt(document.getElementById('leasing-plazo').value);
+        const tasaAnual = parseFloat(document.getElementById('leasing-tasa').value);
+        const porcentajeOpcionCompra = parseFloat(document.getElementById('leasing-opcion-compra').value);
+        const tasaImpuesto = parseFloat(document.getElementById('leasing-tasa-impuesto').value);
+        
+        // Validaciones
+        if (!valorActivo || valorActivo <= 0) {
+            mostrarMensaje("Ingrese un valor válido para el activo", "error");
+            return;
+        }
+        
+        if (!tasaAnual || tasaAnual <= 0) {
+            mostrarMensaje("Ingrese una tasa de interés válida", "error");
+            return;
+        }
+        
+        if (isNaN(porcentajeOpcionCompra) || porcentajeOpcionCompra < 0 || porcentajeOpcionCompra > 30) {
+            mostrarMensaje("La opción de compra debe estar entre 0% y 30%", "error");
+            return;
+        }
+        
+        // Cálculos
+        const valorOpcionCompra = valorActivo * (porcentajeOpcionCompra / 100);
+        const montoFinanciar = valorActivo - valorOpcionCompra;
+        const tasaMensual = Math.pow(1 + tasaAnual/100, 1/12) - 1;
+        const canonMensual = calcularCuotaMensual(montoFinanciar, tasaMensual, plazoMeses);
+        const costoFinancieroTotal = (canonMensual * plazoMeses) + valorOpcionCompra - valorActivo;
+        
+        // Calculamos beneficios tributarios
+        let beneficioTributario = 0;
+        if (tipoLeasing === 'financiero') {
+            // Depreciacón + intereses
+            const depreciacionTotal = valorActivo;
+            const interesesTotales = (canonMensual * plazoMeses) - montoFinanciar;
+            beneficioTributario = (depreciacionTotal + interesesTotales) * (tasaImpuesto / 100);
+        } else {
+            // Todo el canon es deducible en operativo
+            beneficioTributario = canonMensual * plazoMeses * (tasaImpuesto / 100);
+        }
+        
+        // Comparación con crédito tradicional
+        const cuotaCreditoTradicional = calcularCuotaMensual(valorActivo, tasaMensual, plazoMeses);
+        const totalCreditoTradicional = cuotaCreditoTradicional * plazoMeses;
+        const interesesCredito = totalCreditoTradicional - valorActivo;
+        const beneficioTributarioCredito = interesesCredito * (tasaImpuesto / 100);
+        
+        // Flujos netos
+        const flujoNetoLeasing = (canonMensual * plazoMeses) + valorOpcionCompra - beneficioTributario;
+        const flujoNetoCredito = totalCreditoTradicional - beneficioTributarioCredito;
+        const diferenciaFlujoNeto = flujoNetoCredito - flujoNetoLeasing;
+        
+        // Formatear moneda
+        const formatoMoneda = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        
+        // Mostrar resultados
+        document.getElementById('leasing-canon').textContent = formatoMoneda.format(canonMensual);
+        document.getElementById('leasing-valor-opcion').textContent = formatoMoneda.format(valorOpcionCompra);
+        document.getElementById('leasing-costo-total').textContent = formatoMoneda.format(costoFinancieroTotal);
+        document.getElementById('leasing-beneficio').textContent = formatoMoneda.format(beneficioTributario);
+        
+        // Llenar tabla comparativa
+        document.getElementById('leasing-comparacion-tabla').innerHTML = `
+            <tr>
+                <td>Pago mensual</td>
+                <td>${formatoMoneda.format(canonMensual)}</td>
+                <td>${formatoMoneda.format(cuotaCreditoTradicional)}</td>
+                <td>${formatoMoneda.format(cuotaCreditoTradicional - canonMensual)}</td>
+            </tr>
+            <tr>
+                <td>Total pagos</td>
+                <td>${formatoMoneda.format(canonMensual * plazoMeses + valorOpcionCompra)}</td>
+                <td>${formatoMoneda.format(totalCreditoTradicional)}</td>
+                <td>${formatoMoneda.format(totalCreditoTradicional - (canonMensual * plazoMeses + valorOpcionCompra))}</td>
+            </tr>
+            <tr>
+                <td>Beneficio tributario</td>
+                <td>${formatoMoneda.format(beneficioTributario)}</td>
+                <td>${formatoMoneda.format(beneficioTributarioCredito)}</td>
+                <td>${formatoMoneda.format(beneficioTributario - beneficioTributarioCredito)}</td>
+            </tr>
+            <tr>
+                <td>Costo neto (después de impuestos)</td>
+                <td>${formatoMoneda.format(flujoNetoLeasing)}</td>
+                <td>${formatoMoneda.format(flujoNetoCredito)}</td>
+                <td style="color: ${diferenciaFlujoNeto > 0 ? '#2ecc71' : '#e74c3c'}">${formatoMoneda.format(Math.abs(diferenciaFlujoNeto))}</td>
+            </tr>
+        `;
+        
+        // Recomendaciones
+        const recomendaciones = [];
+        
+        if (diferenciaFlujoNeto > 0) {
+            recomendaciones.push(`El leasing es más favorable que el crédito tradicional por ${formatoMoneda.format(diferenciaFlujoNeto)}.`);
+        } else {
+            recomendaciones.push(`El crédito tradicional es más favorable que el leasing por ${formatoMoneda.format(Math.abs(diferenciaFlujoNeto))}.`);
+        }
+        
+        if (tipoLeasing === 'financiero') {
+            recomendaciones.push("En leasing financiero, el activo aparecerá en tu balance, afectando tus indicadores de endeudamiento.");
+            recomendaciones.push("Al finalizar el contrato, podrás ejercer la opción de compra por el valor residual pactado.");
+        } else {
+            recomendaciones.push("En leasing operativo, el activo no aparece en tu balance, mejorando tus indicadores financieros.");
+            recomendaciones.push("Al finalizar el contrato, deberás devolver el activo o negociar una extensión.");
+        }
+        
+        recomendaciones.push("Consulta con tu contador los beneficios tributarios específicos según la normativa vigente.");
+        
+        // Mostrar recomendaciones
+        const listaRecomendaciones = document.getElementById('leasing-recomendaciones-lista');
+        listaRecomendaciones.innerHTML = '';
+        
+        recomendaciones.forEach(rec => {
+            const li = document.createElement('li');
+            li.textContent = rec;
+            listaRecomendaciones.appendChild(li);
+        });
+        
+        // Mostrar resultados
+        document.getElementById('resultado-leasing').style.display = 'block';
+        mostrarMensaje("Cálculo de leasing completado", "success");
+    });
+    
+    // Evento para calcular libranza
+    document.getElementById('calcular-libranza').addEventListener('click', function() {
+        const salarioMensual = parseFloat(document.getElementById('libranza-salario').value);
+        const descuentosActuales = parseFloat(document.getElementById('libranza-descuentos').value) || 0;
+        const montoSolicitado = parseFloat(document.getElementById('libranza-monto').value);
+        const plazoMeses = parseInt(document.getElementById('libranza-plazo').value);
+        const tasaAnual = parseFloat(document.getElementById('libranza-tasa').value);
+        const tipoContrato = document.getElementById('libranza-tipo-contrato').value;
+        
+        // Validaciones
+        if (!salarioMensual || salarioMensual <= 0) {
+            mostrarMensaje("Ingrese un salario mensual válido", "error");
+            return;
+        }
+        
+        if (!montoSolicitado || montoSolicitado <= 0) {
+            mostrarMensaje("Ingrese un monto a solicitar válido", "error");
+            return;
+        }
+        
+        if (!tasaAnual || tasaAnual <= 0) {
+            mostrarMensaje("Ingrese una tasa de interés válida", "error");
+            return;
+        }
+        
+        // Cálculos
+        const tasaMensual = Math.pow(1 + tasaAnual/100, 1/12) - 1;
+        const cuotaMensual = calcularCuotaMensual(montoSolicitado, tasaMensual, plazoMeses);
+        const capacidadMaxima = salarioMensual * 0.5; // 50% del salario es el máximo legal
+        const totalDescuentos = descuentosActuales + cuotaMensual;
+        const porcentajeComprometido = (totalDescuentos / salarioMensual) * 100;
+        
+        // Formatear moneda
+        const formatoMoneda = new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        });
+        
+        // Mostrar resultados básicos
+        document.getElementById('libranza-cuota').textContent = formatoMoneda.format(cuotaMensual);
+        document.getElementById('libranza-capacidad').textContent = formatoMoneda.format(capacidadMaxima);
+        document.getElementById('libranza-porcentaje').textContent = porcentajeComprometido.toFixed(1) + '%';
+        document.getElementById('libranza-total').textContent = formatoMoneda.format(cuotaMensual * plazoMeses);
+        
+        // Análisis de viabilidad
+        let esViable = totalDescuentos <= capacidadMaxima;
+        let viabilidadTexto = "";
+        let colorMedidor = "";
+        let porcentajeMedidor = 0;
+        
+        if (!esViable) {
+            viabilidadTexto = "No viable: Los descuentos superarían el límite legal del 50% de tu salario.";
+            colorMedidor = "#e74c3c"; // Rojo
+            porcentajeMedidor = 100;
+        } else if (porcentajeComprometido > 40) {
+            viabilidadTexto = "Riesgo alto: El préstamo compromete más del 40% de tu salario.";
+            colorMedidor = "#e67e22"; // Naranja
+            porcentajeMedidor = 80;
+        } else if (porcentajeComprometido > 30) {
+            viabilidadTexto = "Precaución: El préstamo compromete entre 30% y 40% de tu salario.";
+            colorMedidor = "#f1c40f"; // Amarillo
+            porcentajeMedidor = 60;
+        } else {
+            viabilidadTexto = "Viable: El préstamo compromete menos del 30% de tu salario.";
+            colorMedidor = "#2ecc71"; // Verde
+            porcentajeMedidor = 40;
+        }
+        
+        // Actualizar medidor visual
+        const medidorFill = document.getElementById('libranza-meter-fill');
+        medidorFill.style.width = porcentajeMedidor + '%';
+        medidorFill.style.backgroundColor = colorMedidor;
+        document.getElementById('libranza-viabilidad-texto').textContent = viabilidadTexto;
+        
+        // Recomendaciones y alternativas
+        const recomendaciones = [];
+        
+        // Recomendaciones según tipo de contrato
+        switch (tipoContrato) {
+            case 'indefinido':
+                recomendaciones.push("Tu contrato indefinido te brinda estabilidad para este tipo de préstamo.");
+                break;
+            case 'fijo':
+                recomendaciones.push("Asegúrate que el plazo del préstamo no exceda la duración de tu contrato.");
+                break;
+            case 'publico':
+                recomendaciones.push("Como empleado público, consulta entidades que ofrezcan tasas preferenciales para este sector.");
+                break;
+            case 'pensionado':
+                recomendaciones.push("Como pensionado, puedes acceder a condiciones especiales en varias entidades financieras.");
+                break;
+        }
+        
+        // Mostrar alternativas si no es viable
+        if (!esViable) {
+            recomendaciones.push("Considera solicitar un monto menor o extender el plazo para reducir la cuota mensual.");
+            
+            // Calcular opciones alternativas
+            const montoMaximo = calcularMontoMaximo(capacidadMaxima - descuentosActuales, tasaMensual, plazoMeses);
+            const plazoNecesario = calcularPlazoNecesario(montoSolicitado, tasaMensual, capacidadMaxima - descuentosActuales);
+            
+            document.getElementById('libranza-alternativas').style.display = 'block';
+            document.getElementById('libranza-alternativas-content').innerHTML = `
+                <p><strong>Alternativas a considerar:</strong></p>
+                <ul>
+                    <li>Monto máximo que puedes solicitar al mismo plazo: ${formatoMoneda.format(montoMaximo)}</li>
+                    <li>Plazo mínimo necesario para el monto solicitado: ${plazoNecesario} meses</li>
+                </ul>
+            `;
+        } else {
+            document.getElementById('libranza-alternativas').style.display = 'none';
+            
+            if (porcentajeComprometido > 40) {
+                recomendaciones.push("Aunque es viable legalmente, tu margen financiero será muy ajustado. Reconsidéralo.");
+            } else if (porcentajeComprometido > 30) {
+                recomendaciones.push("Mantén un fondo de emergencia para cubrir al menos 3 meses de cuotas.");
+            } else {
+                recomendaciones.push("Tu situación financiera es favorable para este préstamo por libranza.");
+                recomendaciones.push("Considera hacer pagos anticipados para reducir intereses cuando sea posible.");
+            }
+        }
+        
+        // Mostrar recomendaciones
+        const listaRecomendaciones = document.getElementById('libranza-recomendaciones-lista');
+        listaRecomendaciones.innerHTML = '';
+        
+        recomendaciones.forEach(rec => {
+            const li = document.createElement('li');
+            li.textContent = rec;
+            listaRecomendaciones.appendChild(li);
+        });
+        
+        // Mostrar resultados
+        document.getElementById('resultado-libranza').style.display = 'block';
+        mostrarMensaje("Cálculo de préstamo por libranza completado", "success");
+    });
+    
+    /**
+     * Calcula el monto máximo financiable según la cuota máxima
+     * @param {number} cuotaMaxima - Cuota mensual máxima
+     * @param {number} tasaMensual - Tasa mensual en decimal
+     * @param {number} plazo - Plazo en meses
+     * @returns {number} - Monto máximo
+     */
+    function calcularMontoMaximo(cuotaMaxima, tasaMensual, plazo) {
+        const factor = (tasaMensual * Math.pow(1 + tasaMensual, plazo)) / (Math.pow(1 + tasaMensual, plazo) - 1);
+        return cuotaMaxima / factor;
+    }
+    
+    /**
+     * Calcula el plazo necesario para un monto y cuota máxima
+     * @param {number} monto - Monto a financiar
+     * @param {number} tasaMensual - Tasa mensual en decimal
+     * @param {number} cuotaMaxima - Cuota mensual máxima
+     * @returns {number} - Plazo en meses
+     */
+    function calcularPlazoNecesario(monto, tasaMensual, cuotaMaxima) {
+        // Si la cuota no cubre ni los intereses
+        if (cuotaMaxima <= monto * tasaMensual) {
+            return "No viable";
+        }
+        
+        let plazo = 1;
+        let cuotaActual = calcularCuotaMensual(monto, tasaMensual, plazo);
+        
+        while (cuotaActual > cuotaMaxima && plazo < 360) {
+            plazo++;
+            cuotaActual = calcularCuotaMensual(monto, tasaMensual, plazo);
+        }
+        
+        return plazo < 360 ? plazo : "No viable";
+    }
+    
+    // ===============================================================
+    // Mejorar formato de moneda en todos los inputs y resultados
+    // ===============================================================
+    
+    // Convertir los inputs numéricos a formato de moneda
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        if (input.id.includes('monto') || input.id.includes('valor') || 
+            input.id.includes('ingresos') || input.id.includes('gastos') || 
+            input.id.includes('deudas') || input.id.includes('ahorro') || 
+            input.id.includes('salario') || input.id.includes('descuentos')) {
+            
+            input.addEventListener('focus', function() {
+                // Al enfocar, convertir a número simple para editar
+                const valor = this.value.replace(/[^\d.-]/g, '');
+                this.value = valor;
+            });
+            
+            input.addEventListener('blur', function() {
+                // Al perder el foco, formatear como moneda si tiene valor
+                if (this.value && !isNaN(parseFloat(this.value))) {
+                    const formatter = new Intl.NumberFormat('es-CO', {
+                        style: 'decimal',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
+                    });
+                    this.value = formatter.format(parseFloat(this.value));
+                }
+            });
+            
+            // Formatear valores existentes al cargar
+            if (input.value && !isNaN(parseFloat(input.value))) {
+                const formatter = new Intl.NumberFormat('es-CO', {
+                    style: 'decimal',
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                });
+                input.value = formatter.format(parseFloat(input.value));
+            }
+        }
+    });
 });
