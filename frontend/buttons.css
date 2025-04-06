@@ -23,6 +23,46 @@
   margin-right: 8px;
 }
 
+/* Estilos mejorados para botones de acción en tablas */
+.btn-small {
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  margin: 0 3px;
+}
+
+.btn-view {
+  background: linear-gradient(to right, #3498db, #2980b9);
+  color: white;
+}
+
+.btn-view:hover {
+  background: linear-gradient(to right, #2980b9, #2471a3);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(41, 128, 185, 0.3);
+}
+
+.btn-delete {
+  background: linear-gradient(to right, #e74c3c, #c0392b);
+  color: white;
+}
+
+.btn-delete:hover {
+  background: linear-gradient(to right, #c0392b, #a93226);
+  transform: translateY(-2px);
+  box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
+}
+
+.action-buttons {
+  display: flex;
+  gap: 5px;
+  justify-content: center;
+}
+
 /* Animación de confirmación en botones */
 @keyframes confirmAction {
   0% { transform: scale(1); }

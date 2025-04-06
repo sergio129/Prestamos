@@ -443,108 +443,155 @@ tr:hover {
 /* Modal para detalles de simulación */
 .detail-modal .modal-content {
   width: 90%;
-  max-width: 800px;
+  max-width: 900px;
   max-height: 85vh;
   overflow-y: auto;
+  padding: 25px;
 }
 
-.simulation-header {
-  margin-bottom: 25px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 15px;
-}
-
-.simulation-header h3 {
-  margin-bottom: 10px;
-  font-size: 18px;
-  color: #333;
-}
-
-.simulation-info {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+.detail-header {
   margin-bottom: 20px;
+  text-align: center;
 }
 
-.simulation-info-item {
-  font-size: 15px;
-}
-
-.simulation-info-item .label {
-  font-weight: 600;
-  margin-right: 8px;
-  color: #555;
-}
-
-.simulation-info-item .value {
-  font-weight: 500;
-  color: #2980b9;
-}
-
-.amortization-title {
-  font-size: 17px;
-  font-weight: 600;
-  margin-top: 25px;
-  margin-bottom: 15px;
+.detail-header h3 {
+  font-size: 22px;
   color: #333;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 10px;
+  margin-bottom: 10px;
+  font-weight: 600;
 }
 
-.detail-table {
+.detail-date {
+  color: #666;
+  font-style: italic;
+}
+
+.detail-section {
+  margin-bottom: 30px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+}
+
+.detail-section h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 15px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid rgba(110, 142, 251, 0.3);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 15px;
+}
+
+.detail-item {
+  padding: 10px;
+  background-color: rgba(245, 247, 250, 0.5);
+  border-radius: 6px;
+}
+
+.detail-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  margin-bottom: 5px;
+}
+
+.detail-value {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.amortization-table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 10px;
+  margin-top: 15px;
   font-size: 14px;
 }
 
-.detail-table th {
-  background-color: rgba(110, 142, 251, 0.1);
-  padding: 12px 10px;
-  text-align: left;
+.amortization-table th {
+  background: linear-gradient(to right, rgba(110, 142, 251, 0.2), rgba(167, 119, 227, 0.2));
   color: #333;
   font-weight: 600;
+  padding: 12px 10px;
+  text-align: left;
+  border-bottom: 2px solid #e0e0e0;
 }
 
-.detail-table td {
+.amortization-table td {
   padding: 10px;
   border-bottom: 1px solid #eee;
 }
 
-.detail-table tr:nth-child(even) {
+.amortization-table tr:nth-child(even) {
   background-color: rgba(245, 247, 250, 0.7);
 }
 
-/* Estilos para las acciones del modal */
+.amortization-table tr:hover {
+  background-color: rgba(110, 142, 251, 0.05);
+}
+
+.amortization-table tr:last-child {
+  font-weight: 600;
+  background-color: rgba(110, 142, 251, 0.1);
+}
+
+.no-data {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-style: italic;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
   margin-top: 25px;
-  padding-top: 15px;
-  border-top: 1px solid #eee;
 }
 
 .btn-modal {
   padding: 10px 20px;
-  font-size: 14px;
+  background-color: #7f8c8d;
+  color: white;
+  border: none;
   border-radius: 6px;
   cursor: pointer;
-  border: none;
+  font-size: 14px;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
-.btn-close-detail {
-  background-color: #95a5a6;
-  color: white;
+.btn-modal:hover {
+  background-color: #6c7a7a;
+  transform: translateY(-2px);
 }
 
-.btn-close-detail:hover {
-  background-color: #7f8c8d;
+/* Estilos responsivos */
+@media (max-width: 768px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .detail-modal .modal-content {
+    padding: 15px;
+  }
+  
+  .amortization-table {
+    font-size: 12px;
+  }
+  
+  .amortization-table th,
+  .amortization-table td {
+    padding: 8px 5px;
+  }
 }
 
-/* Estilo para modo oscuro */
+/* Estilos para modo oscuro */
 @media (prefers-color-scheme: dark) {
   .calculator, .results {
     background-color: #252A41;
@@ -691,6 +738,69 @@ tr:hover {
   
   .modal-actions {
     border-top-color: #333;
+  }
+  
+  .detail-header h3 {
+    color: #f0f0f0;
+  }
+  
+  .detail-date {
+    color: #aaa;
+  }
+  
+  .detail-section {
+    border-bottom-color: #333;
+  }
+  
+  .detail-section h4 {
+    color: #e0e0e0;
+    border-bottom-color: rgba(110, 142, 251, 0.5);
+  }
+  
+  .detail-item {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+  
+  .detail-label {
+    color: #bbb;
+  }
+  
+  .detail-value {
+    color: #f0f0f0;
+  }
+  
+  .amortization-table th {
+    background: linear-gradient(to right, rgba(110, 142, 251, 0.3), rgba(167, 119, 227, 0.3));
+    color: #f0f0f0;
+    border-bottom-color: #444;
+  }
+  
+  .amortization-table td {
+    border-bottom-color: #dfdbdb;
+  }
+  
+  .amortization-table tr:nth-child(even) {
+    background-color: rgba(30, 35, 45, 0.3);
+  }
+  
+  .amortization-table tr:hover {
+    background-color: rgba(110, 142, 251, 0.1);
+  }
+  
+  .amortization-table tr:last-child {
+    background-color: rgba(110, 142, 251, 0.2);
+  }
+  
+  .no-data {
+    color: #aaa;
+  }
+  
+  .btn-modal {
+    background-color: #5d6d7e;
+  }
+  
+  .btn-modal:hover {
+    background-color: #8a8a8a;
   }
 }
 

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="buttons.css">
     <link rel="stylesheet" href="estilos-adicionales.css">
     <script src="fixer.js"></script>
+    <script src="busqueda.js"></script>
 </head>
 <body>
     <div class="container">
@@ -111,7 +112,7 @@
         </div>
     </div>
 
-    <!-- Modal para buscar simulaciones -->
+    <!-- Modal para buscar simulaciones - modificado para usar funciones directas -->
     <div id="search-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -119,7 +120,7 @@
             <div class="form-group">
                 <label for="search-id">Buscar por Identificación:</label>
                 <input type="text" id="search-id" placeholder="Ingrese número de identificación">
-                <button type="button" id="search-id-btn" class="btn btn-secondary" onclick="buscarSimulaciones()">Buscar</button>
+                <button type="button" id="search-id-btn" class="btn btn-secondary" onclick="buscarSimulacionesDirecto()">Buscar</button>
             </div>
             <div id="search-results" class="hidden">
                 <h3>Simulaciones encontradas</h3>
@@ -307,6 +308,72 @@
                         alert("Error: Función de búsqueda no disponible");
                     }
                 });
+            }
+        });
+    </script>
+    <script>
+        // Asegurar que buscarSimulaciones esté disponible globalmente
+        if (typeof window.buscarSimulacionesDirecto !== 'function') {
+            window.buscarSimulacionesDirecto = function() {
+                // Implementación mínima como respaldo
+                const identificacion = document.getElementById('search-id')?.value;
+                if (!identificacion) {
+                    alert("Ingrese un número de identificación");
+                    return;
+                }
+                
+                const searchResults = document.getElementById('search-results');
+                const table = document.querySelector('#results-table tbody');
+                
+                if (searchResults && table) {
+                    searchResults.classList.remove('hidden');
+                    table.innerHTML = '<tr><td colspan="7">Buscando simulaciones...</td></tr>';
+                    
+                    fetch(`http://localhost:3000/buscar-simulaciones?id=${identificacion}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            table.innerHTML = data.simulaciones?.length ? 
+                                '' : '<tr><td colspan="7">No se encontraron simulaciones</td></tr>';
+                            
+                            data.simulaciones?.forEach(sim => {
+                                const row = document.createElement('tr');
+                                row.innerHTML = `
+                                    <td>${sim.identificacion}</td>
+                                    <td>${sim.nombre}</td>
+                                    <td>$${sim.monto}</td>
+                                    <td>${sim.plazo}</td>
+                                    <td>${sim.interesMensual}%</td>
+                                    <td>${sim.fecha || 'N/A'}</td>
+                                    <td>
+                                        <button onclick="alert('Ver: ${sim.id}')">Ver</button>
+                                    </td>
+                                `;
+                                table.appendChild(row);
+                            });
+                        })
+                        .catch(err => {
+                            table.innerHTML = `<tr><td colspan="7">Error: ${err.message}</td></tr>`;
+                        });
+                } else {
+                    alert("Error: No se pueden mostrar resultados");
+                }
+            };
+        }
+        
+        // Asegurar que la función esté asignada al botón
+        document.addEventListener('DOMContentLoaded', function() {
+            const btn = document.getElementById('search-id-btn');
+            if (btn) {
+                btn.onclick = function(e) {
+                    e.preventDefault();
+                    if (typeof window.buscarSimulacionesDirecto === 'function') {
+                        window.buscarSimulacionesDirecto();
+                    } else if (typeof window.buscarSimulaciones === 'function') {
+                        window.buscarSimulaciones();
+                    } else {
+                        alert("Error: Función de búsqueda no disponible");
+                    }
+                };
             }
         });
     </script>
