@@ -1399,3 +1399,117 @@ body, .container, form, input, button {
   background-color: #95a5a6;
   transform: translateY(-2px);
 }
+
+/* Estilos para las nuevas funcionalidades de PDF */
+.watermark-options {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: rgba(245, 247, 250, 0.7);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.watermark-color {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.watermark-color input[type="color"] {
+  width: 40px;
+  height: 25px;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+}
+
+#export-template {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+/* Botones de previsualizar y enviar */
+.preview-btn, .email-btn {
+  width: 100%;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.preview-btn {
+  background: linear-gradient(to right, #3498db, #2980b9);
+  box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+}
+
+.preview-btn:hover {
+  background: linear-gradient(to right, #2980b9, #2471a3);
+  box-shadow: 0 7px 20px rgba(52, 152, 219, 0.5);
+}
+
+.email-btn {
+  background: linear-gradient(to right, #27ae60, #2ecc71);
+  box-shadow: 0 4px 15px rgba(39, 174, 96, 0.4);
+}
+
+.email-btn:hover {
+  background: linear-gradient(to right, #219653, #27ae60);
+  box-shadow: 0 7px 20px rgba(39, 174, 96, 0.5);
+}
+
+/* Modal de previsualización */
+.preview-modal .modal-content {
+  width: 95%;
+  max-width: 900px;
+  max-height: 90vh;
+  padding: 20px;
+}
+
+.preview-container {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 20px 0;
+  max-height: 60vh;
+  overflow-y: auto;
+  background-color: white;
+}
+
+/* Estilos para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .watermark-options {
+    background-color: rgba(30, 35, 45, 0.5);
+  }
+  
+  #export-template {
+    background-color: #1a1c2d;
+    border-color: #333;
+    color: #f0f0f0;
+  }
+  
+  .preview-container {
+    border-color: #333;
+    background-color: #fff; /* Mantener fondo blanco para previsualizar PDF */
+  }
+  
+  .email-form {
+    background-color: #252A41;
+    color: #e0e0e0;
+  }
+  
+  .email-form h3 {
+    border-bottom-color: #333;
+  }
+  
+  .email-form input, .email-form textarea {
+    background-color: #1a1c2d;
+    border-color: #333;
+    color: #f0f0f0;
+  }
+}

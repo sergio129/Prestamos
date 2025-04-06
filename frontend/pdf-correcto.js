@@ -35,6 +35,46 @@ document.addEventListener('DOMContentLoaded', function() {
         generarPDF();
     });
     
+    // Nuevo: Añadir opción para incluir marca de agua
+    const watermarkContainer = document.createElement('div');
+    watermarkContainer.className = 'form-group';
+    watermarkContainer.innerHTML = `
+        <label>
+            <input type="checkbox" id="export-watermark" checked> Incluir marca de agua
+        </label>
+        <div id="watermark-options" class="watermark-options">
+            <input type="text" id="watermark-text" placeholder="Texto para marca de agua" value="CONFIDENCIAL">
+            <div class="watermark-color">
+                <label for="watermark-color">Color:</label>
+                <input type="color" id="watermark-color" value="#eeeeee">
+            </div>
+        </div>
+    `;
+    
+    // Añadir después de las otras opciones
+    const checkboxGroup = document.querySelector('#export-modal .checkbox-group');
+    if (checkboxGroup) {
+        checkboxGroup.appendChild(watermarkContainer);
+    }
+    
+    // Nuevo: Añadir selector de plantilla
+    const templateContainer = document.createElement('div');
+    templateContainer.className = 'form-group';
+    templateContainer.innerHTML = `
+        <label for="export-template">Plantilla:</label>
+        <select id="export-template">
+            <option value="standard">Estándar</option>
+            <option value="professional">Profesional</option>
+            <option value="simple">Simple</option>
+        </select>
+    `;
+    
+    // Añadir antes de las opciones
+    const firstFormGroup = document.querySelector('#export-modal .form-group');
+    if (firstFormGroup && firstFormGroup.parentNode) {
+        firstFormGroup.parentNode.insertBefore(templateContainer, firstFormGroup);
+    }
+    
     // Función principal para generar PDF
     function generarPDF() {
         console.log("Iniciando generación de PDF");
@@ -53,6 +93,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const includeSummary = document.getElementById('export-summary')?.checked !== false;
         const includeAmortization = document.getElementById('export-amortization')?.checked !== false;
         
+        // Nuevas opciones
+        const useWatermark = document.getElementById('export-watermark')?.checked !== false;
+        const watermarkText = document.getElementById('watermark-text')?.value || 'CONFIDENCIAL';
+        const watermarkColor = document.getElementById('watermark-color')?.value || '#eeeeee';
+        const template = document.getElementById('export-template')?.value || 'standard';
+        
         try {
             // Crear elemento contenedor para el PDF
             const contenedor = document.createElement('div');
@@ -61,6 +107,19 @@ document.addEventListener('DOMContentLoaded', function() {
             contenedor.style.backgroundColor = 'white';
             contenedor.style.color = 'black';
             contenedor.style.fontFamily = 'Arial, sans-serif';
+            
+            // Aplicar estilos según la plantilla seleccionada
+            if (template === 'professional') {
+                contenedor.style.fontFamily = 'Helvetica, Arial, sans-serif';
+                titulo.style.color = '#1a5276';
+                titulo.style.borderBottom = '2px solid #3498db';
+                titulo.style.paddingBottom = '10px';
+            } else if (template === 'simple') {
+                contenedor.style.fontFamily = 'Courier, monospace';
+                contenedor.style.fontSize = '12px';
+                titulo.style.borderBottom = '1px solid #999';
+                titulo.style.fontWeight = 'normal';
+            }
             
             // Agregar título
             const titulo = document.createElement('h1');
@@ -82,6 +141,26 @@ document.addEventListener('DOMContentLoaded', function() {
                 contenedor.appendChild(amortizacionSection);
             }
             
+            // Agregar marca de agua si está seleccionada
+            if (useWatermark) {
+                const watermark = document.createElement('div');
+                watermark.textContent = watermarkText;
+                watermark.style.position = 'fixed';
+                watermark.style.top = '50%';
+                watermark.style.left = '50%';
+                watermark.style.transform = 'translate(-50%, -50%) rotate(-45deg)';
+                watermark.style.fontSize = '60px';
+                watermark.style.fontWeight = 'bold';
+                watermark.style.color = watermarkColor;
+                watermark.style.opacity = '0.2';
+                watermark.style.pointerEvents = 'none';
+                watermark.style.zIndex = '1000';
+                watermark.style.width = '100%';
+                watermark.style.textAlign = 'center';
+                
+                contenedor.appendChild(watermark);
+            }
+            
             // Agregar pie de página
             const footer = document.createElement('div');
             footer.style.marginTop = '30px';
@@ -90,6 +169,38 @@ document.addEventListener('DOMContentLoaded', function() {
             footer.style.color = '#666';
             footer.textContent = `Documento generado el ${new Date().toLocaleString()} | Simulador de Préstamos`;
             contenedor.appendChild(footer);
+            
+            // Nuevo: Añadir código QR con enlace
+            const qrContainer = document.createElement('div');
+            qrContainer.style.textAlign = 'center';
+            qrContainer.style.marginTop = '20px';
+            
+            const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=150x150&chl=${encodeURIComponent(
+                JSON.stringify({
+                    tipo: 'simulacion_prestamo',
+                    monto: datosPrestamo.monto,
+                    plazo: datosPrestamo.plazo,
+                    interes: datosPrestamo.interesMensual,
+                    fecha: new Date().toISOString().split('T')[0]
+                })
+            )}`;
+            
+            const qrImg = document.createElement('img');
+            qrImg.src = qrUrl;
+            qrImg.alt = 'Código QR';
+            qrImg.style.width = '100px';
+            qrImg.style.height = '100px';
+            
+            const qrCaption = document.createElement('p');
+            qrCaption.textContent = 'Escanea para más información';
+            qrCaption.style.fontSize = '12px';
+            qrCaption.style.color = '#666';
+            qrCaption.style.marginTop = '5px';
+            
+            qrContainer.appendChild(qrImg);
+            qrContainer.appendChild(qrCaption);
+            
+            contenedor.appendChild(qrContainer);
             
             // Añadir temporalmente al DOM
             document.body.appendChild(contenedor);
@@ -115,13 +226,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(() => {
                 mostrarMensaje("PDF generado correctamente", "success");
                 exportModal.classList.add('hidden');
-                // Eliminar contenedor temporal
                 document.body.removeChild(contenedor);
             })
             .catch(error => {
                 console.error("Error al generar PDF:", error);
                 mostrarMensaje(`Error: ${error.message}`, "error");
-                // Eliminar contenedor temporal
                 if (document.body.contains(contenedor)) {
                     document.body.removeChild(contenedor);
                 }
@@ -132,16 +241,218 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
+    // Nueva función: Previsualizar PDF
+    function previsualizarPDF() {
+        const datosPrestamo = obtenerDatosPrestamo();
+        
+        if (!datosPrestamo.monto || datosPrestamo.monto <= 0) {
+            mostrarMensaje("No hay datos para exportar. Calcule un préstamo primero.", "error");
+            return;
+        }
+        
+        try {
+            const contenedor = document.createElement('div');
+            
+            const previewModal = document.createElement('div');
+            previewModal.className = 'modal preview-modal';
+            previewModal.innerHTML = `
+                <div class="modal-content preview-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Vista previa del PDF</h2>
+                    <div class="preview-container"></div>
+                    <div class="modal-actions">
+                        <button class="btn-modal btn-download">Descargar PDF</button>
+                        <button class="btn-modal btn-close">Cerrar</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(previewModal);
+            previewModal.querySelector('.preview-container').appendChild(contenedor);
+            
+            previewModal.classList.remove('hidden');
+            
+            previewModal.querySelector('.close-modal').addEventListener('click', () => {
+                previewModal.classList.add('hidden');
+                setTimeout(() => previewModal.remove(), 300);
+            });
+            
+            previewModal.querySelector('.btn-close').addEventListener('click', () => {
+                previewModal.classList.add('hidden');
+                setTimeout(() => previewModal.remove(), 300);
+            });
+            
+            previewModal.querySelector('.btn-download').addEventListener('click', () => {
+                generarPDF();
+                previewModal.classList.add('hidden');
+                setTimeout(() => previewModal.remove(), 300);
+            });
+        } catch (error) {
+            console.error("Error en la previsualización:", error);
+            mostrarMensaje(`Error: ${error.message}`, "error");
+        }
+    }
+    
+    // Añadir botón de previsualización
+    const previewBtn = document.createElement('button');
+    previewBtn.className = 'btn preview-btn';
+    previewBtn.innerHTML = '<i class="fas fa-eye"></i> Previsualizar';
+    previewBtn.style.marginTop = '10px';
+    previewBtn.style.backgroundColor = '#3498db';
+    previewBtn.style.color = 'white';
+    previewBtn.style.border = 'none';
+    previewBtn.style.padding = '10px 15px';
+    previewBtn.style.borderRadius = '5px';
+    previewBtn.style.cursor = 'pointer';
+    
+    if (generarPdfBtn && generarPdfBtn.parentNode) {
+        generarPdfBtn.parentNode.insertBefore(previewBtn, generarPdfBtn.nextSibling);
+    }
+    
+    previewBtn.addEventListener('click', function() {
+        previsualizarPDF();
+    });
+    
+    // Nueva función: Enviar PDF por correo
+    function enviarPorCorreo() {
+        const emailInput = document.createElement('div');
+        emailInput.className = 'email-input';
+        emailInput.innerHTML = `
+            <div class="overlay"></div>
+            <div class="email-form">
+                <h3>Enviar PDF por correo</h3>
+                <div class="form-group">
+                    <label for="email-to">Destinatario:</label>
+                    <input type="email" id="email-to" placeholder="correo@ejemplo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="email-subject">Asunto:</label>
+                    <input type="text" id="email-subject" value="Simulación de préstamo" required>
+                </div>
+                <div class="form-group">
+                    <label for="email-message">Mensaje:</label>
+                    <textarea id="email-message" rows="3">Adjunto encontrará la simulación de préstamo solicitada.</textarea>
+                </div>
+                <div class="email-actions">
+                    <button type="button" class="btn-send">Enviar</button>
+                    <button type="button" class="btn-cancel">Cancelar</button>
+                </div>
+            </div>
+        `;
+        
+        const style = document.createElement('style');
+        style.textContent = `
+            .email-input {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: 9999;
+            }
+            .overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.7);
+            }
+            .email-form {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                width: 90%;
+                max-width: 500px;
+            }
+            .email-form h3 {
+                margin-top: 0;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 10px;
+            }
+            .email-actions {
+                display: flex;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 20px;
+            }
+            .btn-send, .btn-cancel {
+                padding: 8px 15px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            .btn-send {
+                background: #27ae60;
+                color: white;
+            }
+            .btn-cancel {
+                background: #7f8c8d;
+                color: white;
+            }
+        `;
+        
+        document.head.appendChild(style);
+        document.body.appendChild(emailInput);
+        
+        emailInput.querySelector('.btn-cancel').addEventListener('click', function() {
+            emailInput.remove();
+            style.remove();
+        });
+        
+        emailInput.querySelector('.overlay').addEventListener('click', function() {
+            emailInput.remove();
+            style.remove();
+        });
+        
+        emailInput.querySelector('.btn-send').addEventListener('click', function() {
+            const email = document.getElementById('email-to')?.value;
+            if (!email || !email.includes('@')) {
+                alert("Por favor ingrese un correo válido");
+                return;
+            }
+            
+            mostrarMensaje("Simulando envío de correo... (Esta es una simulación)", "info");
+            setTimeout(() => {
+                mostrarMensaje("Correo enviado exitosamente (simulación)", "success");
+                emailInput.remove();
+                style.remove();
+            }, 1500);
+        });
+    }
+    
+    // Añadir botón para enviar por correo
+    const emailBtn = document.createElement('button');
+    emailBtn.className = 'btn email-btn';
+    emailBtn.innerHTML = '<i class="fas fa-envelope"></i> Enviar por correo';
+    emailBtn.style.marginTop = '10px';
+    emailBtn.style.backgroundColor = '#27ae60';
+    emailBtn.style.color = 'white';
+    emailBtn.style.border = 'none';
+    emailBtn.style.padding = '10px 15px';
+    emailBtn.style.borderRadius = '5px';
+    emailBtn.style.cursor = 'pointer';
+    
+    if (previewBtn && previewBtn.parentNode) {
+        previewBtn.parentNode.insertBefore(emailBtn, previewBtn.nextSibling);
+    }
+    
+    emailBtn.addEventListener('click', function() {
+        enviarPorCorreo();
+    });
+    
     // Obtener datos del préstamo desde la interfaz
     function obtenerDatosPrestamo() {
         try {
-            // Datos básicos
             const monto = parseFloat(document.getElementById('monto')?.value || 0);
             const plazo = parseInt(document.getElementById('plazo')?.value || 0);
             const interesMensual = parseFloat(document.getElementById('interes-mensual')?.value || 0);
             const interesAnual = document.getElementById('interes-anual')?.textContent || "0%";
             
-            // Resultados
             const cuotaMensualEl = document.getElementById('cuota-mensual');
             const totalPagarEl = document.getElementById('total-pagar');
             const totalInteresesEl = document.getElementById('total-intereses');
@@ -150,7 +461,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const totalPagar = extraerNumero(totalPagarEl?.textContent || "0");
             const totalIntereses = extraerNumero(totalInteresesEl?.textContent || "0");
             
-            // Tabla de amortización
             let amortizacion = [];
             const filas = document.querySelectorAll('#amortization-table tbody tr');
             
@@ -168,7 +478,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 });
             } else if (monto > 0 && cuotaMensual > 0 && plazo > 0) {
-                // Generar tabla de amortización si no está visible
                 amortizacion = generarTablaAmortizacion(monto, interesMensual, plazo, cuotaMensual);
             }
             
@@ -189,16 +498,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
     
-    // Extraer número desde texto (para valores monetarios)
     function extraerNumero(texto) {
         if (!texto) return 0;
-        // Eliminar símbolos y espacios
         const limpio = texto.replace(/[$,.\s]/g, '');
         const numero = parseInt(limpio);
         return isNaN(numero) ? 0 : numero;
     }
     
-    // Generar tabla de amortización
     function generarTablaAmortizacion(monto, tasa, plazo, cuotaMensual) {
         const amortizacion = [];
         const tasaMensual = tasa / 100;
@@ -208,7 +514,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const interes = saldo * tasaMensual;
             const capital = cuotaMensual - interes;
             saldo -= capital;
-            saldo = Math.max(0, saldo); // Evitar saldo negativo por redondeo
+            saldo = Math.max(0, saldo);
             
             amortizacion.push({
                 cuota: i,
@@ -222,12 +528,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return amortizacion;
     }
     
-    // Crear sección de resumen
     function crearSeccionResumen(datos) {
         const section = document.createElement('div');
         section.style.marginBottom = '20px';
         
-        // Título
         const title = document.createElement('h2');
         title.textContent = 'Resumen del préstamo';
         title.style.color = '#444';
@@ -236,17 +540,14 @@ document.addEventListener('DOMContentLoaded', function() {
         title.style.borderBottom = '1px solid #ddd';
         section.appendChild(title);
         
-        // Contenido
         const contenido = document.createElement('div');
         
-        // Formato moneda
         const formatoMoneda = new Intl.NumberFormat('es-CO', {
             style: 'currency', 
             currency: 'COP',
             minimumFractionDigits: 0
         });
         
-        // Datos
         const elementos = [
             { label: 'Monto del préstamo:', value: formatoMoneda.format(datos.monto) },
             { label: 'Plazo:', value: `${datos.plazo} meses` },
@@ -257,7 +558,6 @@ document.addEventListener('DOMContentLoaded', function() {
             { label: 'Total intereses:', value: formatoMoneda.format(datos.totalIntereses) }
         ];
         
-        // Crear lista de elementos
         elementos.forEach(elem => {
             const item = document.createElement('div');
             item.style.display = 'flex';
@@ -281,12 +581,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return section;
     }
     
-    // Crear sección de amortización
     function crearSeccionAmortizacion(amortizacion) {
         const section = document.createElement('div');
         section.style.marginTop = '30px';
         
-        // Título
         const title = document.createElement('h2');
         title.textContent = 'Tabla de Amortización';
         title.style.color = '#444';
@@ -295,20 +593,17 @@ document.addEventListener('DOMContentLoaded', function() {
         title.style.borderBottom = '1px solid #ddd';
         section.appendChild(title);
         
-        // Tabla
         const tabla = document.createElement('table');
         tabla.style.width = '100%';
         tabla.style.borderCollapse = 'collapse';
         tabla.style.marginBottom = '20px';
         
-        // Formato moneda
         const formatoMoneda = new Intl.NumberFormat('es-CO', {
             style: 'currency', 
             currency: 'COP',
             minimumFractionDigits: 0
         });
         
-        // Cabecera
         const thead = document.createElement('thead');
         const headerRow = document.createElement('tr');
         
@@ -326,10 +621,8 @@ document.addEventListener('DOMContentLoaded', function() {
         thead.appendChild(headerRow);
         tabla.appendChild(thead);
         
-        // Cuerpo de la tabla
         const tbody = document.createElement('tbody');
         
-        // Limitar a 30 filas para evitar problemas de rendimiento
         const filasAMostrar = amortizacion.length > 30 ? 30 : amortizacion.length;
         
         for (let i = 0; i < filasAMostrar; i++) {
@@ -340,7 +633,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 tr.style.backgroundColor = '#f9f9f9';
             }
             
-            // Propiedades de la fila
             const props = [
                 fila.cuota, 
                 formatoMoneda.format(fila.capital), 
@@ -360,7 +652,6 @@ document.addEventListener('DOMContentLoaded', function() {
             tbody.appendChild(tr);
         }
         
-        // Si hay demasiadas filas, mostrar un mensaje
         if (amortizacion.length > 30) {
             const tr = document.createElement('tr');
             const td = document.createElement('td');
@@ -379,15 +670,12 @@ document.addEventListener('DOMContentLoaded', function() {
         return section;
     }
     
-    // Mostrar mensaje de notificación
     function mostrarMensaje(mensaje, tipo) {
-        // Usar la función global si existe
         if (typeof window.mostrarToast === 'function') {
             window.mostrarToast(mensaje, tipo);
             return;
         }
         
-        // Respaldo: crear notificación propia
         console.log(`${tipo}: ${mensaje}`);
         
         const toast = document.createElement('div');
