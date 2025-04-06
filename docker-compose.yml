@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  prestamos-app:
+    build: .
+    ports:
+      - "80:80"
+    restart: always
+    volumes:
+      - ./logs:/var/log/nginx

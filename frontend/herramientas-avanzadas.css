@@ -247,6 +247,11 @@
     font-size: 24px;
     font-weight: bold;
     color: #2c3e50;
+    position: relative;
+}
+
+.financiero-card-value:not(:empty):not([id="capacidad-pago"]):not([id="nivel-endeudamiento"]):not([id="balance-financiero"]):before {
+    content: "$";
 }
 
 .chart-container {
@@ -291,6 +296,24 @@
     border: 1px solid #ced4da;
     border-radius: 4px;
     font-size: 16px;
+}
+
+.monetary-input {
+    position: relative;
+}
+
+.monetary-input::before {
+    content: "$";
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #6c757d;
+    z-index: 1;
+}
+
+.monetary-input input {
+    padding-left: 25px !important;
 }
 
 .herramientas-form-row {
@@ -344,6 +367,11 @@
     font-size: 20px;
     font-weight: bold;
     color: #2c3e50;
+    position: relative;
+}
+
+.hipoteca-card-value:not(:empty):not([id$="porcentaje"]):not([id$="relacion"]):before {
+    content: "$";
 }
 
 .hipoteca-table-container {
@@ -408,6 +436,11 @@
     font-size: 20px;
     font-weight: bold;
     color: #2c3e50;
+    position: relative;
+}
+
+.vehiculo-card-value:not(:empty):not([id$="porcentaje"]):not([id$="relacion"]):before {
+    content: "$";
 }
 
 .capacidad-pago-barra {
@@ -455,6 +488,11 @@
     font-size: 20px;
     font-weight: bold;
     color: #2c3e50;
+    position: relative;
+}
+
+.leasing-card-value:not(:empty):not([id$="porcentaje"]):not([id$="relacion"]):before {
+    content: "$";
 }
 
 .leasing-table-container {
@@ -503,6 +541,11 @@
     font-size: 20px;
     font-weight: bold;
     color: #2c3e50;
+    position: relative;
+}
+
+.libranza-card-value:not(:empty):not([id$="porcentaje"]):not([id$="relacion"]):before {
+    content: "$";
 }
 
 .libranza-meter-container {
@@ -544,6 +587,36 @@
     padding: 15px;
     border-radius: 8px;
     border-left: 4px solid #4a6fa5;
+}
+
+/* Agregar formato de moneda a los valores de resultados */
+.currency-value {
+    position: relative;
+    display: inline-block;
+}
+
+.currency-value::before {
+    content: "$";
+    position: absolute;
+    left: -12px;
+}
+
+.currency-value.large {
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.currency-value.medium {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+/* Estilo para resaltar los resultados con formato monetario */
+.formatted-money {
+    color: #2c3e50;
+    font-weight: bold;
 }
 
 /* Responsive styles */

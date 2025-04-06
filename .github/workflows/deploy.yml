@@ -1,0 +1,39 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main  # o la rama que uses
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        run: |
+          echo "${{ secrets.AWS_EC2_KEY }}" > private_key.pem
+          chmod 400 private_key.pem
+
+      - name: Copy project to EC2
+        run: |
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i private_key.pem" ./ ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update
+
+      - name: Run deploy commands on EC2
+        run: |
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
+            set -e
+            echo "Respaldando versión actual..."
+            cp -r ~/Prestamos ~/Prestamos_backup_$(date +%Y%m%d%H%M%S) || true
+            echo "Actualizando archivos..."
+            rm -rf ~/Prestamos
+            mv ~/temp_update ~/Prestamos
+            cd ~/Prestamos
+            echo "Reconstruyendo contenedores Docker..."
+            docker-compose down
+            docker-compose up -d --build
+            docker ps
+          EOF

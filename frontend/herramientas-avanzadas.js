@@ -1713,22 +1713,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // ===============================================================
-    // Eliminar formato de moneda de los inputs para evitar problemas
+    // Función para formatear moneda en resultados sin afectar inputs
     // ===============================================================
     
-    // Eliminar los eventos que están causando problemas con la entrada de números
-    document.querySelectorAll('input[type="number"]').forEach(input => {
-        // Eliminar cualquier atributo data-valor-original para evitar conflictos
-        if (input.hasAttribute('data-valor-original')) {
-            input.removeAttribute('data-valor-original');
-        }
-        
-        // Remover eventos de formateo que puedan estar causando problemas
-        input.removeEventListener('focus', () => {});
-        input.removeEventListener('blur', () => {});
-        input.removeEventListener('input', () => {});
-        
-        // Resetear el tipo a number para asegurar que funcione correctamente
-        input.type = 'number';
-    });
+    /**
+     * Devuelve valor formateado con separadores de miles
+     * @param {number} valor - Valor numérico a formatear
+     * @param {number} decimales - Cantidad de decimales a mostrar
+     * @returns {string} - Valor formateado como moneda
+     */
+    function formatoMoneda(valor, decimales = 0) {
+        return new Intl.NumberFormat('es-CO', {
+            style: 'currency',
+            currency: 'COP',
+            minimumFractionDigits: decimales,
+            maximumFractionDigits: decimales
+        }).format(valor);
+    }
+    
+    /**
+     * Extrae un valor numérico de un string con formato de moneda
+     * @param {string} valorTexto - Texto con formato de moneda
+     * @returns {number} - Valor numérico extraído
+     */
+    function extraerValorNumerico(valorTexto) {
+        if (!valorTexto) return 0;
+        return parseFloat(valorTexto.replace(/[^\d.-]/g, '')) || 0;
+    }
 });
