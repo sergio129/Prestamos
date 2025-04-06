@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="herramientas-tab active" data-panel="tir-panel">Calculadora TIR</div>
                 <div class="herramientas-tab" data-panel="comparador-panel">Comparador de Préstamos</div>
                 <div class="herramientas-tab" data-panel="analisis-panel">Análisis Financiero</div>
+                <div class="herramientas-tab" data-panel="hipotecario-panel">Préstamos Hipotecarios</div>
+                <div class="herramientas-tab" data-panel="vehiculo-panel">Préstamos Vehículos</div>
+                <div class="herramientas-tab" data-panel="leasing-panel">Leasing</div>
+                <div class="herramientas-tab" data-panel="libranza-panel">Libranza</div>
             </div>
             
             <div class="herramientas-content">
@@ -194,6 +198,413 @@ document.addEventListener('DOMContentLoaded', function() {
                             <h4>Recomendaciones</h4>
                             <ul id="recomendaciones-lista">
                                 <!-- Recomendaciones dinámicas -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Préstamos Hipotecarios -->
+                <div id="hipotecario-panel" class="herramientas-panel">
+                    <h3>Calculadora de Préstamos Hipotecarios</h3>
+                    <p class="panel-description">
+                        Calcula y analiza préstamos hipotecarios para adquisición de vivienda. Esta herramienta te ayuda a determinar 
+                        cuotas, plazos óptimos, comparar opciones UVR vs tasa fija y evaluar tu capacidad de endeudamiento para 
+                        comprar tu casa o apartamento.
+                    </p>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="hipo-valor-inmueble">Valor del inmueble:</label>
+                            <input type="number" id="hipo-valor-inmueble" placeholder="Valor total del inmueble">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="hipo-monto-prestamo">Monto a financiar:</label>
+                            <input type="number" id="hipo-monto-prestamo" placeholder="Monto que necesitas financiar">
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="hipo-tipo-tasa">Tipo de tasa:</label>
+                            <select id="hipo-tipo-tasa">
+                                <option value="fija">Tasa fija</option>
+                                <option value="uvr">UVR (Unidad de Valor Real)</option>
+                            </select>
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="hipo-tasa">Tasa de interés (% anual):</label>
+                            <input type="number" id="hipo-tasa" step="0.01" min="0.1" value="10.5">
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="hipo-plazo">Plazo (años):</label>
+                            <select id="hipo-plazo">
+                                <option value="5">5 años</option>
+                                <option value="10">10 años</option>
+                                <option value="15">15 años</option>
+                                <option value="20" selected>20 años</option>
+                                <option value="30">30 años</option>
+                            </select>
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="hipo-ingresos">Ingresos mensuales:</label>
+                            <input type="number" id="hipo-ingresos" placeholder="Tus ingresos mensuales">
+                        </div>
+                    </div>
+                    
+                    <button id="calcular-hipoteca" class="herramientas-btn">Calcular Préstamo Hipotecario</button>
+                    
+                    <div id="resultado-hipoteca" style="display: none;">
+                        <h4>Resultados del Cálculo Hipotecario</h4>
+                        
+                        <div class="hipoteca-detalles">
+                            <div class="hipoteca-resumen">
+                                <div class="hipoteca-card">
+                                    <div class="hipoteca-card-title">Cuota mensual</div>
+                                    <div id="hipo-cuota" class="hipoteca-card-value">$0</div>
+                                </div>
+                                <div class="hipoteca-card">
+                                    <div class="hipoteca-card-title">Total de intereses</div>
+                                    <div id="hipo-intereses" class="hipoteca-card-value">$0</div>
+                                </div>
+                                <div class="hipoteca-card">
+                                    <div class="hipoteca-card-title">Relación cuota/ingreso</div>
+                                    <div id="hipo-relacion" class="hipoteca-card-value">0%</div>
+                                </div>
+                                <div class="hipoteca-card">
+                                    <div class="hipoteca-card-title">Costo total</div>
+                                    <div id="hipo-total" class="hipoteca-card-value">$0</div>
+                                </div>
+                            </div>
+                            
+                            <div class="hipoteca-amortizacion">
+                                <h5>Tabla de amortización simplificada</h5>
+                                <div class="hipoteca-table-container">
+                                    <table class="hipoteca-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Año</th>
+                                                <th>Pago anual</th>
+                                                <th>Capital</th>
+                                                <th>Intereses</th>
+                                                <th>Saldo restante</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="hipo-amortizacion">
+                                            <!-- Se llenará dinámicamente -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="hipoteca-viabilidad">
+                                <h5>Análisis de viabilidad</h5>
+                                <div id="hipo-viabilidad-mensaje" class="hipoteca-viabilidad-mensaje"></div>
+                                <ul id="hipo-recomendaciones" class="hipoteca-recomendaciones">
+                                    <!-- Se llenará dinámicamente -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Préstamos Vehículos -->
+                <div id="vehiculo-panel" class="herramientas-panel">
+                    <h3>Calculadora de Préstamos para Vehículos</h3>
+                    <p class="panel-description">
+                        Planifica la financiación de tu automóvil nuevo o usado. Esta herramienta te ayuda a calcular cuotas mensuales,
+                        comparar diferentes plazos, evaluar tasas de interés especiales y determinar el valor máximo del vehículo que
+                        puedes adquirir según tu capacidad de pago.
+                    </p>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="vehiculo-valor">Valor del vehículo:</label>
+                            <input type="number" id="vehiculo-valor" placeholder="Valor del vehículo">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="vehiculo-cuota-inicial">Cuota inicial (%):</label>
+                            <input type="number" id="vehiculo-cuota-inicial" min="0" max="90" value="20">
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="vehiculo-tasa">Tasa de interés (% anual):</label>
+                            <input type="number" id="vehiculo-tasa" step="0.01" min="0.1" value="12.5">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="vehiculo-plazo">Plazo (meses):</label>
+                            <select id="vehiculo-plazo">
+                                <option value="12">12 meses</option>
+                                <option value="24">24 meses</option>
+                                <option value="36">36 meses</option>
+                                <option value="48" selected>48 meses</option>
+                                <option value="60">60 meses</option>
+                                <option value="72">72 meses</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="vehiculo-ingresos">Ingresos mensuales:</label>
+                            <input type="number" id="vehiculo-ingresos" placeholder="Tus ingresos mensuales">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="vehiculo-tipo">Tipo de vehículo:</label>
+                            <select id="vehiculo-tipo">
+                                <option value="nuevo">Nuevo</option>
+                                <option value="usado">Usado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="calcular-vehiculo" class="herramientas-btn">Calcular Préstamo Vehículo</button>
+                    
+                    <div id="resultado-vehiculo" style="display: none;">
+                        <h4>Resultados del Préstamo de Vehículo</h4>
+                        
+                        <div class="vehiculo-resumen">
+                            <div class="vehiculo-card">
+                                <div class="vehiculo-card-title">Valor a financiar</div>
+                                <div id="vehiculo-monto-financiar" class="vehiculo-card-value">$0</div>
+                            </div>
+                            <div class="vehiculo-card">
+                                <div class="vehiculo-card-title">Cuota mensual</div>
+                                <div id="vehiculo-cuota" class="vehiculo-card-value">$0</div>
+                            </div>
+                            <div class="vehiculo-card">
+                                <div class="vehiculo-card-title">Total intereses</div>
+                                <div id="vehiculo-intereses-total" class="vehiculo-card-value">$0</div>
+                            </div>
+                            <div class="vehiculo-card">
+                                <div class="vehiculo-card-title">Costo total</div>
+                                <div id="vehiculo-total" class="vehiculo-card-value">$0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="vehiculo-analisis">
+                            <h5>Análisis de Capacidad de Pago</h5>
+                            <div class="capacidad-pago-barra">
+                                <div id="vehiculo-barra-capacidad" class="capacidad-pago-progreso"></div>
+                            </div>
+                            <div id="vehiculo-capacidad-mensaje" class="capacidad-pago-mensaje"></div>
+                            
+                            <div class="vehiculo-recomendaciones">
+                                <h5>Recomendaciones</h5>
+                                <ul id="vehiculo-recomendaciones-lista">
+                                    <!-- Se llenará dinámicamente -->
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Leasing -->
+                <div id="leasing-panel" class="herramientas-panel">
+                    <h3>Calculadora de Leasing</h3>
+                    <p class="panel-description">
+                        Evalúa opciones de leasing financiero para activos productivos, maquinaria o vehículos. 
+                        Esta herramienta te permite comparar leasing vs. crédito tradicional, calcular el canon mensual, 
+                        evaluar la opción de compra y entender los beneficios tributarios del leasing.
+                    </p>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="leasing-valor-activo">Valor del activo:</label>
+                            <input type="number" id="leasing-valor-activo" placeholder="Valor del activo a financiar">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="leasing-tipo">Tipo de leasing:</label>
+                            <select id="leasing-tipo">
+                                <option value="financiero">Leasing Financiero</option>
+                                <option value="operativo">Leasing Operativo</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="leasing-plazo">Plazo (meses):</label>
+                            <select id="leasing-plazo">
+                                <option value="24">24 meses</option>
+                                <option value="36" selected>36 meses</option>
+                                <option value="48">48 meses</option>
+                                <option value="60">60 meses</option>
+                            </select>
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="leasing-tasa">Tasa de interés (% anual):</label>
+                            <input type="number" id="leasing-tasa" step="0.01" min="0.1" value="12.0">
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="leasing-opcion-compra">Opción de compra (%):</label>
+                            <input type="number" id="leasing-opcion-compra" min="0" max="20" value="10">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="leasing-tasa-impuesto">Tasa de impuesto de renta (%):</label>
+                            <input type="number" id="leasing-tasa-impuesto" min="0" max="40" value="32">
+                        </div>
+                    </div>
+                    
+                    <button id="calcular-leasing" class="herramientas-btn">Calcular Leasing</button>
+                    
+                    <div id="resultado-leasing" style="display: none;">
+                        <h4>Resultados del Cálculo de Leasing</h4>
+                        
+                        <div class="leasing-resumen">
+                            <div class="leasing-card">
+                                <div class="leasing-card-title">Canon mensual</div>
+                                <div id="leasing-canon" class="leasing-card-value">$0</div>
+                            </div>
+                            <div class="leasing-card">
+                                <div class="leasing-card-title">Valor opción de compra</div>
+                                <div id="leasing-valor-opcion" class="leasing-card-value">$0</div>
+                            </div>
+                            <div class="leasing-card">
+                                <div class="leasing-card-title">Costo financiero total</div>
+                                <div id="leasing-costo-total" class="leasing-card-value">$0</div>
+                            </div>
+                            <div class="leasing-card">
+                                <div class="leasing-card-title">Beneficio tributario estimado</div>
+                                <div id="leasing-beneficio" class="leasing-card-value">$0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="leasing-comparacion">
+                            <h5>Comparación Leasing vs. Crédito Tradicional</h5>
+                            <div class="leasing-table-container">
+                                <table class="leasing-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Concepto</th>
+                                            <th>Leasing</th>
+                                            <th>Crédito Tradicional</th>
+                                            <th>Diferencia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="leasing-comparacion-tabla">
+                                        <!-- Se llenará dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div class="leasing-recomendaciones">
+                            <h5>Recomendaciones y Consideraciones</h5>
+                            <ul id="leasing-recomendaciones-lista">
+                                <!-- Se llenará dinámicamente -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel Libranza -->
+                <div id="libranza-panel" class="herramientas-panel">
+                    <h3>Calculadora de Préstamos por Libranza</h3>
+                    <p class="panel-description">
+                        Calcula préstamos por libranza o descuento de nómina. Esta herramienta te permite evaluar tu capacidad de 
+                        endeudamiento según tus ingresos, simular préstamos con descuento directo de nómina y planificar créditos 
+                        de libre inversión o destinación específica que se pagan automáticamente con tu salario.
+                    </p>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="libranza-salario">Salario mensual:</label>
+                            <input type="number" id="libranza-salario" placeholder="Tu salario mensual">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="libranza-descuentos">Descuentos actuales:</label>
+                            <input type="number" id="libranza-descuentos" placeholder="Otros descuentos de nómina">
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="libranza-monto">Monto a solicitar:</label>
+                            <input type="number" id="libranza-monto" placeholder="Monto del préstamo">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="libranza-plazo">Plazo (meses):</label>
+                            <select id="libranza-plazo">
+                                <option value="12">12 meses</option>
+                                <option value="24">24 meses</option>
+                                <option value="36" selected>36 meses</option>
+                                <option value="48">48 meses</option>
+                                <option value="60">60 meses</option>
+                                <option value="72">72 meses</option>
+                                <option value="84">84 meses</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="herramientas-form-row">
+                        <div class="herramientas-form-group">
+                            <label for="libranza-tasa">Tasa de interés (% anual):</label>
+                            <input type="number" id="libranza-tasa" step="0.01" min="0.1" value="14.5">
+                        </div>
+                        <div class="herramientas-form-group">
+                            <label for="libranza-tipo-contrato">Tipo de contrato:</label>
+                            <select id="libranza-tipo-contrato">
+                                <option value="indefinido">Indefinido</option>
+                                <option value="fijo">Término fijo</option>
+                                <option value="publico">Sector público</option>
+                                <option value="pensionado">Pensionado</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button id="calcular-libranza" class="herramientas-btn">Calcular Préstamo por Libranza</button>
+                    
+                    <div id="resultado-libranza" style="display: none;">
+                        <h4>Resultados del Préstamo por Libranza</h4>
+                        
+                        <div class="libranza-resumen">
+                            <div class="libranza-card">
+                                <div class="libranza-card-title">Cuota mensual</div>
+                                <div id="libranza-cuota" class="libranza-card-value">$0</div>
+                            </div>
+                            <div class="libranza-card">
+                                <div class="libranza-card-title">Capacidad máxima de descuento</div>
+                                <div id="libranza-capacidad" class="libranza-card-value">$0</div>
+                            </div>
+                            <div class="libranza-card">
+                                <div class="libranza-card-title">% de ingresos comprometidos</div>
+                                <div id="libranza-porcentaje" class="libranza-card-value">0%</div>
+                            </div>
+                            <div class="libranza-card">
+                                <div class="libranza-card-title">Total a pagar</div>
+                                <div id="libranza-total" class="libranza-card-value">$0</div>
+                            </div>
+                        </div>
+                        
+                        <div class="libranza-viabilidad">
+                            <h5>Análisis de Viabilidad</h5>
+                            <div class="libranza-meter-container">
+                                <div class="libranza-meter">
+                                    <div id="libranza-meter-fill" class="libranza-meter-fill"></div>
+                                </div>
+                                <div id="libranza-viabilidad-texto" class="libranza-viabilidad-texto"></div>
+                            </div>
+                            
+                            <div class="libranza-alternativas" id="libranza-alternativas" style="display: none;">
+                                <h5>Alternativas sugeridas</h5>
+                                <div id="libranza-alternativas-content">
+                                    <!-- Se llenará dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="libranza-recomendaciones">
+                            <h5>Recomendaciones</h5>
+                            <ul id="libranza-recomendaciones-lista">
+                                <!-- Se llenará dinámicamente -->
                             </ul>
                         </div>
                     </div>
