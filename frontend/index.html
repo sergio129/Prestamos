@@ -7,13 +7,16 @@
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="buttons.css">
     <link rel="stylesheet" href="estilos-adicionales.css">
+    <!-- Font Awesome para iconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Scripts esenciales primero -->
     <script src="fixer.js"></script>
-    <script src="busqueda.js"></script>
 </head>
 <body>
     <div class="container">
         <h1>Simulador de Préstamos</h1>
         
+        <!-- Formulario principal -->
         <div class="calculator">
             <form id="loan-form">
                 <div class="form-group">
@@ -45,6 +48,7 @@
             </form>
         </div>
         
+        <!-- Resultados de la simulación -->
         <div class="results hidden" id="results">
             <h2>Resultados de la simulación</h2>
             <div class="result-item">
@@ -63,12 +67,15 @@
             <div class="buttons-group">
                 <button id="save-btn" class="btn btn-save">Guardar Simulación</button>
                 <button id="show-amortization-btn" class="btn btn-info">Ver tabla de amortización</button>
+                <button class="btn export-btn export-detail-btn">
+                    <i class="fas fa-file-pdf"></i> Exportar a PDF
+                </button>
             </div>
             
-            <!-- Nuevo contenedor para mensajes persistentes -->
             <div class="message-container" id="message-container"></div>
         </div>
         
+        <!-- Tabla de amortización -->
         <div id="amortization-table-container" class="hidden">
             <h2>Tabla de Amortización</h2>
             <div class="table-responsive">
@@ -88,6 +95,52 @@
                 </table>
             </div>
             <button id="hide-amortization-btn" class="btn btn-secondary">Ocultar tabla</button>
+        </div>
+        
+        <!-- Sección de simulaciones recientes -->
+        <div class="recent-simulations hidden" id="recent-simulations">
+            <h3>Simulaciones recientes</h3>
+            <div id="recent-list">
+                <!-- Generado dinámicamente -->
+            </div>
+        </div>
+
+        <!-- Contenedor para el comparador de préstamos -->
+        <div class="comparison-container hidden" id="comparison-container">
+            <!-- Generado dinámicamente -->
+        </div>
+
+        <!-- Contenedor para gráficos de análisis -->
+        <div class="chart-container hidden" id="chart-container">
+            <div class="tabs">
+                <div class="tab active" data-tab="amortization">Amortización</div>
+                <div class="tab" data-tab="interest">Intereses vs Capital</div>
+                <div class="tab" data-tab="balance">Saldo Restante</div>
+            </div>
+            <div id="chart-content">
+                <!-- Generado dinámicamente -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botón de accesibilidad -->
+    <div class="a11y-help" id="a11y-help" aria-label="Opciones de accesibilidad">
+        <i class="fas fa-universal-access"></i>
+    </div>
+
+    <!-- Menú de accesibilidad -->
+    <div class="a11y-menu" id="a11y-menu">
+        <div class="a11y-option" data-option="contrast">
+            <i class="fas fa-adjust"></i> Alto contraste
+        </div>
+        <div class="a11y-option" data-option="font-size">
+            <i class="fas fa-text-height"></i> Texto más grande
+        </div>
+        <div class="a11y-option" data-option="line-spacing">
+            <i class="fas fa-arrows-alt-v"></i> Espaciado amplio
+        </div>
+        <div class="a11y-option" data-option="focus-mode">
+            <i class="fas fa-eye"></i> Modo enfocado
         </div>
     </div>
     
@@ -112,7 +165,7 @@
         </div>
     </div>
 
-    <!-- Modal para buscar simulaciones - modificado para usar funciones directas -->
+    <!-- Modal para buscar simulaciones -->
     <div id="search-modal" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -146,7 +199,7 @@
         </div>
     </div>
 
-    <!-- Nuevo modal para ver detalles de simulación -->
+    <!-- Modal para ver detalles de simulación -->
     <div id="detail-modal" class="modal detail-modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -155,227 +208,50 @@
             </div>
             <div class="modal-actions">
                 <button class="btn-modal btn-close-detail">Cerrar</button>
+                <button class="btn-modal export-detail-btn">
+                    <i class="fas fa-file-pdf"></i> Exportar a PDF
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- Modal para exportar a PDF -->
+    <div id="export-modal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Exportar Simulación</h2>
+            <div class="form-group">
+                <label for="export-title">Título del documento:</label>
+                <input type="text" id="export-title" placeholder="Simulación de préstamo" value="Simulación de préstamo">
+            </div>
+            <div class="form-group">
+                <label>Contenido a incluir:</label>
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="export-summary" checked> Resumen
+                    </label>
+                    <label>
+                        <input type="checkbox" id="export-amortization" checked> Tabla de amortización
+                    </label>
+                    <label>
+                        <input type="checkbox" id="export-charts" checked> Gráficos
+                    </label>
+                </div>
+            </div>
+            <button id="generate-pdf" class="btn export-btn">
+                <i class="fas fa-file-pdf"></i> Generar PDF
+            </button>
+        </div>
+    </div>
     
+    <!-- Cargar las librerías externas necesarias -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- Cargar nuestros scripts en el orden correcto -->
+    <script src="busqueda.js"></script>
     <script src="simulador.js"></script>
-    <script>
-      // Script para garantizar que el botón de búsqueda funcione correctamente
-      document.addEventListener('DOMContentLoaded', function() {
-        const searchBtn = document.getElementById('search-id-btn');
-        const searchIdInput = document.getElementById('search-id');
-        
-        if (searchBtn && searchIdInput) {
-          console.log("Configurando eventos para búsqueda");
-          
-          // Añadir evento al botón buscar
-          searchBtn.addEventListener('click', function() {
-            console.log("Botón buscar presionado");
-            // Esta función debe estar definida en simulador.js
-            if (typeof buscarSimulaciones === 'function') {
-              buscarSimulaciones();
-            } else {
-              console.error("La función buscarSimulaciones no está definida");
-              alert("Error: Función de búsqueda no disponible");
-            }
-          });
-          
-          // También permitir búsqueda al presionar Enter en el campo
-          searchIdInput.addEventListener('keyup', function(e) {
-            if (e.key === 'Enter') {
-              e.preventDefault();
-              searchBtn.click();
-            }
-          });
-        } else {
-          console.error("No se encontraron los elementos de búsqueda");
-        }
-      });
-    </script>
-    <script>
-      // Asegurar que las funciones críticas estén disponibles como respaldo
-      document.addEventListener('DOMContentLoaded', function() {
-        // Verificar si la función buscarSimulaciones existe, si no, crearla
-        if (typeof window.buscarSimulaciones !== 'function') {
-          window.buscarSimulaciones = function() {
-            console.error("La función de búsqueda no se cargó correctamente");
-            
-            // Si la función mostrarToast existe, usarla
-            if (typeof window.mostrarToast === 'function') {
-              window.mostrarToast("Error: La función de búsqueda no está disponible", "error");
-            } else {
-              // Como último recurso, crear un toast básico
-              const toast = document.createElement('div');
-              toast.style.position = 'fixed';
-              toast.style.bottom = '30px';
-              toast.style.right = '30px';
-              toast.style.background = 'rgba(231, 76, 60, 0.9)';
-              toast.style.color = 'white';
-              toast.style.padding = '15px 20px';
-              toast.style.borderRadius = '8px';
-              toast.style.zIndex = '9999';
-              toast.textContent = "Error: La función de búsqueda no está disponible";
-              
-              document.body.appendChild(toast);
-              
-              setTimeout(() => {
-                toast.remove();
-              }, 3000);
-            }
-          };
-        }
-        
-        // Asegurar que el botón de búsqueda tenga el evento correcto
-        const searchIdBtn = document.getElementById('search-id-btn');
-        if (searchIdBtn) {
-          // Eliminar event listeners existentes
-          const newBtn = searchIdBtn.cloneNode(true);
-          searchIdBtn.parentNode.replaceChild(newBtn, searchIdBtn);
-          
-          // Añadir nuevo event listener
-          newBtn.addEventListener('click', function() {
-            if (typeof window.buscarSimulaciones === 'function') {
-              window.buscarSimulaciones();
-            }
-          });
-        }
-      });
-    </script>
-    <script>
-        // Verificar que las funciones críticas existan y crear respaldos si no
-        document.addEventListener('DOMContentLoaded', function() {
-            if (typeof window.buscarSimulaciones !== 'function') {
-                console.warn("Definiendo función de búsqueda de respaldo");
-                window.buscarSimulaciones = function() {
-                    const searchIdInput = document.getElementById('search-id');
-                    const identificacion = searchIdInput ? searchIdInput.value : '';
-                    const searchResultsContainer = document.getElementById('search-results');
-                    const resultsTable = document.getElementById('results-table')?.querySelector('tbody');
-                    
-                    if (!identificacion) {
-                        alert("Ingrese un número de identificación para buscar");
-                        return;
-                    }
-                    
-                    if (searchResultsContainer && resultsTable) {
-                        resultsTable.innerHTML = '<tr><td colspan="7">Buscando simulaciones...</td></tr>';
-                        searchResultsContainer.classList.remove('hidden');
-                        
-                        // Intentar buscar mediante fetch directo
-                        fetch(`http://localhost:3000/buscar-simulaciones?id=${identificacion}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                resultsTable.innerHTML = '';
-                                if (data.simulaciones && data.simulaciones.length > 0) {
-                                    data.simulaciones.forEach(sim => {
-                                        const row = document.createElement('tr');
-                                        row.innerHTML = `
-                                            <td>${sim.identificacion}</td>
-                                            <td>${sim.nombre}</td>
-                                            <td>$${sim.monto}</td>
-                                            <td>${sim.plazo}</td>
-                                            <td>${sim.interesMensual}%</td>
-                                            <td>${sim.fecha || 'N/A'}</td>
-                                            <td>
-                                                <button onclick="alert('Ver simulación: ${sim.id}')">Ver</button>
-                                            </td>
-                                        `;
-                                        resultsTable.appendChild(row);
-                                    });
-                                } else {
-                                    resultsTable.innerHTML = '<tr><td colspan="7">No se encontraron simulaciones</td></tr>';
-                                }
-                            })
-                            .catch(error => {
-                                resultsTable.innerHTML = '<tr><td colspan="7">Error al buscar simulaciones</td></tr>';
-                                console.error("Error en búsqueda:", error);
-                            });
-                    } else {
-                        alert("Error: No se encontraron elementos para mostrar resultados");
-                    }
-                };
-            }
-            
-            // Asegurarse de que el botón tenga el evento correcto
-            const searchIdBtn = document.getElementById('search-id-btn');
-            if (searchIdBtn) {
-                searchIdBtn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    if (typeof window.buscarSimulaciones === 'function') {
-                        window.buscarSimulaciones();
-                    } else {
-                        alert("Error: Función de búsqueda no disponible");
-                    }
-                });
-            }
-        });
-    </script>
-    <script>
-        // Asegurar que buscarSimulaciones esté disponible globalmente
-        if (typeof window.buscarSimulacionesDirecto !== 'function') {
-            window.buscarSimulacionesDirecto = function() {
-                // Implementación mínima como respaldo
-                const identificacion = document.getElementById('search-id')?.value;
-                if (!identificacion) {
-                    alert("Ingrese un número de identificación");
-                    return;
-                }
-                
-                const searchResults = document.getElementById('search-results');
-                const table = document.querySelector('#results-table tbody');
-                
-                if (searchResults && table) {
-                    searchResults.classList.remove('hidden');
-                    table.innerHTML = '<tr><td colspan="7">Buscando simulaciones...</td></tr>';
-                    
-                    fetch(`http://localhost:3000/buscar-simulaciones?id=${identificacion}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            table.innerHTML = data.simulaciones?.length ? 
-                                '' : '<tr><td colspan="7">No se encontraron simulaciones</td></tr>';
-                            
-                            data.simulaciones?.forEach(sim => {
-                                const row = document.createElement('tr');
-                                row.innerHTML = `
-                                    <td>${sim.identificacion}</td>
-                                    <td>${sim.nombre}</td>
-                                    <td>$${sim.monto}</td>
-                                    <td>${sim.plazo}</td>
-                                    <td>${sim.interesMensual}%</td>
-                                    <td>${sim.fecha || 'N/A'}</td>
-                                    <td>
-                                        <button onclick="alert('Ver: ${sim.id}')">Ver</button>
-                                    </td>
-                                `;
-                                table.appendChild(row);
-                            });
-                        })
-                        .catch(err => {
-                            table.innerHTML = `<tr><td colspan="7">Error: ${err.message}</td></tr>`;
-                        });
-                } else {
-                    alert("Error: No se pueden mostrar resultados");
-                }
-            };
-        }
-        
-        // Asegurar que la función esté asignada al botón
-        document.addEventListener('DOMContentLoaded', function() {
-            const btn = document.getElementById('search-id-btn');
-            if (btn) {
-                btn.onclick = function(e) {
-                    e.preventDefault();
-                    if (typeof window.buscarSimulacionesDirecto === 'function') {
-                        window.buscarSimulacionesDirecto();
-                    } else if (typeof window.buscarSimulaciones === 'function') {
-                        window.buscarSimulaciones();
-                    } else {
-                        alert("Error: Función de búsqueda no disponible");
-                    }
-                };
-            }
-        });
-    </script>
+    <!-- Usar solo un script de mejoras, no ambos -->
+    <script src="mejoras-correcto.js"></script>
 </body>
 </html>

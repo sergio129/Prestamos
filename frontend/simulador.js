@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const interesMensual = parseFloat(document.getElementById('interes-mensual')?.value || 0);
         
         // Validar entradas
-        if (isNaN(monto) || monto <= 0 || isNaN(plazo) || plazo <= 0 || isNaN(interesMensual) || interesMensual <= 0) {
+        if (monto <= 0 || plazo <= 0 || interesMensual <= 0) {
             mostrarToast("Por favor, complete todos los campos con valores válidos", "error");
             return;
         }
@@ -415,6 +415,12 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Mostrar toast de éxito
         mostrarToast("Cálculo realizado con éxito", "success");
+
+        // Al final de la función, después de calcular, dispara un evento personalizado
+        // para que otros scripts puedan capturar los datos de la simulación
+        document.dispatchEvent(new CustomEvent('simulacionCalculada', {
+            detail: resultadoActual
+        }));
     }
     
     // Función para calcular la tabla de amortización

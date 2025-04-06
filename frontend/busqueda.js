@@ -74,6 +74,7 @@ function buscarSimulacionesDirecto() {
                         <td class="action-buttons">
                             <button class="btn-small btn-view" onclick="verSimulacion('${sim.id}')">Ver</button>
                             <button class="btn-small btn-delete" onclick="eliminarSimulacion('${sim.id}')">Eliminar</button>
+                            <button class="btn-small btn-export export-detail-btn" onclick="mostrarExportarPDF('${sim.id}')">Exportar PDF</button>
                         </td>
                     `;
                     resultsTableBody.appendChild(row);
@@ -317,6 +318,16 @@ function eliminarSimulacion(id) {
     });
 }
 
+// Agregar función para mostrar PDF
+function mostrarExportarPDF(id) {
+    const exportModal = document.getElementById('export-modal');
+    if (exportModal) {
+        exportModal.classList.remove('hidden');
+    } else {
+        mostrarMensajeToast("No se pudo abrir la ventana de exportación", "error");
+    }
+}
+
 // Función simple para mostrar mensajes toast
 function mostrarMensajeToast(mensaje, tipo) {
     // Si existe la función global mostrarToast, usarla
@@ -379,8 +390,19 @@ document.addEventListener('DOMContentLoaded', function() {
         console.log("Evento de búsqueda por Enter configurado");
     }
     
+    // Configurar botones de exportación PDF
+    document.querySelectorAll('.export-detail-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const exportModal = document.getElementById('export-modal');
+            if (exportModal) {
+                exportModal.classList.remove('hidden');
+            }
+        });
+    });
+    
     // Exponer funciones globalmente
     window.buscarSimulaciones = buscarSimulacionesDirecto;
     window.verSimulacion = verSimulacion;
     window.eliminarSimulacion = eliminarSimulacion;
+    window.mostrarExportarPDF = mostrarExportarPDF;
 });
