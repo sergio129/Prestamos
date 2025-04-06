@@ -31,20 +31,132 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Generar PDF
-    if (generarPdfBtn) {
-        generarPdfBtn.addEventListener('click', function() {
-            if (isGeneratingPDF) {
-                return;
-            }
+    // Añadir opciones avanzadas para PDF al modal de exportación
+    const exportOptionsContainer = document.createElement('div');
+    exportOptionsContainer.className = 'export-advanced-options';
+    exportOptionsContainer.innerHTML = `
+        <div class="export-section-title">
+            <h3>Opciones avanzadas</h3>
+            <button type="button" class="btn-toggle-options"><i class="fas fa-chevron-down"></i></button>
+        </div>
+        
+        <div class="export-options-content hidden">
+            <div class="form-group">
+                <label for="pdf-destinatario">Destinatario:</label>
+                <input type="text" id="pdf-destinatario" placeholder="Nombre del destinatario">
+            </div>
             
-            isGeneratingPDF = true;
-            generarPDFSimple();
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="pdf-watermark" checked> Incluir marca de agua
+                </label>
+                <div class="watermark-options">
+                    <input type="text" id="watermark-text" placeholder="Texto de marca de agua" value="CONFIDENCIAL">
+                    <div class="watermark-color">
+                        <label for="watermark-color">Color:</label>
+                        <input type="color" id="watermark-color" value="#eeeeee">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="pdf-header-image">Imagen de encabezado:</label>
+                <select id="pdf-header-image">
+                    <option value="none">Sin imagen</option>
+                    <option value="logo">Logo de la empresa</option>
+                    <option value="banner">Banner completo</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Firma digital:</label>
+                <div class="signature-options">
+                    <label>
+                        <input type="checkbox" id="pdf-signature"> Incluir firma
+                    </label>
+                    <input type="text" id="pdf-signature-name" placeholder="Nombre para la firma" class="signature-input hidden">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="pdf-color-theme">Tema de color:</label>
+                <select id="pdf-color-theme">
+                    <option value="default">Predeterminado</option>
+                    <option value="elegant">Elegante (Azul)</option>
+                    <option value="professional">Profesional (Gris)</option>
+                    <option value="vibrant">Vibrante (Verde/Púrpura)</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="pdf-add-qr" checked> Incluir código QR
+                </label>
+            </div>
+        </div>
+    `;
+    
+    // Añadir al modal de exportación antes del botón de generar
+    if (generarPdfBtn && generarPdfBtn.parentNode) {
+        generarPdfBtn.parentNode.insertBefore(exportOptionsContainer, generarPdfBtn);
+    }
+    
+    // Configurar evento para mostrar/ocultar opciones avanzadas
+    const btnToggleOptions = document.querySelector('.btn-toggle-options');
+    if (btnToggleOptions) {
+        btnToggleOptions.addEventListener('click', function() {
+            const optionsContent = document.querySelector('.export-options-content');
+            if (optionsContent) {
+                optionsContent.classList.toggle('hidden');
+                
+                // Cambiar icono
+                const icon = this.querySelector('i');
+                if (icon) {
+                    if (optionsContent.classList.contains('hidden')) {
+                        icon.className = 'fas fa-chevron-down';
+                    } else {
+                        icon.className = 'fas fa-chevron-up';
+                    }
+                }
+            }
         });
     }
     
-    // Función simplificada para generar PDF
-    function generarPDFSimple() {
+    // Evento para el checkbox de firma
+    const pdfSignature = document.getElementById('pdf-signature');
+    if (pdfSignature) {
+        pdfSignature.addEventListener('change', function() {
+            const signatureInput = document.getElementById('pdf-signature-name');
+            if (signatureInput) {
+                if (this.checked) {
+                    signatureInput.classList.remove('hidden');
+                } else {
+                    signatureInput.classList.add('hidden');
+                }
+            }
+        });
+    }
+    
+    // Generar PDF
+    if (generarPdfBtn) {
+        const newBtn = generarPdfBtn.cloneNode(true);
+        if (generarPdfBtn.parentNode) {
+            generarPdfBtn.parentNode.replaceChild(newBtn, generarPdfBtn);
+        }
+        
+        newBtn.addEventListener('click', generarPDF);
+    }
+    
+    // Función mejorada para generar PDF
+    function generarPDF() {
+        console.log("Iniciando generación de PDF mejorado");
+        
+        if (isGeneratingPDF) {
+            return;
+        }
+        
+        isGeneratingPDF = true;
+        
         // Obtener datos
         const datos = capturarDatosFormulario();
         
@@ -54,31 +166,128 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        console.log("Generando PDF con datos:", datos);
+        // Obtener opciones avanzadas
+        const destinatario = document.getElementById('pdf-destinatario')?.value || '';
+        const incluirMarcaAgua = document.getElementById('pdf-watermark')?.checked !== false;
+        const textoMarcaAgua = document.getElementById('watermark-text')?.value || 'CONFIDENCIAL';
+        const colorMarcaAgua = document.getElementById('watermark-color')?.value || '#eeeeee';
+        const headerImage = document.getElementById('pdf-header-image')?.value || 'none';
+        const incluirFirma = document.getElementById('pdf-signature')?.checked === true;
+        const nombreFirma = document.getElementById('pdf-signature-name')?.value || '';
+        const temaColor = document.getElementById('pdf-color-theme')?.value || 'default';
+        const incluirQR = document.getElementById('pdf-add-qr')?.checked !== false;
         
-        // Crear documento PDF directamente sin usar elementos HTML intermedios
+        // Crear documento PDF
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF();
         
-        // Título
-        doc.setFontSize(22);
-        doc.setTextColor(33, 33, 33);
-        doc.text("Simulación de Préstamo", 105, 20, { align: "center" });
+        // Aplicar tema de color
+        let colorPrimario = '#333333';
+        let colorSecundario = '#666666';
+        let colorAcento = '#6e8efb';
+        let colorFondo = '#f9f9f9';
         
-        // Fecha
+        switch (temaColor) {
+            case 'elegant':
+                colorPrimario = '#1a5276';
+                colorSecundario = '#2874a6';
+                colorAcento = '#3498db';
+                colorFondo = '#eaf2f8';
+                break;
+            case 'professional':
+                colorPrimario = '#2c3e50';
+                colorSecundario = '#34495e';
+                colorAcento = '#7f8c8d';
+                colorFondo = '#ecf0f1';
+                break;
+            case 'vibrant':
+                colorPrimario = '#27ae60';
+                colorSecundario = '#2ecc71';
+                colorAcento = '#8e44ad';
+                colorFondo = '#f5f5f5';
+                break;
+        }
+        
+        // Convertir colores hex a componentes RGB
+        function hexToRgb(hex) {
+            const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+            return result ? {
+                r: parseInt(result[1], 16),
+                g: parseInt(result[2], 16),
+                b: parseInt(result[3], 16)
+            } : { r: 0, g: 0, b: 0 };
+        }
+        
+        const colorPrimarioRGB = hexToRgb(colorPrimario);
+        const colorSecundarioRGB = hexToRgb(colorSecundario);
+        const colorAcentoRGB = hexToRgb(colorAcento);
+        
+        // Añadir marca de agua si está habilitada
+        if (incluirMarcaAgua) {
+            const marcaAguaRGB = hexToRgb(colorMarcaAgua);
+            
+            doc.setTextColor(marcaAguaRGB.r, marcaAguaRGB.g, marcaAguaRGB.b);
+            doc.setFontSize(60);
+            doc.setFont('helvetica', 'bold');
+            doc.setGState(new doc.GState({opacity: 0.3}));
+            
+            // Dibujar marca de agua en diagonal centrada
+            doc.text(textoMarcaAgua, 105, 150, {
+                align: 'center',
+                angle: 45
+            });
+            
+            // Restaurar estado normal
+            doc.setGState(new doc.GState({opacity: 1.0}));
+        }
+        
+        // Dibujar encabezado
+        doc.setFillColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+        doc.rect(0, 0, 210, 20, 'F');
+        
+        // Título principal
+        doc.setFontSize(20);
+        doc.setTextColor(255, 255, 255);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Simulación de Préstamo", 105, 12, { align: "center" });
+        
+        // Borde inferior decorativo
+        doc.setFillColor(colorAcentoRGB.r, colorAcentoRGB.g, colorAcentoRGB.b);
+        doc.rect(0, 20, 210, 2, 'F');
+        
+        // Añadir destinatario si está especificado
+        let yPos = 30;
+        if (destinatario) {
+            doc.setFontSize(12);
+            doc.setTextColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+            doc.text(`Destinatario: ${destinatario}`, 20, yPos);
+            yPos += 8;
+        }
+        
+        // Fecha del documento
         doc.setFontSize(10);
-        doc.setTextColor(100, 100, 100);
-        doc.text(`Generado el ${new Date().toLocaleDateString()}`, 105, 30, { align: "center" });
+        doc.setTextColor(colorSecundarioRGB.r, colorSecundarioRGB.g, colorSecundarioRGB.b);
+        doc.text(`Fecha: ${new Date().toLocaleDateString()}`, 20, yPos);
+        yPos += 15;
         
-        // Resumen
+        // Título de sección de resumen
         doc.setFontSize(16);
-        doc.setTextColor(33, 33, 33);
-        doc.text("Resumen del préstamo", 20, 45);
+        doc.setTextColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+        doc.setFont('helvetica', 'bold');
+        doc.text("Resumen del préstamo", 20, yPos);
+        yPos += 2;
         
-        doc.setFontSize(11);
-        doc.setTextColor(60, 60, 60);
+        // Línea divisoria
+        doc.setDrawColor(colorAcentoRGB.r, colorAcentoRGB.g, colorAcentoRGB.b);
+        doc.setLineWidth(0.5);
+        doc.line(20, yPos, 190, yPos);
+        yPos += 10;
         
         // Datos principales
+        doc.setFontSize(11);
+        doc.setTextColor(colorSecundarioRGB.r, colorSecundarioRGB.g, colorSecundarioRGB.b);
+        doc.setFont('helvetica', 'normal');
+        
         const lineas = [
             [`Monto del préstamo: $${formatNumber(datos.monto)}`],
             [`Plazo: ${datos.plazo} meses`],
@@ -89,45 +298,54 @@ document.addEventListener('DOMContentLoaded', function() {
             [`Total intereses: $${formatNumber(datos.totalIntereses)}`]
         ];
         
-        // Imprimir líneas
+        // Imprimir líneas de resumen
         doc.setDrawColor(220, 220, 220);
-        let y = 55;
         lineas.forEach(linea => {
-            doc.text(linea[0], 25, y);
-            y += 10;
+            doc.text(linea[0], 25, yPos);
+            yPos += 8;
         });
+        
+        // Crear una nueva página para la tabla de amortización
+        doc.addPage();
         
         // Tabla de amortización
         if (datos.amortizacion && datos.amortizacion.length > 0) {
-            doc.addPage();
+            // Encabezado de la página
+            doc.setFillColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+            doc.rect(0, 0, 210, 20, 'F');
             
-            doc.setFontSize(16);
-            doc.setTextColor(33, 33, 33);
-            doc.text("Tabla de Amortización", 105, 20, { align: "center" });
+            doc.setFontSize(18);
+            doc.setTextColor(255, 255, 255);
+            doc.setFont('helvetica', 'bold');
+            doc.text("Tabla de Amortización", 105, 12, { align: "center" });
             
-            // Encabezados
+            // Borde inferior decorativo
+            doc.setFillColor(colorAcentoRGB.r, colorAcentoRGB.g, colorAcentoRGB.b);
+            doc.rect(0, 20, 210, 2, 'F');
+            
+            // Encabezados de tabla
             const headers = ["Cuota", "Capital", "Interés", "Pago Mensual", "Saldo"];
             const columnWidths = [20, 35, 35, 35, 35];
             
             // Posición inicial
-            y = 40;
+            yPos = 40;
             
             // Dibujar encabezados
-            doc.setFillColor(240, 240, 240);
-            doc.rect(20, y - 10, 160, 10, 'F');
+            doc.setFillColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+            doc.rect(20, yPos - 10, 160, 10, 'F');
             
             doc.setFontSize(10);
-            doc.setTextColor(50, 50, 50);
+            doc.setTextColor(255, 255, 255);
             
-            let x = 25;
+            let xPos = 25;
             headers.forEach((header, i) => {
-                doc.text(header, x, y - 3);
-                x += columnWidths[i];
+                doc.text(header, xPos, yPos - 3);
+                xPos += columnWidths[i];
             });
             
             // Dibujar línea horizontal
-            doc.setDrawColor(200, 200, 200);
-            doc.line(20, y, 180, y);
+            doc.setDrawColor(colorAcentoRGB.r, colorAcentoRGB.g, colorAcentoRGB.b);
+            doc.line(20, yPos, 180, yPos);
             
             // Limitar a 25 filas por página
             const maxRows = 25;
@@ -137,22 +355,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Nueva página si es necesario
                 if (i > 0 && i % maxRows === 0) {
                     doc.addPage();
-                    y = 20;
-                    doc.setFontSize(12);
-                    doc.text("Tabla de Amortización (continuación)", 105, y, { align: "center" });
-                    y += 20;
+                    yPos = 20;
                     
-                    doc.setFillColor(240, 240, 240);
-                    doc.rect(20, y - 10, 160, 10, 'F');
+                    // Encabezado en nueva página
+                    doc.setFillColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+                    doc.rect(0, 0, 210, 20, 'F');
                     
-                    x = 25;
+                    doc.setFontSize(16);
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text("Tabla de Amortización (continuación)", 105, 12, { align: "center" });
+                    
+                    // Borde inferior decorativo
+                    doc.setFillColor(colorAcentoRGB.r, colorAcentoRGB.g, colorAcentoRGB.b);
+                    doc.rect(0, 20, 210, 2, 'F');
+                    
+                    yPos += 20;
+                    
+                    // Encabezados en nueva página
+                    doc.setFillColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+                    doc.rect(20, yPos - 10, 160, 10, 'F');
+                    
+                    xPos = 25;
                     doc.setFontSize(10);
+                    doc.setTextColor(255, 255, 255);
+                    
                     headers.forEach((header, j) => {
-                        doc.text(header, x, y - 3);
-                        x += columnWidths[j];
+                        doc.text(header, xPos, yPos - 3);
+                        xPos += columnWidths[j];
                     });
                     
-                    doc.line(20, y, 180, y);
+                    doc.setDrawColor(colorAcentoRGB.r, colorAcentoRGB.g, colorAcentoRGB.b);
+                    doc.line(20, yPos, 180, yPos);
                 }
                 
                 const row = datos.amortizacion[i];
@@ -160,55 +394,121 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Colorear filas alternas
                 if (i % 2 === 1) {
                     doc.setFillColor(245, 245, 245);
-                    doc.rect(20, y, 160, 8, 'F');
+                    doc.rect(20, yPos, 160, 8, 'F');
                 }
                 
                 // Datos de la fila
-                x = 25;
-                doc.text(row.cuota.toString(), x, y + 5);
-                x += columnWidths[0];
+                doc.setTextColor(colorSecundarioRGB.r, colorSecundarioRGB.g, colorSecundarioRGB.b);
+                xPos = 25;
+                doc.text(row.cuota.toString(), xPos, yPos + 5);
+                xPos += columnWidths[0];
                 
-                doc.text("$" + formatNumber(row.capital), x, y + 5);
-                x += columnWidths[1];
+                doc.text("$" + formatNumber(row.capital), xPos, yPos + 5);
+                xPos += columnWidths[1];
                 
-                doc.text("$" + formatNumber(row.interes), x, y + 5);
-                x += columnWidths[2];
+                doc.text("$" + formatNumber(row.interes), xPos, yPos + 5);
+                xPos += columnWidths[2];
                 
-                doc.text("$" + formatNumber(row.pagoMensual), x, y + 5);
-                x += columnWidths[3];
+                doc.text("$" + formatNumber(row.pagoMensual), xPos, yPos + 5);
+                xPos += columnWidths[3];
                 
-                doc.text("$" + formatNumber(row.saldoRestante), x, y + 5);
+                doc.text("$" + formatNumber(row.saldoRestante), xPos, yPos + 5);
                 
                 // Siguiente fila
-                y += 8;
-            }
-            
-            // Si hay más filas, mostrar mensaje
-            if (datos.amortizacion.length > 100) {
-                y += 10;
-                doc.setFontSize(10);
-                doc.setTextColor(100, 100, 100);
-                doc.text(`... y ${datos.amortizacion.length - 100} filas más`, 105, y, { align: "center" });
+                yPos += 8;
             }
         }
         
+        // Añadir código QR si está habilitado
+        if (incluirQR) {
+            const currentPage = doc.getCurrentPageInfo().pageNumber;
+            doc.setPage(1); // Volver a la primera página para el QR
+            
+            try {
+                // Generar datos para el QR
+                const dataForQR = {
+                    tipo: 'simulacion_prestamo',
+                    monto: datos.monto,
+                    plazo: datos.plazo,
+                    interes: datos.interesMensual,
+                    fecha: new Date().toISOString().split('T')[0]
+                };
+                
+                // Crear SVG para el QR
+                const qrCode = new QRCode({
+                    content: JSON.stringify(dataForQR),
+                    width: 50,
+                    height: 50,
+                    color: colorSecundarioRGB.r + "," + colorSecundarioRGB.g + "," + colorSecundarioRGB.b,
+                    background: 'transparent',
+                    ecl: 'M'
+                });
+                
+                // Añadir QR a la esquina inferior derecha de la primera página
+                const qrSvg = qrCode.svg();
+                doc.addSvgAsImage(qrSvg, 150, 260, 40, 40);
+                
+                // Añadir texto debajo del QR
+                doc.setFontSize(8);
+                doc.setTextColor(colorSecundarioRGB.r, colorSecundarioRGB.g, colorSecundarioRGB.b);
+                doc.text("Escanea para más información", 170, 280, { align: "center" });
+            } catch (error) {
+                console.error("No se pudo generar el código QR:", error);
+            }
+            
+            // Volver a la página donde estábamos
+            doc.setPage(currentPage);
+        }
+        
+        // Añadir firma si está habilitada
+        if (incluirFirma && nombreFirma) {
+            const paginaActual = doc.getCurrentPageInfo().pageNumber;
+            doc.setPage(paginaActual);
+            
+            // Línea para la firma
+            const yPosFooter = 270;
+            doc.setLineWidth(0.5);
+            doc.setDrawColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+            doc.line(20, yPosFooter, 80, yPosFooter);
+            
+            // Nombre de quien firma
+            doc.setFontSize(10);
+            doc.setTextColor(colorPrimarioRGB.r, colorPrimarioRGB.g, colorPrimarioRGB.b);
+            doc.text(nombreFirma, 50, yPosFooter + 5, { align: "center" });
+            
+            // Cargo o título
+            doc.setFontSize(8);
+            doc.setTextColor(colorSecundarioRGB.r, colorSecundarioRGB.g, colorSecundarioRGB.b);
+            doc.text("Asesor Financiero", 50, yPosFooter + 10, { align: "center" });
+        }
+        
         // Pie de página
-        doc.setFontSize(10);
-        doc.setTextColor(150, 150, 150);
         const pageCount = doc.getNumberOfPages();
         
         for (let i = 1; i <= pageCount; i++) {
             doc.setPage(i);
+            
+            // Linea divisoria de pie de página
+            doc.setDrawColor(colorAcentoRGB.r, colorAcentoRGB.g, colorAcentoRGB.b);
+            doc.setLineWidth(0.5);
+            doc.line(20, 285, 190, 285);
+            
+            doc.setFontSize(8);
+            doc.setTextColor(colorSecundarioRGB.r, colorSecundarioRGB.g, colorSecundarioRGB.b);
             doc.text(`Página ${i} de ${pageCount}`, 105, 290, { align: "center" });
             doc.text("Simulador de Préstamos", 20, 290);
-            doc.text(`Generado el ${new Date().toLocaleString()}`, 180, 290, { align: "right" });
+            doc.text(`Generado el ${new Date().toLocaleString()}`, 190, 290, { align: "right" });
         }
         
         // Guardar
         try {
-            doc.save("Simulacion_Prestamo.pdf");
+            const fileName = destinatario 
+                ? `Simulacion_Prestamo_${destinatario.replace(/\s+/g, '_')}.pdf` 
+                : "Simulacion_Prestamo.pdf";
+                
+            doc.save(fileName);
             mostrarToast("PDF generado correctamente", "success");
-            exportModal.classList.add('hidden');
+            document.getElementById('export-modal').classList.add('hidden');
         } catch (error) {
             console.error("Error al guardar PDF:", error);
             mostrarToast("Error al generar el PDF", "error");
@@ -316,5 +616,21 @@ document.addEventListener('DOMContentLoaded', function() {
         
         console.log(`Toast (${tipo}): ${mensaje}`);
         alert(mensaje);
+    }
+    
+    // Función para QR (simplificada)
+    class QRCode {
+        constructor(options) {
+            this.options = options;
+        }
+        
+        svg() {
+            // Esta es una versión simplificada - en una implementación real
+            // usaríamos una librería de verdad para generar el QR
+            return `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 50 50">
+                <rect x="5" y="5" width="40" height="40" fill="none" stroke="${this.options.color}" stroke-width="1"/>
+                <text x="25" y="30" font-size="8" text-anchor="middle" fill="${this.options.color}">QR CODE</text>
+            </svg>`;
+        }
     }
 });
