@@ -15,8 +15,9 @@ jobs:
 
       - name: Save private key
         run: |
-          echo "${{ secrets.AWS_EC2_KEY }}" > Sheyo_0129.pem
-          chmod 400 Sheyo_0129.pem
+          echo "${{ secrets.AWS_EC2_KEY }}" > ssh_key.pem
+          chmod 600 ssh_key.pem
+          ls -la ssh_key.pem
 
       - name: Debug connection values
         run: |
@@ -33,28 +34,33 @@ jobs:
           echo "AWS_HOST=${EC2_HOST}" >> $GITHUB_ENV
           echo "Usando valores predeterminados: ${EC2_USER}@${EC2_HOST}"
 
-      - name: Install rsync
-        run: sudo apt-get update && sudo apt-get install -y rsync
+      - name: Install essential tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync openssh-client
 
       - name: Copy project to EC2
         run: |
           echo "Copiando archivos a ${{ env.AWS_USER }}@${{ env.AWS_HOST }}..."
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i Sheyo_0129.pem" ./ ${{ env.AWS_USER }}@${{ env.AWS_HOST }}:~/temp_update || {
-            echo "Error con rsync, intentando con scp..."
-            scp -o StrictHostKeyChecking=no -i Sheyo_0129.pem -r ./* ${{ env.AWS_USER }}@${{ env.AWS_HOST }}:~/temp_update
-          }
+          mkdir -p ~/.ssh
+          ssh-keyscan ${{ env.AWS_HOST }} >> ~/.ssh/known_hosts
+          scp -v -i ssh_key.pem -o StrictHostKeyChecking=no -r ./* ${{ env.AWS_USER }}@${{ env.AWS_HOST }}:~/temp_update
 
       - name: Run deploy commands on EC2
         run: |
-          ssh -o StrictHostKeyChecking=no -i Sheyo_0129.pem ${{ env.AWS_USER }}@${{ env.AWS_HOST }} << 'EOF'
+          ssh -v -i ssh_key.pem -o StrictHostKeyChecking=no ${{ env.AWS_USER }}@${{ env.AWS_HOST }} << 'EOF'
             set -e
             echo "Respaldando versión actual..."
-            cp -r ~/Prestamos ~/Prestamos_backup_$(date +%Y%m%d%H%M%S) || true
+            mkdir -p ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)
+            cp -r ~/Prestamos/* ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)/ || true
+            
             echo "Actualizando archivos..."
-            rm -rf ~/Prestamos
-            mv ~/temp_update ~/Prestamos
-            cd ~/Prestamos
+            mkdir -p ~/Prestamos
+            rm -rf ~/Prestamos/*
+            cp -r ~/temp_update/* ~/Prestamos/
+            
             echo "Reconstruyendo contenedores Docker..."
+            cd ~/Prestamos
             docker-compose down
             docker-compose up -d --build
             docker ps
