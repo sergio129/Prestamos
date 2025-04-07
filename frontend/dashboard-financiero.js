@@ -180,6 +180,166 @@
         
         document.body.appendChild(dashboardAccessModal);
         
+        // Crear modal para el dashboard (en lugar de insertarlo directamente en la página)
+        const dashboardModal = document.createElement('div');
+        dashboardModal.id = 'dashboard-modal';
+        dashboardModal.className = 'modal dashboard-modal hidden';
+        
+        dashboardModal.innerHTML = `
+            <div class="modal-content dashboard-modal-content">
+                <div class="dashboard-modal-header">
+                    <h2>Dashboard Financiero Personal</h2>
+                    <span class="close-modal">&times;</span>
+                </div>
+                <div class="dashboard-modal-body">
+                    <div class="dashboard-grid">
+                        <!-- Resumen de situación financiera -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-wallet"></i> Resumen Financiero</h3>
+                                <button class="btn-refresh" data-section="financial-summary">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="health-indicator">
+                                    <div class="indicator-bar">
+                                        <div class="indicator-fill" id="health-indicator-fill"></div>
+                                    </div>
+                                    <div class="indicator-label">Salud Financiera: <span class="indicator-value" id="health-status">Calculando...</span></div>
+                                </div>
+                                
+                                <div class="financial-summary">
+                                    <div class="summary-item">
+                                        <span class="summary-label">Capacidad de endeudamiento</span>
+                                        <span class="summary-value" id="dash-capacidad">Calculando...</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Préstamos activos</span>
+                                        <span class="summary-value" id="dash-prestamos">0</span>
+                                    </div>
+                                    <div class="summary-item">
+                                        <span class="summary-label">Deuda total</span>
+                                        <span class="summary-value" id="dash-deuda">Calculando...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Mejores tasas del mercado -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-percentage"></i> Mejores Tasas Actuales</h3>
+                                <button class="btn-refresh" data-section="best-rates">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="best-rates-container" class="best-rates-container">
+                                    <div class="loading-spinner">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <span>Cargando tasas actualizadas...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Simulaciones recientes y acciones rápidas -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="quick-actions">
+                                    <button class="quick-action-btn" id="quick-loan">
+                                        <i class="fas fa-hand-holding-usd"></i>
+                                        <span>Simular Préstamo</span>
+                                    </button>
+                                    <button class="quick-action-btn" id="quick-capacity">
+                                        <i class="fas fa-calculator"></i>
+                                        <span>Capacidad de Endeudamiento</span>
+                                    </button>
+                                    <button class="quick-action-btn" id="quick-compare">
+                                        <i class="fas fa-exchange-alt"></i>
+                                        <span>Comparar Tasas</span>
+                                    </button>
+                                    <button class="quick-action-btn" id="quick-invest">
+                                        <i class="fas fa-chart-line"></i>
+                                        <span>Simulador de Inversiones</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Simulaciones recientes -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-history"></i> Simulaciones Recientes</h3>
+                                <button class="btn-refresh" data-section="recent-simulations">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div id="simulaciones-recientes" class="simulaciones-container">
+                                    <div class="loading-spinner">
+                                        <i class="fas fa-spinner fa-spin"></i>
+                                        <span>Cargando simulaciones...</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Editar datos financieros -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-edit"></i> Mis Datos Financieros</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Actualiza tu información financiera para obtener recomendaciones más precisas.</p>
+                                <button id="btn-editar-datos" class="btn-action-secondary">
+                                    <i class="fas fa-pencil-alt"></i> Editar Datos Financieros
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Seguridad -->
+                        <div class="dashboard-card">
+                            <div class="card-header">
+                                <h3><i class="fas fa-lock"></i> Seguridad</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="card-text">Gestiona la seguridad de tu dashboard financiero.</p>
+                                <button id="btn-cambiar-pin" class="btn-action-secondary">
+                                    <i class="fas fa-key"></i> Cambiar PIN de Acceso
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recomendaciones personalizadas -->
+                    <div class="recommendations-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-lightbulb"></i> Recomendaciones Personalizadas</h3>
+                            <button class="btn-refresh" data-section="recommendations">
+                                <i class="fas fa-sync-alt"></i>
+                            </button>
+                        </div>
+                        <div class="panel-body">
+                            <div id="recommendations-container" class="recommendations-slider">
+                                <!-- Se generará dinámicamente -->
+                                <div class="loading-spinner">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span>Analizando tu perfil financiero...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(dashboardModal);
+        
         // Eventos para el modal de acceso
         dashboardAccessBtn.addEventListener('click', function() {
             dashboardAccessModal.classList.remove('hidden');
@@ -392,235 +552,66 @@
         
         // Función para mostrar el dashboard después de autenticación
         function mostrarDashboard() {
-            const dashboardContainer = document.getElementById('dashboard-container');
+            // Mostrar el modal del dashboard en lugar de insertarlo en la página
+            dashboardModal.classList.remove('hidden');
             
-            if (!dashboardContainer) {
-                // Crear contenedor principal para el dashboard si no existe
-                const newDashboardContainer = document.createElement('div');
-                newDashboardContainer.id = 'dashboard-container';
-                newDashboardContainer.className = 'dashboard-container';
-                
-                // Reutilizar el código existente para crear la estructura del dashboard
-                newDashboardContainer.innerHTML = `
-                    <div class="dashboard-header">
-                        <h2>Dashboard Financiero Personal</h2>
-                        <button class="dashboard-toggle" id="toggle-dashboard">
-                            <i class="fas fa-chevron-up"></i>
-                        </button>
-                    </div>
-                    <div class="dashboard-body">
-                        <div class="dashboard-grid">
-                            <!-- Resumen de situación financiera -->
-                            <div class="dashboard-card">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-wallet"></i> Resumen Financiero</h3>
-                                    <button class="btn-refresh" data-section="financial-summary">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    <div class="health-indicator">
-                                        <div class="indicator-bar">
-                                            <div class="indicator-fill" id="health-indicator-fill"></div>
-                                        </div>
-                                        <div class="indicator-label">Salud Financiera: <span class="indicator-value" id="health-status">Calculando...</span></div>
-                                    </div>
-                                    
-                                    <div class="financial-summary">
-                                        <div class="summary-item">
-                                            <span class="summary-label">Capacidad de endeudamiento</span>
-                                            <span class="summary-value" id="dash-capacidad">Calculando...</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <span class="summary-label">Préstamos activos</span>
-                                            <span class="summary-value" id="dash-prestamos">0</span>
-                                        </div>
-                                        <div class="summary-item">
-                                            <span class="summary-label">Deuda total</span>
-                                            <span class="summary-value" id="dash-deuda">Calculando...</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Mejores tasas del mercado -->
-                            <div class="dashboard-card">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-percentage"></i> Mejores Tasas Actuales</h3>
-                                    <button class="btn-refresh" data-section="best-rates">
-                                        <i class="fas fa-sync-alt"></i>
-                                    </button>
-                                </div>
-                                <div class="card-body">
-                                    <div id="best-rates-container" class="best-rates-container">
-                                        <div class="loading-spinner">
-                                            <i class="fas fa-spinner fa-spin"></i>
-                                            <span>Cargando tasas actualizadas...</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Simulaciones recientes y acciones rápidas -->
-                            <div class="dashboard-card">
-                                <div class="card-header">
-                                    <h3><i class="fas fa-bolt"></i> Acciones Rápidas</h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="quick-actions">
-                                        <button class="quick-action-btn" id="quick-loan">
-                                            <i class="fas fa-hand-holding-usd"></i>
-                                            <span>Simular Préstamo</span>
-                                        </button>
-                                        <button class="quick-action-btn" id="quick-capacity">
-                                            <i class="fas fa-calculator"></i>
-                                            <span>Capacidad de Endeudamiento</span>
-                                        </button>
-                                        <button class="quick-action-btn" id="quick-compare">
-                                            <i class="fas fa-exchange-alt"></i>
-                                            <span>Comparar Tasas</span>
-                                        </button>
-                                        <button class="quick-action-btn" id="quick-invest">
-                                            <i class="fas fa-chart-line"></i>
-                                            <span>Simulador de Inversiones</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Recomendaciones personalizadas -->
-                        <div class="recommendations-panel">
-                            <div class="panel-header">
-                                <h3><i class="fas fa-lightbulb"></i> Recomendaciones Personalizadas</h3>
-                                <button class="btn-refresh" data-section="recommendations">
-                                    <i class="fas fa-sync-alt"></i>
-                                </button>
-                            </div>
-                            <div class="panel-body">
-                                <div id="recommendations-container" class="recommendations-slider">
-                                    <!-- Se generará dinámicamente -->
-                                    <div class="loading-spinner">
-                                        <i class="fas fa-spinner fa-spin"></i>
-                                        <span>Analizando tu perfil financiero...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                
-                // Insertar el dashboard al principio del body o después del header si existe
-                const header = document.querySelector('header');
-                if (header) {
-                    header.after(newDashboardContainer);
-                } else {
-                    const body = document.body;
-                    body.insertBefore(newDashboardContainer, body.firstChild);
-                }
-                
-                // Inicializar datos del dashboard
-                inicializarDashboard();
-            } else {
-                // Si ya existe, asegurarnos de que sea visible
-                dashboardContainer.style.display = 'block';
-                
-                // Actualizar datos
-                inicializarDashboard();
-            }
+            // Inicializar datos del dashboard
+            inicializarDashboard();
         }
         
-        // Configurar toggle del dashboard
-        const toggleBtn = document.getElementById('toggle-dashboard');
-        if (toggleBtn) {
-            toggleBtn.addEventListener('click', function() {
-                const dashboardBody = document.querySelector('.dashboard-body');
-                const icon = this.querySelector('i');
-                
-                if (dashboardBody.classList.contains('collapsed')) {
-                    dashboardBody.classList.remove('collapsed');
-                    icon.classList.remove('fa-chevron-down');
-                    icon.classList.add('fa-chevron-up');
-                    localStorage.setItem('dashboardCollapsed', 'false');
-                } else {
-                    dashboardBody.classList.add('collapsed');
-                    icon.classList.remove('fa-chevron-up');
-                    icon.classList.add('fa-chevron-down');
-                    localStorage.setItem('dashboardCollapsed', 'true');
-                }
-            });
+        // Eventos del modal del dashboard
+        dashboardModal.querySelector('.close-modal').addEventListener('click', function() {
+            dashboardModal.classList.add('hidden');
+        });
+        
+        // Evitar que los clics dentro del contenido cierren el modal
+        dashboardModal.querySelector('.modal-content').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Cerrar modal al hacer clic fuera del contenido
+        dashboardModal.addEventListener('click', function() {
+            dashboardModal.classList.add('hidden');
+        });
+        
+        // Botón de editar datos financieros
+        document.getElementById('btn-editar-datos').addEventListener('click', function() {
+            // Cerrar modal del dashboard
+            dashboardModal.classList.add('hidden');
             
-            // Restaurar estado anterior
-            const wasCollapsed = localStorage.getItem('dashboardCollapsed') === 'true';
-            if (wasCollapsed) {
-                const dashboardBody = document.querySelector('.dashboard-body');
-                const icon = toggleBtn.querySelector('i');
-                dashboardBody.classList.add('collapsed');
-                icon.classList.remove('fa-chevron-up');
-                icon.classList.add('fa-chevron-down');
+            // Mostrar formulario de configuración
+            document.getElementById('dashboard-access-modal').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('active');
+            document.getElementById('setup-form').classList.remove('hidden');
+            document.getElementById('setup-form').classList.add('active');
+            
+            // Prellenar los campos con los datos existentes
+            const datosFinancieros = obtenerDatosFinancieros();
+            if (datosFinancieros) {
+                document.getElementById('df-ingreso-principal').value = datosFinancieros.ingresos.principal || '';
+                document.getElementById('df-ingresos-adicionales').value = datosFinancieros.ingresos.adicionales || '';
+                document.getElementById('df-gasto-vivienda').value = datosFinancieros.gastos.vivienda || '';
+                document.getElementById('df-gasto-servicios').value = datosFinancieros.gastos.servicios || '';
+                document.getElementById('df-gasto-alimentacion').value = datosFinancieros.gastos.alimentacion || '';
+                document.getElementById('df-gasto-transporte').value = datosFinancieros.gastos.transporte || '';
+                document.getElementById('df-deuda-tc').value = datosFinancieros.deudas.tc || '';
+                document.getElementById('df-deuda-prestamos').value = datosFinancieros.deudas.prestamos || '';
+                document.getElementById('df-deuda-vehiculo').value = datosFinancieros.deudas.vehiculo || '';
+                document.getElementById('df-otras-deudas').value = datosFinancieros.deudas.otras || '';
             }
-        }
+        });
         
-        // Configurar botones de acción rápida
-        const quickLoanBtn = document.getElementById('quick-loan');
-        if (quickLoanBtn) {
-            quickLoanBtn.addEventListener('click', function() {
-                // Enfoca el formulario de préstamo principal
-                const montoInput = document.getElementById('monto');
-                if (montoInput) {
-                    montoInput.focus();
-                    montoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            });
-        }
-        
-        const quickCapacityBtn = document.getElementById('quick-capacity');
-        if (quickCapacityBtn) {
-            quickCapacityBtn.addEventListener('click', function() {
-                // Abre el modal de capacidad de endeudamiento
-                const capacidadBtn = document.querySelector('.btn-capacidad');
-                if (capacidadBtn) {
-                    capacidadBtn.click();
-                }
-            });
-        }
-        
-        const quickCompareBtn = document.getElementById('quick-compare');
-        if (quickCompareBtn) {
-            quickCompareBtn.addEventListener('click', function() {
-                // Abre el comparador de tasas
-                const comparadorBtn = document.querySelector('.btn-comparador');
-                if (comparadorBtn) {
-                    comparadorBtn.click();
-                }
-            });
-        }
-        
-        const quickInvestBtn = document.getElementById('quick-invest');
-        if (quickInvestBtn) {
-            quickInvestBtn.addEventListener('click', function() {
-                // Abre el simulador de inversiones
-                const inversionBtn = document.querySelector('.btn-inversion');
-                if (inversionBtn) {
-                    inversionBtn.click();
-                }
-            });
-        }
-        
-        // Configurar botones de actualización
-        document.querySelectorAll('.btn-refresh').forEach(btn => {
-            btn.addEventListener('click', function() {
-                const section = this.getAttribute('data-section');
-                actualizarSeccion(section);
-                
-                // Mostrar indicador de carga
-                this.classList.add('refreshing');
-                
-                // Simular tiempo de carga
-                setTimeout(() => {
-                    this.classList.remove('refreshing');
-                }, 1000);
-            });
+        // Botón de cambiar PIN
+        document.getElementById('btn-cambiar-pin').addEventListener('click', function() {
+            const nuevoPin = prompt("Ingresa un nuevo PIN de 4 dígitos:");
+            
+            if (nuevoPin && nuevoPin.length === 4 && /^\d{4}$/.test(nuevoPin)) {
+                localStorage.setItem('dashboardPin', nuevoPin);
+                mostrarMensaje("PIN actualizado correctamente", "success");
+            } else if (nuevoPin) {
+                mostrarMensaje("El PIN debe tener 4 dígitos numéricos", "error");
+            }
         });
         
         // Inicializar datos del dashboard
