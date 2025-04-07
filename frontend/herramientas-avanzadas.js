@@ -1095,29 +1095,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * Muestra un mensaje al usuario
+     * Muestra un mensaje al usuario con toast en lugar de alertas JavaScript
      * @param {string} texto - Mensaje a mostrar
      * @param {string} tipo - Tipo de mensaje (success, error, warning, info)
      */
     function mostrarMensaje(texto, tipo) {
-        // Intentar usar la función global si existe
-        if (typeof window.mostrarToast === 'function') {
-            window.mostrarToast(texto, tipo);
-            return;
-        }
+        // Inicializar el contenedor con la nueva función
+        const toastContainer = initToastContainer();
         
-        // Si no hay función global, crear un toast propio
-        let toastContainer = document.querySelector('.toast-container');
-        if (!toastContainer) {
-            toastContainer = document.createElement('div');
-            toastContainer.className = 'toast-container';
-            toastContainer.style.position = 'fixed';
-            toastContainer.style.top = '20px';
-            toastContainer.style.right = '20px';
-            toastContainer.style.zIndex = '10000';
-            document.body.appendChild(toastContainer);
-        }
-        
+        // Crear el mensaje toast
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.style.backgroundColor = tipo === 'error' ? '#e74c3c' : 
@@ -1128,17 +1114,121 @@ document.addEventListener('DOMContentLoaded', function() {
         toast.style.marginBottom = '10px';
         toast.style.borderRadius = '4px';
         toast.style.boxShadow = '0 2px 5px rgba(0,0,0,0.2)';
-        toast.textContent = texto;
+        toast.style.animation = 'fadeIn 0.3s ease';
+        toast.style.minWidth = '250px';
+        toast.style.maxWidth = '350px';
+        toast.style.fontWeight = 'bold';
+        toast.style.opacity = '0.9';
+        
+        // Agregar icono según el tipo
+        let icon = '';
+        if (tipo === 'success') icon = '✓ ';
+        else if (tipo === 'error') icon = '✗ ';
+        else if (tipo === 'warning') icon = '⚠️ ';
+        else icon = 'ℹ️ ';
+        
+        toast.innerHTML = `${icon}${texto}`;
         
         toastContainer.appendChild(toast);
         
+        // Registrar en consola para debugging
+        console.log(`Mensaje (${tipo}): ${texto}`);
+        
         // Eliminar después de 3 segundos
         setTimeout(() => {
-            if (toast.parentNode === toastContainer) {
-                toastContainer.removeChild(toast);
-            }
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.5s ease';
+            
+            // Remover completamente después de la transición
+            setTimeout(() => {
+                if (toast.parentNode === toastContainer) {
+                    toastContainer.removeChild(toast);
+                }
+            }, 500);
         }, 3000);
     }
+    
+    // Mejorar la inicialización del contenedor de toasts para que se muestre correctamente
+    function initToastContainer() {
+        // Verificar si ya existe el contenedor
+        let toastContainer = document.querySelector('.toast-container');
+        
+        // Si no existe, crearlo con mejor posicionamiento
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.className = 'toast-container';
+            
+            // Estilos mejorados para el contenedor - POSICIÓN MODIFICADA para mejor visibilidad
+            toastContainer.style.position = 'fixed';
+            toastContainer.style.top = '50%'; // Centrado verticalmente
+            toastContainer.style.left = '50%'; // Centrado horizontalmente
+            toastContainer.style.transform = 'translate(-50%, -50%)'; // Centrado perfecto
+            toastContainer.style.zIndex = '999999'; // Valor muy alto para asegurar que esté por encima de todo
+            toastContainer.style.maxWidth = '400px';
+            toastContainer.style.width = 'auto';
+            
+            // Crear estilos para la animación y mejorar visibilidad
+            const styleElement = document.createElement('style');
+            styleElement.textContent = `
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: scale(0.8); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+                
+                .toast-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    pointer-events: none; /* Permite hacer clic a través del contenedor */
+                }
+                
+                .toast {
+                    margin-bottom: 10px;
+                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                    animation: fadeIn 0.3s ease;
+                    border-radius: 8px;
+                    padding: 16px 20px;
+                    min-width: 300px;
+                    max-width: 400px;
+                    color: white;
+                    font-weight: 600;
+                    opacity: 0.98;
+                    word-break: break-word;
+                    text-align: center;
+                    pointer-events: auto; /* Los toasts sí reciben clics */
+                    font-size: 16px;
+                    line-height: 1.4;
+                    margin-bottom: 15px;
+                }
+            `;
+            
+            // Añadir los estilos y el contenedor al DOM
+            document.head.appendChild(styleElement);
+            document.body.appendChild(toastContainer);
+        }
+        
+        return toastContainer;
+    }
+    
+    // Sobrescribir las funciones de alerta nativas para asegurar que no se usen
+    // Esto capturará cualquier alerta que podría estar ocurriendo en el código
+    window.alert = function(mensaje) {
+        console.log("Alerta interceptada:", mensaje);
+        mostrarMensaje(mensaje, "info");
+        return false;
+    };
+    
+    window.confirm = function(mensaje) {
+        console.log("Confirm interceptado:", mensaje);
+        mostrarMensaje(mensaje, "warning");
+        return true; // Simular que el usuario acepta
+    };
+    
+    window.prompt = function(mensaje, valorPredeterminado) {
+        console.log("Prompt interceptado:", mensaje);
+        mostrarMensaje(mensaje, "info");
+        return valorPredeterminado || ""; // Simular entrada de usuario
+    };
     
     // ===============================================================
     // Implementación de eventos para módulos adicionales
