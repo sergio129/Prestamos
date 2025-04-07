@@ -40,6 +40,9 @@ jobs:
         run: |
           ssh -v -i ssh_key.pem -o StrictHostKeyChecking=no ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
             set -e
+            echo "Cambiando permisos al usuario actual..."
+            sudo chown -R $USER:$USER ~/Prestamos || true
+
             echo "Respaldando versión actual..."
             mkdir -p ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)
             cp -r ~/Prestamos/* ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)/ || true
