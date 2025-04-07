@@ -18,11 +18,11 @@ jobs:
           echo "${{ secrets.AWS_EC2_KEY }}" > ssh_key.pem
           chmod 600 ssh_key.pem
 
-      - name: Debug connection values
+      - name: Validar secretos
         run: |
-          echo "Verificando secretos (sin mostrar valores sensibles)"
-          if [ -z "${{ secrets.AWS_USER }}" ]; then echo "ERROR: AWS_USER está vacío"; else echo "✅ AWS_USER está configurado"; fi
-          if [ -z "${{ secrets.AWS_HOST }}" ]; then echo "ERROR: AWS_HOST está vacío"; else echo "✅ AWS_HOST está configurado"; fi
+          echo "Validando secretos..."
+          if [ -z "${{ secrets.AWS_USER }}" ]; then echo "❌ AWS_USER está vacío"; exit 1; else echo "✅ AWS_USER OK"; fi
+          if [ -z "${{ secrets.AWS_HOST }}" ]; then echo "❌ AWS_HOST está vacío"; exit 1; else echo "✅ AWS_HOST OK"; fi
 
       - name: Install essential tools
         run: |
