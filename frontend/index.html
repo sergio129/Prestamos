@@ -12,6 +12,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Scripts esenciales primero -->
     <script src="fixer.js"></script>
+    <link rel="stylesheet" href="nuevas-funcionalidades.css">
+    <link rel="stylesheet" href="inversiones-styles.css">
+    <link rel="stylesheet" href="asesor-virtual-styles.css">
+    <link rel="stylesheet" href="hipotecario-styles.css">
+    <link rel="stylesheet" href="entidades-styles.css">
+    <link rel="stylesheet" href="capacidad-styles.css">
+    <link rel="stylesheet" href="comparador-tasas-styles.css">
+    <link rel="stylesheet" href="dashboard-styles.css">
+    <link rel="stylesheet" href="dashboard-access-styles.css">
 </head>
 <body>
     <div class="container">
@@ -292,50 +301,14 @@
     <script src="herramientas-avanzadas.js"></script>
     
     <!-- Nuevas funcionalidades -->
-    <link rel="stylesheet" href="nuevas-funcionalidades.css">
-    <link rel="stylesheet" href="inversiones-styles.css">
-    <link rel="stylesheet" href="asesor-virtual-styles.css">
-    <link rel="stylesheet" href="hipotecario-styles.css">
-    <link rel="stylesheet" href="entidades-styles.css">
-    <link rel="stylesheet" href="capacidad-styles.css">
-    <link rel="stylesheet" href="comparador-tasas-styles.css">
+    <script src="datos-financieros.js"></script>
     <script src="capacidad-endeudamiento.js"></script>
     <script src="comparador-tasas.js"></script>
     <script src="simulador-inversiones.js"></script>
     <script src="asesor-virtual.js"></script>
     <script src="hipotecario-subsidios.js"></script>
     <script src="comparador-entidades.js"></script>
-    
-    <!-- Script para el panel de contacto -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Panel de contacto
-            const contactToggle = document.getElementById('contact-toggle');
-            const contactPanel = document.getElementById('contact-panel');
-            
-            if (contactToggle && contactPanel) {
-                contactToggle.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                    contactPanel.classList.toggle('active');
-                    console.log('Panel de contacto: ' + (contactPanel.classList.contains('active') ? 'abierto' : 'cerrado'));
-                });
-                
-                // Cerrar al hacer clic fuera
-                document.addEventListener('click', function(e) {
-                    if (contactPanel.classList.contains('active') && 
-                        !contactPanel.contains(e.target) && 
-                        e.target !== contactToggle) {
-                        contactPanel.classList.remove('active');
-                    }
-                });
-                
-                // Evitar que clics dentro del panel se propaguen
-                contactPanel.addEventListener('click', function(e) {
-                    e.stopPropagation();
-                });
-            }
-        });
-    </script>
+    <script src="dashboard-financiero.js"></script>
     <script src="contact.js"></script>
 </body>
 </html>
