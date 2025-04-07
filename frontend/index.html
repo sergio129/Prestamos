@@ -145,6 +145,34 @@
         </div>
     </div>
     
+    <!-- Sección de Contacto -->
+    <div class="contact-panel" id="contact-panel">
+        <div class="contact-toggle" id="contact-toggle">
+            <i class="fas fa-comments"></i>
+        </div>
+        <div class="contact-content">
+            <h3>Contáctenos</h3>
+            <div class="contact-options">
+                <a href="https://wa.me/573103904286" target="_blank" class="contact-option whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>WhatsApp</span>
+                </a>
+                <a href="https://www.facebook.com/SergioLuisAnayaRomero" target="_blank" class="contact-option facebook">
+                    <i class="fab fa-facebook"></i>
+                    <span>Facebook</span>
+                </a>
+                <a href="https://www.instagram.com/sergioanaya62/" target="_blank" class="contact-option instagram">
+                    <i class="fab fa-instagram"></i>
+                    <span>Instagram</span>
+                </a>
+                <a href="mailto:info@prestamos.com" class="contact-option email">
+                    <i class="fas fa-envelope"></i>
+                    <span>Email</span>
+                </a>
+            </div>
+        </div>
+    </div>
+    
     <!-- Modal para guardar simulación -->
     <div id="save-modal" class="modal hidden">
         <div class="modal-content">
@@ -253,6 +281,7 @@
     <!-- Cargar nuestros scripts en el orden correcto -->
     <script src="busqueda.js"></script>
     <script src="simulador.js"></script>
+    <script src="mejoras.js"></script>
     <script src="accesibilidad.js"></script>
     <script src="pdf-sencillo.js"></script>
     <script src="calculadora-corregida.js"></script>
@@ -261,5 +290,36 @@
     <!-- Nueva herramienta financiera avanzada (todo en un solo módulo) -->
     <link rel="stylesheet" href="herramientas-avanzadas.css">
     <script src="herramientas-avanzadas.js"></script>
+    
+    <!-- Script para el panel de contacto -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Panel de contacto
+            const contactToggle = document.getElementById('contact-toggle');
+            const contactPanel = document.getElementById('contact-panel');
+            
+            if (contactToggle && contactPanel) {
+                contactToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    contactPanel.classList.toggle('active');
+                    console.log('Panel de contacto: ' + (contactPanel.classList.contains('active') ? 'abierto' : 'cerrado'));
+                });
+                
+                // Cerrar al hacer clic fuera
+                document.addEventListener('click', function(e) {
+                    if (contactPanel.classList.contains('active') && 
+                        !contactPanel.contains(e.target) && 
+                        e.target !== contactToggle) {
+                        contactPanel.classList.remove('active');
+                    }
+                });
+                
+                // Evitar que clics dentro del panel se propaguen
+                contactPanel.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                });
+            }
+        });
+    </script>
 </body>
 </html>

@@ -242,3 +242,5 @@ Cuota | Capital       | Interés      | Pago Mensual  | Saldo Restante
 12     | $903.25       | $13.55       | $916.80        | $0.00
 =================================================================
 
+
+[ELIMINACIÓN - 7/4/2025, 10:17:30] ID: 1743899379403, Cliente: Sergio Luis Anaya Romero, Identificación: 1015411162

@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initCharts();
     initA11yFeatures();
     initExportPDF();
+    initContactPanel();
     
     /**
      * 1. SIMULACIONES RECIENTES
@@ -618,6 +619,27 @@ document.addEventListener('DOMContentLoaded', function() {
             // Versión simple si no existe la función global
             console.log(`Toast (${tipo}): ${mensaje}`);
             alert(mensaje);
+        }
+    }
+
+    /**
+     * 5. PANEL DE CONTACTO
+     */
+    function initContactPanel() {
+        const contactPanel = document.getElementById('contact-panel');
+        const contactToggle = document.getElementById('contact-toggle');
+        
+        if (contactToggle && contactPanel) {
+            contactToggle.addEventListener('click', function() {
+                contactPanel.classList.toggle('active');
+            });
+            
+            // Cerrar panel si se hace clic fuera
+            document.addEventListener('click', function(e) {
+                if (!contactPanel.contains(e.target) && contactPanel.classList.contains('active')) {
+                    contactPanel.classList.remove('active');
+                }
+            });
         }
     }
 });
