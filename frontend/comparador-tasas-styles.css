@@ -454,6 +454,7 @@
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    position: relative;
 }
 
 .grafico-title {
@@ -462,6 +463,28 @@
     color: #2c3e50;
     margin-bottom: 15px;
     text-align: center;
+}
+
+.grafico-error {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    transform: translateY(-50%);
+    text-align: center;
+    color: #e74c3c;
+    padding: 20px;
+}
+
+.grafico-error i {
+    font-size: 40px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.grafico-error p {
+    font-size: 14px;
+    color: #7f8c8d;
 }
 
 /* Conclusiones y recomendaciones */

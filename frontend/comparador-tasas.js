@@ -536,65 +536,294 @@
          * @param {number} plazoMeses - Plazo en meses
          */
         function mostrarResultadosComparacion(resultados, tipoPrestamo, montoPrestamo, plazoMeses) {
-            const tablaResultados = document.getElementById('tasas-resultados');
-            tablaResultados.innerHTML = '';
+            const tasasResultados = comparadorModal.querySelector('#tasas-resultados');
             
+            if (!tasasResultados) {
+                console.error('No se encontró el contenedor de resultados');
+                return;
+            }
+            
+            tasasResultados.innerHTML = '';
+            
+            // Formatear valores
             const formatoMoneda = new Intl.NumberFormat('es-CO', {
                 style: 'currency',
                 currency: 'COP',
-                minimumFractionDigits: 0
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
             });
             
-            resultados.forEach((resultado, index) => {
+            const formatoPorcentaje = new Intl.NumberFormat('es-CO', {
+                style: 'percent',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            
+            // Identificar la mejor tasa
+            const mejorTasa = resultados[0].tasaAjustada;
+            
+            // Poblar tabla de resultados
+            resultados.forEach((entidad, index) => {
                 const fila = document.createElement('tr');
-                
-                if (index === 0) {
-                    fila.className = 'mejor-tasa';
-                }
                 
                 fila.innerHTML = `
                     <td>
                         <div class="entidad-info">
-                            <img src="${resultado.logo}" alt="${resultado.nombre}" class="entidad-logo">
-                            <span class="entidad-nombre">${resultado.nombre}</span>
+                            <div class="entidad-logo">
+                                <img src="${entidad.logo}" alt="${entidad.nombre}">
+                            </div>
+                            <div>
+                                <div class="entidad-nombre">${entidad.nombre}</div>
+                                <div class="entidad-details">${entidad.tiempoAprobacion}</div>
+                            </div>
                         </div>
                     </td>
-                    <td>${resultado.tasaAjustada.toFixed(2)}%</td>
-                    <td>${resultado.tasaMensual.toFixed(2)}%</td>
-                    <td>${formatoMoneda.format(resultado.cuotaMensual)}</td>
-                    <td>${resultado.requisitos}</td>
-                    <td>
-                        <button class="btn-aplicar-tasa" data-tasa="${resultado.tasaMensual.toFixed(2)}">
-                            Aplicar
-                        </button>
-                    </td>
+                    <td class="tasa-valor ${entidad.tasaAjustada === mejorTasa ? 'mejor-tasa' : ''}">${entidad.tasaAjustada.toFixed(2)}%</td>
+                    <td>${entidad.tasaMensual.toFixed(2)}%</td>
+                    <td>${formatoMoneda.format(entidad.cuotaMensual)}</td>
+                    <td>${entidad.requisitos}</td>
+                    <td><button class="action-btn btn-aplicar" data-entidad="${index}">Aplicar</button></td>
                 `;
                 
-                tablaResultados.appendChild(fila);
+                tasasResultados.appendChild(fila);
             });
             
-            document.querySelectorAll('.btn-aplicar-tasa').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const tasaSeleccionada = parseFloat(this.getAttribute('data-tasa'));
+            // Configurar botones de aplicar
+            const botonesAplicar = tasasResultados.querySelectorAll('.btn-aplicar');
+            botonesAplicar.forEach(boton => {
+                boton.addEventListener('click', function() {
+                    const entidadIndex = parseInt(this.getAttribute('data-entidad'));
+                    const entidad = resultados[entidadIndex];
                     
-                    document.getElementById('interes-mensual').value = tasaSeleccionada;
+                    // Actualizar valores en el simulador principal
+                    const montoInput = document.getElementById('monto');
+                    const plazoInput = document.getElementById('plazo');
+                    const interesInput = document.getElementById('interes-mensual');
                     
-                    const montoComparador = document.getElementById('monto-prestamo').value;
-                    const plazoComparador = document.getElementById('plazo-meses').value;
-                    
-                    if (montoComparador) {
-                        document.getElementById('monto').value = montoComparador;
+                    if (montoInput && plazoInput && interesInput) {
+                        montoInput.value = montoPrestamo;
+                        plazoInput.value = plazoMeses;
+                        interesInput.value = entidad.tasaMensual.toFixed(2);
+                        
+                        // Cerrar modal
+                        comparadorModal.classList.add('hidden');
+                        
+                        // Calcular préstamo
+                        if (typeof calcularPrestamo === 'function') {
+                            calcularPrestamo();
+                            mostrarMensaje(`Simulando préstamo con ${entidad.nombre}`, "success");
+                        } else {
+                            mostrarMensaje(`Valores configurados con datos de ${entidad.nombre}`, "success");
+                        }
+                    } else {
+                        mostrarMensaje("No se pudo aplicar al simulador principal", "error");
                     }
-                    
-                    if (plazoComparador) {
-                        document.getElementById('plazo').value = plazoComparador;
-                    }
-                    
-                    comparadorModal.classList.add('hidden');
-                    
-                    mostrarMensaje(`Tasa de ${tasaSeleccionada}% aplicada al simulador`, "success");
                 });
             });
+            
+            // Generar gráfico
+            generarGraficoComparativo(resultados);
+            
+            // Generar recomendaciones
+            generarRecomendaciones(resultados, tipoPrestamo, montoPrestamo, plazoMeses);
+        }
+        
+        /**
+         * Genera un gráfico comparativo de cuotas por entidad
+         * @param {Array} resultados - Resultados de la comparación
+         */
+        function generarGraficoComparativo(resultados) {
+            // Verificar que Chart.js esté disponible
+            if (typeof Chart === 'undefined') {
+                console.error("Chart.js no está disponible para generar el gráfico");
+                // Mostrar mensaje alternativo en el contenedor
+                const graficoContainer = comparadorModal.querySelector('.grafico-container');
+                if (graficoContainer) {
+                    graficoContainer.innerHTML = `
+                        <div class="grafico-title">Comparativa de Cuotas por Entidad</div>
+                        <div class="grafico-error">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <p>No se pudo cargar el gráfico. Chart.js no está disponible.</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            
+            const canvas = comparadorModal.querySelector('#chart-tasas');
+            if (!canvas) {
+                console.error("No se encontró el elemento canvas para el gráfico");
+                return;
+            }
+            
+            const ctx = canvas.getContext('2d');
+            
+            // Destruir gráfico anterior si existe
+            if (window.tasasChart) {
+                window.tasasChart.destroy();
+            }
+            
+            // Limitar a 8 entidades como máximo para mejor visualización
+            const datosGrafico = resultados.slice(0, 8);
+            
+            // Preparar datos
+            const labels = datosGrafico.map(entidad => entidad.nombre);
+            const cuotas = datosGrafico.map(entidad => entidad.cuotaMensual);
+            const tasas = datosGrafico.map(entidad => entidad.tasaAjustada);
+            
+            // Colores para barras (azules)
+            const coloresCuotas = datosGrafico.map(() => 'rgba(57, 73, 171, 0.7)');
+            const bordesCuotas = datosGrafico.map(() => 'rgba(57, 73, 171, 1)');
+            
+            // Crear dataset principal (cuotas)
+            const datasets = [
+                {
+                    label: 'Cuota Mensual',
+                    data: cuotas,
+                    backgroundColor: coloresCuotas,
+                    borderColor: bordesCuotas,
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    maxBarThickness: 50
+                },
+                {
+                    label: 'Tasa Anual (%)',
+                    data: tasas,
+                    type: 'line',
+                    borderColor: 'rgba(231, 76, 60, 1)',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(231, 76, 60, 1)',
+                    pointRadius: 4,
+                    fill: false,
+                    yAxisID: 'y1'
+                }
+            ];
+            
+            // Configurar opciones del gráfico
+            const options = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            boxWidth: 15,
+                            padding: 15,
+                            font: {
+                                size: 12
+                            },
+                            color: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#e0e0e0' : '#333'
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        callbacks: {
+                            label: function(context) {
+                                const value = context.raw;
+                                const datasetLabel = context.dataset.label;
+                                
+                                if (datasetLabel === 'Cuota Mensual') {
+                                    return datasetLabel + ': ' + new Intl.NumberFormat('es-CO', {
+                                        style: 'currency',
+                                        currency: 'COP',
+                                        minimumFractionDigits: 0,
+                                        maximumFractionDigits: 0
+                                    }).format(value);
+                                } else {
+                                    return datasetLabel + ': ' + value.toFixed(2) + '%';
+                                }
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#aaa' : '#666',
+                            font: {
+                                size: 11
+                            },
+                            maxRotation: 45,
+                            minRotation: 45
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)'
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return new Intl.NumberFormat('es-CO', {
+                                    style: 'currency',
+                                    currency: 'COP',
+                                    minimumFractionDigits: 0,
+                                    maximumFractionDigits: 0
+                                }).format(value);
+                            },
+                            color: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#aaa' : '#666'
+                        }
+                    },
+                    y1: {
+                        position: 'right',
+                        beginAtZero: true,
+                        grid: {
+                            drawOnChartArea: false
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(2) + '%';
+                            },
+                            color: window.matchMedia('(prefers-color-scheme: dark)').matches ? '#e74c3c' : '#e74c3c'
+                        }
+                    }
+                }
+            };
+            
+            // Crear gráfico
+            window.tasasChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: datasets
+                },
+                options: options
+            });
+            
+            console.log('Gráfico de tasas generado correctamente');
+        }
+        
+        /**
+         * Generar recomendaciones basadas en los resultados
+         * @param {Array} resultados - Resultados de la comparación
+         * @param {string} tipoPrestamo - Tipo de préstamo seleccionado
+         * @param {number} montoPrestamo - Monto del préstamo
+         * @param {number} plazoMeses - Plazo en meses
+         */
+        function generarRecomendaciones(resultados, tipoPrestamo, montoPrestamo, plazoMeses) {
+            const recomendacionesContainer = comparadorModal.querySelector('#recomendaciones-container');
+            
+            if (!recomendacionesContainer) {
+                console.error('No se encontró el contenedor de recomendaciones');
+                return;
+            }
+            
+            recomendacionesContainer.innerHTML = '';
+            
+            const mejorEntidad = resultados[0];
+            
+            const recomendacion = document.createElement('div');
+            recomendacion.className = 'recomendacion';
+            recomendacion.innerHTML = `
+                <p><strong>Recomendación:</strong> La mejor opción para un préstamo de ${montoPrestamo} COP a ${plazoMeses} meses es con <strong>${mejorEntidad.nombre}</strong>, que ofrece una tasa ajustada de ${mejorEntidad.tasaAjustada.toFixed(2)}%.</p>
+            `;
+            
+            recomendacionesContainer.appendChild(recomendacion);
         }
     });
 })();
