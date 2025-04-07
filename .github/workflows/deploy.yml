@@ -3,7 +3,7 @@ name: Deploy to AWS EC2
 on:
   push:
     branches:
-      - master
+      - master  # o la rama que uses
 
 jobs:
   deploy:
@@ -18,9 +18,10 @@ jobs:
           echo "${{ secrets.AWS_EC2_KEY }}" > private_key.pem
           chmod 400 private_key.pem
 
-      - name: Verificar valores de conexión (debug)
+      - name: Debug connection values
         run: |
-          echo "Conectando a: ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}"
+          echo "AWS_USER=${{ secrets.AWS_USER }}"
+          echo "AWS_HOST=${{ secrets.AWS_HOST }}"
 
       - name: Copy project to EC2
         run: |
@@ -29,15 +30,15 @@ jobs:
       - name: Run deploy commands on EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
-          set -e
-          echo "Respaldando versión actual..."
-          cp -r ~/Prestamos ~/Prestamos_backup_$(date +%Y%m%d%H%M%S) || true
-          echo "Actualizando archivos..."
-          rm -rf ~/Prestamos
-          mv ~/temp_update ~/Prestamos
-          cd ~/Prestamos
-          echo "Reconstruyendo contenedores Docker..."
-          docker-compose down
-          docker-compose up -d --build
-          docker ps
+            set -e
+            echo "Respaldando versión actual..."
+            cp -r ~/Prestamos ~/Prestamos_backup_$(date +%Y%m%d%H%M%S) || true
+            echo "Actualizando archivos..."
+            rm -rf ~/Prestamos
+            mv ~/temp_update ~/Prestamos
+            cd ~/Prestamos
+            echo "Reconstruyendo contenedores Docker..."
+            docker-compose down
+            docker-compose up -d --build
+            docker ps
           EOF
