@@ -1,81 +1,50 @@
-# Simulador de Préstamos Web
+# Simulador de Préstamos
 
-Un simulador simple de préstamos que permite calcular cuotas mensuales, total a pagar e intereses.
+Aplicación web completa para simular, calcular y analizar préstamos financieros.
 
 ## Características
 
-- Cálculo de préstamos usando la fórmula de amortización francesa
-- Interfaz simple e intuitiva
-- Funcionalidad para guardar simulaciones
+- **Simulador básico de préstamos**: Calcula cuotas mensuales, total a pagar e intereses.
+- **Tabla de amortización**: Muestra el detalle de pagos mes a mes.
+- **Herramientas financieras avanzadas**:
+  - Calculadora TIR (Tasa Interna de Retorno)
+  - Comparador de préstamos
+  - Análisis financiero
+  - Préstamos hipotecarios
+  - Préstamos para vehículos
+  - Leasing
+  - Libranza
+- **Calculadora de capacidad de endeudamiento**: Determina cuánto puede pedir prestado el usuario.
+- **Comparador de tasas del mercado**: Muestra tasas actuales de diferentes entidades.
+- **Exportación a PDF**: Genera reportes detallados de las simulaciones.
+- **Búsqueda de simulaciones**: Permite guardar y recuperar simulaciones anteriores.
+- **Accesibilidad**: Opciones para mejorar la experiencia de usuario.
+- **Modo oscuro**: Interfaz adaptable para uso nocturno.
+- **Contacto**: Acceso directo a WhatsApp y redes sociales.
 
-## Requisitos
+## Tecnologías utilizadas
 
-- Node.js (versión 14 o superior)
-- npm (normalmente viene con Node.js)
+- HTML5, CSS3, JavaScript (ES6+)
+- Chart.js para visualización de datos
+- HTML2PDF para generación de documentos PDF
+- FontAwesome para iconografía
 
-## Instalación
+## Estructura del proyecto
 
-1. Clona este repositorio o descarga los archivos
-2. Abre una terminal en la carpeta del proyecto
-3. Instala las dependencias:
+- `/frontend`: Contiene todos los archivos de la interfaz
+  - `index.html`: Página principal
+  - `styles.css`, `buttons.css`, etc.: Archivos de estilo
+  - `simulador.js`, `mejoras.js`, etc.: Scripts de funcionalidad
+  - `/img`: Imágenes y recursos gráficos
 
-```bash
-npm install
-```
+## Configuración y despliegue
 
-## Ejecución
+1. Clona este repositorio
+2. Abre `index.html` en tu navegador para desarrollo local
+3. Para producción, despliega todos los archivos en un servidor web
 
-Para iniciar el servidor, ejecuta:
+## Contacto
 
-```bash
-npm start
-```
-
-Luego, abre tu navegador y visita: http://localhost:3000
-
-## Uso
-
-1. Ingresa el monto del préstamo en pesos colombianos (COP)
-2. Selecciona el plazo en meses
-3. Ingresa la tasa de interés mensual (%)
-4. Haz clic en "Calcular"
-5. Revisa los resultados de la simulación
-6. Opcionalmente, puedes:
-   - Ver la tabla de amortización detallada
-   - Guardar la simulación ingresando los datos del cliente
-   - Buscar simulaciones guardadas por número de identificación
-
-## Estructura de carpetas
-
-```
-/simulador-prestamos
-│
-├── frontend/
-│   ├── index.html    # Interfaz de usuario
-│   ├── styles.css    # Estilos y apariencia
-│   └── simulador.js  # Lógica de cálculo y comunicación con backend
-│
-├── backend/
-│   ├── server.js          # Servidor y rutas API
-│   ├── simulaciones.json  # Almacenamiento de simulaciones (formato JSON)
-│   └── simulaciones.txt   # Registro en formato texto plano
-│
-├── package.json
-└── README.md
-```
-
-## Solución de problemas
-
-Si experimentas problemas donde los elementos no responden a la interacción:
-
-1. Asegúrate de que el servidor esté corriendo (`npm start`)
-2. Verifica que no haya errores en la consola del navegador (F12)
-3. Prueba cargar la página en modo incógnito o en otro navegador
-4. Si persisten los problemas, prueba reinstalar las dependencias:
-   ```
-   npm install
-   ```
-
-## Notas
-
-Este simulador realiza cálculos orientativos y no constituye una oferta real de préstamos.
+Para soporte o consultas:
+- WhatsApp: +57 310 390 4286
+- Email: info@prestamos.com
