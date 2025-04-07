@@ -19,21 +19,44 @@ jobs:
           chmod 400 private_key.pem
 
       - name: Verificar valores de conexión (debug)
-        run: echo "Conectando a: ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}"
+        env:
+          AWS_USER: ${{ secrets.AWS_USER }}
+          AWS_HOST: ${{ secrets.AWS_HOST }}
+        run: echo "Conectando a: $AWS_USER@$AWS_HOST"
+
+      - name: Install required tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y rsync
 
       - name: Copy project to EC2
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i private_key.pem" ./ ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i private_key.pem" ./ ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update || {
+            echo "Error en rsync. Intentando con SCP..."
+            scp -o StrictHostKeyChecking=no -i private_key.pem -r ./* ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update
+          }
 
       - name: Run deploy commands on EC2
         run: |
           ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
             set -e
+            mkdir -p ~/temp_update
             echo "Respaldando versión actual..."
-            cp -r ~/Prestamos ~/Prestamos_backup_$(date +%Y%m%d%H%M%S) || true
+            if [ -d ~/Prestamos ]; then
+              cp -r ~/Prestamos ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)
+            else
+              echo "No existe directorio previo para respaldar"
+              mkdir -p ~/Prestamos
+            fi
             echo "Actualizando archivos..."
-            rm -rf ~/Prestamos
-            mv ~/temp_update ~/Prestamos
+            # Evitar error si temp_update no existe
+            if [ -d ~/temp_update ]; then
+              rm -rf ~/Prestamos
+              mv ~/temp_update ~/Prestamos
+            else
+              echo "Error: Directorio temporal no encontrado"
+              exit 1
+            fi
             cd ~/Prestamos
             echo "Reconstruyendo contenedores Docker..."
             docker-compose down
