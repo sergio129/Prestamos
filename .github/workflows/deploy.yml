@@ -17,22 +17,12 @@ jobs:
         run: |
           echo "${{ secrets.AWS_EC2_KEY }}" > ssh_key.pem
           chmod 600 ssh_key.pem
-          ls -la ssh_key.pem
 
       - name: Debug connection values
         run: |
           echo "Verificando secretos (sin mostrar valores sensibles)"
-          if [ -z "${{ secrets.AWS_USER }}" ]; then echo "ERROR: AWS_USER está vacío"; else echo "AWS_USER está configurado"; fi
-          if [ -z "${{ secrets.AWS_HOST }}" ]; then echo "ERROR: AWS_HOST está vacío"; else echo "AWS_HOST está configurado"; fi
-
-      - name: Set deployment variables
-        env:
-          EC2_USER: ec2-user
-          EC2_HOST: 18.191.186.71
-        run: |
-          echo "AWS_USER=${EC2_USER}" >> $GITHUB_ENV
-          echo "AWS_HOST=${EC2_HOST}" >> $GITHUB_ENV
-          echo "Usando valores predeterminados: ${EC2_USER}@${EC2_HOST}"
+          if [ -z "${{ secrets.AWS_USER }}" ]; then echo "ERROR: AWS_USER está vacío"; else echo "✅ AWS_USER está configurado"; fi
+          if [ -z "${{ secrets.AWS_HOST }}" ]; then echo "ERROR: AWS_HOST está vacío"; else echo "✅ AWS_HOST está configurado"; fi
 
       - name: Install essential tools
         run: |
@@ -41,24 +31,24 @@ jobs:
 
       - name: Copy project to EC2
         run: |
-          echo "Copiando archivos a ${{ env.AWS_USER }}@${{ env.AWS_HOST }}..."
+          echo "Copiando archivos a ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}..."
           mkdir -p ~/.ssh
-          ssh-keyscan ${{ env.AWS_HOST }} >> ~/.ssh/known_hosts
-          scp -v -i ssh_key.pem -o StrictHostKeyChecking=no -r ./* ${{ env.AWS_USER }}@${{ env.AWS_HOST }}:~/temp_update
+          ssh-keyscan ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
+          scp -v -i ssh_key.pem -o StrictHostKeyChecking=no -r ./* ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update
 
       - name: Run deploy commands on EC2
         run: |
-          ssh -v -i ssh_key.pem -o StrictHostKeyChecking=no ${{ env.AWS_USER }}@${{ env.AWS_HOST }} << 'EOF'
+          ssh -v -i ssh_key.pem -o StrictHostKeyChecking=no ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
             set -e
             echo "Respaldando versión actual..."
             mkdir -p ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)
             cp -r ~/Prestamos/* ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)/ || true
-            
+
             echo "Actualizando archivos..."
             mkdir -p ~/Prestamos
             rm -rf ~/Prestamos/*
             cp -r ~/temp_update/* ~/Prestamos/
-            
+
             echo "Reconstruyendo contenedores Docker..."
             cd ~/Prestamos
             docker-compose down
