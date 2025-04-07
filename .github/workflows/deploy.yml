@@ -15,8 +15,8 @@ jobs:
 
       - name: Save private key
         run: |
-          echo "${{ secrets.AWS_EC2_KEY }}" > private_key.pem
-          chmod 400 private_key.pem
+          echo "${{ secrets.AWS_EC2_KEY }}" > sheyo_0129.pem
+          chmod 400 sheyo_0129.pem
 
       - name: Debug connection values
         run: |
@@ -25,7 +25,7 @@ jobs:
 
       - name: Copy project to EC2
         run: |
-          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i private_key.pem" ./ ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update
+          rsync -avz -e "ssh -o StrictHostKeyChecking=no -i sheyo_0129.pem" ./ ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update
 
       - name: Run deploy commands on EC2
         run: |
