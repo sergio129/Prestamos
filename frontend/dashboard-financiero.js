@@ -1,6 +1,6 @@
 /**
- * Dashboard Financiero
- * Ofrece una vista unificada de todas las herramientas financieras y resultados
+ * Dashboard Financiero Personal
+ * Permite al usuario visualizar y gestionar su situación financiera
  */
 
 (function() {
@@ -632,6 +632,97 @@
             
             // Actualizar estado financiero
             actualizarEstadoFinanciero();
+            
+            // Cargar simulaciones recientes
+            cargarSimulacionesRecientes();
+        }
+        
+        /**
+         * Carga las simulaciones recientes del usuario
+         */
+        function cargarSimulacionesRecientes() {
+            const container = document.getElementById('simulaciones-recientes');
+            if (!container) return;
+            
+            // Obtener simulaciones guardadas
+            const simulaciones = window.obtenerSimulaciones ? window.obtenerSimulaciones() : [];
+            
+            if (simulaciones && simulaciones.length > 0) {
+                container.innerHTML = '';
+                
+                // Crear elemento para cada simulación
+                simulaciones.slice(0, 5).forEach(sim => { // Mostrar solo las 5 más recientes
+                    const fecha = new Date(sim.fecha);
+                    const fechaFormateada = fecha.toLocaleDateString('es-CO', { 
+                        day: '2-digit', 
+                        month: '2-digit', 
+                        year: 'numeric' 
+                    });
+                    
+                    const formatoMoneda = new Intl.NumberFormat('es-CO', {
+                        style: 'currency',
+                        currency: 'COP',
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 0
+                    });
+                    
+                    const simItem = document.createElement('div');
+                    simItem.className = 'simulacion-item';
+                    simItem.innerHTML = `
+                        <div class="simulacion-title">${sim.tipo} - ${formatoMoneda.format(sim.monto)}</div>
+                        <div class="simulacion-details">
+                            <span>Plazo: ${sim.plazo} meses</span>
+                            <span>Tasa: ${sim.tasa}%</span>
+                        </div>
+                        <div class="simulacion-fecha">${fechaFormateada}</div>
+                    `;
+                    
+                    // Agregar evento para recargar simulación
+                    simItem.addEventListener('click', function() {
+                        // Cerrar modal del dashboard
+                        dashboardModal.classList.add('hidden');
+                        
+                        // Aplicar valores al formulario principal
+                        const montoInput = document.getElementById('monto');
+                        const plazoInput = document.getElementById('plazo');
+                        const interesInput = document.getElementById('interes-mensual');
+                        
+                        if (montoInput && plazoInput && interesInput) {
+                            montoInput.value = sim.monto;
+                            plazoInput.value = sim.plazo;
+                            interesInput.value = sim.tasa;
+                            
+                            // Enfocar y calcular
+                            setTimeout(() => {
+                                montoInput.focus();
+                                montoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                
+                                // Calcular préstamo automáticamente
+                                if (typeof calcularPrestamo === 'function') {
+                                    calcularPrestamo();
+                                } else {
+                                    // Buscar y hacer clic en el botón de calcular
+                                    const calcularBtn = document.querySelector('#loan-form button[type="submit"]');
+                                    if (calcularBtn) {
+                                        calcularBtn.click();
+                                    }
+                                }
+                                
+                                mostrarMensaje("Simulación recargada", "success");
+                            }, 100);
+                        }
+                    });
+                    
+                    container.appendChild(simItem);
+                });
+            } else {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-history"></i>
+                        <p>No hay simulaciones recientes</p>
+                    </div>
+                `;
+            }
         }
         
         /**
@@ -1275,6 +1366,66 @@
             } else {
                 alert(mensaje);
             }
+        }
+        
+        // Configurar Acciones Rápidas
+        const quickLoanBtn = document.getElementById('quick-loan');
+        if (quickLoanBtn) {
+            quickLoanBtn.addEventListener('click', function() {
+                // Cerrar modal del dashboard
+                dashboardModal.classList.add('hidden');
+                
+                // Enfocar el formulario de préstamo principal
+                const montoInput = document.getElementById('monto');
+                if (montoInput) {
+                    setTimeout(() => {
+                        montoInput.focus();
+                        montoInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+            });
+        }
+        
+        const quickCapacityBtn = document.getElementById('quick-capacity');
+        if (quickCapacityBtn) {
+            quickCapacityBtn.addEventListener('click', function() {
+                // Cerrar modal del dashboard
+                dashboardModal.classList.add('hidden');
+                
+                // Abrir el modal de capacidad de endeudamiento
+                const capacidadBtn = document.querySelector('.btn-capacidad');
+                if (capacidadBtn) {
+                    capacidadBtn.click();
+                }
+            });
+        }
+        
+        const quickCompareBtn = document.getElementById('quick-compare');
+        if (quickCompareBtn) {
+            quickCompareBtn.addEventListener('click', function() {
+                // Cerrar modal del dashboard
+                dashboardModal.classList.add('hidden');
+                
+                // Abrir el comparador de tasas
+                const comparadorBtn = document.querySelector('.btn-comparador');
+                if (comparadorBtn) {
+                    comparadorBtn.click();
+                }
+            });
+        }
+        
+        const quickInvestBtn = document.getElementById('quick-invest');
+        if (quickInvestBtn) {
+            quickInvestBtn.addEventListener('click', function() {
+                // Cerrar modal del dashboard
+                dashboardModal.classList.add('hidden');
+                
+                // Abrir el simulador de inversiones
+                const inversionBtn = document.querySelector('.btn-inversion');
+                if (inversionBtn) {
+                    inversionBtn.click();
+                }
+            });
         }
     });
 })();

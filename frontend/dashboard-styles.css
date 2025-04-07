@@ -720,6 +720,25 @@
     margin-top: 5px;
 }
 
+/* Estado vacío */
+.empty-state {
+    text-align: center;
+    padding: 20px;
+    color: #bdc3c7;
+}
+
+.empty-state i {
+    font-size: 30px;
+    margin-bottom: 10px;
+    display: block;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #95a5a6;
+    font-size: 14px;
+}
+
 /* Modo oscuro */
 @media (prefers-color-scheme: dark) {
     .dashboard-card,
@@ -857,6 +876,14 @@
     
     .simulacion-fecha {
         color: #95a5a6;
+    }
+    
+    .empty-state {
+        color: #4A5072;
+    }
+    
+    .empty-state p {
+        color: #7f8c8d;
     }
 }
 
