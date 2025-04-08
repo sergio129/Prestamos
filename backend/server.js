@@ -117,8 +117,16 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
+// Añadir una ruta de verificación de estado para comprobar que el servidor está funcionando
+app.get('/api/status', (req, res) => {
+    res.json({ status: 'OK', message: 'El servidor está funcionando correctamente' });
+});
+
+// Prefijo de API para todas las rutas del backend
+const API_PREFIX = '/api';
+
 // Ruta para guardar simulaciones
-app.post('/guardar-simulacion', (req, res) => {
+app.post(`${API_PREFIX}/guardar-simulacion`, (req, res) => {
     console.log("==== SOLICITUD DE GUARDADO RECIBIDA ====");
     
     try {
@@ -275,8 +283,15 @@ Formato:
     }
 });
 
-// Ruta para buscar simulaciones por ID de cliente - corregida para logear más información
-app.get('/buscar-simulaciones', (req, res) => {
+// Mantener las rutas antiguas por compatibilidad
+app.post('/guardar-simulacion', (req, res) => {
+    console.log("Redirigiendo solicitud antigua a nueva ruta API");
+    req.url = `${API_PREFIX}/guardar-simulacion`;
+    app.handle(req, res);
+});
+
+// Ruta para buscar simulaciones por ID de cliente
+app.get(`${API_PREFIX}/buscar-simulaciones`, (req, res) => {
     const identificacion = req.query.id;
     
     console.log("==== SOLICITUD DE BÚSQUEDA RECIBIDA ====");
@@ -342,8 +357,15 @@ app.get('/buscar-simulaciones', (req, res) => {
     }
 });
 
+// Mantener las rutas antiguas por compatibilidad
+app.get('/buscar-simulaciones', (req, res) => {
+    console.log("Redirigiendo solicitud antigua a nueva ruta API");
+    req.url = `${API_PREFIX}/buscar-simulaciones`;
+    app.handle(req, res);
+});
+
 // Ruta para obtener una simulación específica por ID
-app.get('/obtener-simulacion', (req, res) => {
+app.get(`${API_PREFIX}/obtener-simulacion`, (req, res) => {
     const id = req.query.id;
     
     if (!id) {
@@ -368,8 +390,15 @@ app.get('/obtener-simulacion', (req, res) => {
     }
 });
 
+// Mantener la ruta antigua por compatibilidad
+app.get('/obtener-simulacion', (req, res) => {
+    console.log("Redirigiendo solicitud antigua a nueva ruta API");
+    req.url = `${API_PREFIX}/obtener-simulacion`;
+    app.handle(req, res);
+});
+
 // Nueva ruta para eliminar simulaciones
-app.delete('/eliminar-simulacion', (req, res) => {
+app.delete(`${API_PREFIX}/eliminar-simulacion`, (req, res) => {
     const id = req.query.id;
     
     console.log("==== SOLICITUD DE ELIMINACIÓN RECIBIDA ====");
@@ -433,6 +462,19 @@ app.delete('/eliminar-simulacion', (req, res) => {
         console.error('Error al eliminar simulación:', error);
         res.status(500).json({ error: 'Error al eliminar simulación: ' + error.message });
     }
+});
+
+// Mantener la ruta antigua por compatibilidad
+app.delete('/eliminar-simulacion', (req, res) => {
+    console.log("Redirigiendo solicitud antigua a nueva ruta API");
+    req.url = `${API_PREFIX}/eliminar-simulacion`;
+    app.handle(req, res);
+});
+
+// Ruta para manejar todas las solicitudes GET que no coincidan con rutas anteriores
+// Esto asegura que las rutas de frontend funcionen con enrutamiento del lado del cliente
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/index.html'));
 });
 
 // Iniciar el servidor
