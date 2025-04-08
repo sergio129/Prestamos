@@ -1,0 +1,172 @@
+/* Estilos para las nuevas funcionalidades */
+
+.nuevas-herramientas {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 8px;
+    background: linear-gradient(to right, #f5f7fa, #e4e7eb);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.herramientas-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.herramientas-header h3 {
+    font-size: 18px;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.herramientas-tabs {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.herramientas-tab {
+    padding: 8px 15px;
+    cursor: pointer;
+    border-radius: 5px 5px 0 0;
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+.herramientas-tab:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+}
+
+.herramientas-tab.active {
+    color: #495057;
+    background-color: #fff;
+    border-color: #dee2e6 #dee2e6 #fff;
+    border-width: 1px;
+}
+
+.herramientas-panel {
+    display: none;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 0 0 5px 5px;
+}
+
+.herramientas-panel.active {
+    display: block;
+}
+
+/* Estilos para Calculadora TIR */
+.tir-calculator {
+    padding: 15px;
+    background-color: rgba(250, 250, 250, 0.7);
+    border-radius: 5px;
+}
+
+.tir-result {
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e8f4fd;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.tir-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: #0066cc;
+}
+
+/* Estilos para Comparador Avanzado */
+.comparator-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.loan-card {
+    padding: 15px;
+    border: 1px solid #dee2e6;
+    border-radius: 5px;
+    background-color: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.loan-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.loan-card-header {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
+
+.loan-card-body .metric {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.recommendation-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 12px;
+    border-radius: 3px;
+    background-color: #28a745;
+    color: white;
+    margin-left: 10px;
+}
+
+/* Estilos para Análisis Financiero */
+.dashboard-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.metric-card {
+    padding: 15px;
+    border-radius: 5px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    text-align: center;
+}
+
+.metric-card .metric-title {
+    font-size: 14px;
+    color: #6c757d;
+    margin-bottom: 5px;
+}
+
+.metric-card .metric-value {
+    font-size: 22px;
+    font-weight: bold;
+    color: #212529;
+}
+
+.analysis-chart {
+    margin-top: 20px;
+    height: 300px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 5px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .comparator-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-metrics {
+        grid-template-columns: 1fr 1fr;
+    }
+}

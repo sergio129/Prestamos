@@ -1,0 +1,503 @@
+/* Estilos para el Asesor Financiero Virtual */
+
+/* Botón del asesor */
+.btn-asesor {
+    background: linear-gradient(to right, #9b59b6, #8e44ad);
+    box-shadow: 0 4px 15px rgba(155, 89, 182, 0.4);
+    margin-bottom: 10px;
+    width: 100%;
+}
+
+.btn-asesor:hover {
+    background: linear-gradient(to right, #8e44ad, #7d3c98);
+    box-shadow: 0 7px 20px rgba(155, 89, 182, 0.5);
+    transform: translateY(-2px);
+}
+
+/* Contenido del modal */
+.asesor-content {
+    max-width: 900px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
+/* Encabezado del asesor */
+.asesor-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.asesor-avatar {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+    color: white;
+    font-size: 24px;
+}
+
+.asesor-avatar i {
+    filter: drop-shadow(0 2px 3px rgba(0,0,0,0.2));
+}
+
+.asesor-header h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+/* Conversación */
+.asesor-conversation {
+    margin-bottom: 30px;
+}
+
+.asesor-message {
+    background-color: #f5f7fa;
+    border-radius: 12px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    border-top-left-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.asesor-message p {
+    margin: 0;
+    line-height: 1.5;
+    color: #333;
+}
+
+/* Opciones de usuario */
+.user-options {
+    margin-top: 25px;
+}
+
+.user-options h3 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.option-buttons {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+}
+
+.option-btn {
+    background-color: #fff;
+    border: 2px solid #9b59b6;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #9b59b6;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option-btn:hover {
+    background-color: #9b59b6;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
+}
+
+/* Cuestionario */
+.asesor-questionnaire {
+    animation: fadeIn 0.5s ease-out;
+}
+
+.asesor-questionnaire h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.question-group {
+    margin-bottom: 15px;
+}
+
+.question-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #444;
+}
+
+/* Preguntas adicionales específicas por objetivo */
+.preguntas-adicionales {
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin: 20px 0;
+    border-left: 4px solid #9b59b6;
+}
+
+/* Resultados */
+.results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 15px;
+}
+
+.results-header h3 {
+    margin: 0;
+    font-size: 22px;
+    color: #333;
+}
+
+.plan-score {
+    text-align: center;
+}
+
+.score-label {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 5px;
+}
+
+.score-value {
+    font-size: 24px;
+    font-weight: bold;
+    color: #9b59b6;
+}
+
+.results-summary {
+    background-color: #f5f7fa;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+
+/* Tarjetas de estrategia */
+.strategy-container {
+    margin-bottom: 30px;
+}
+
+.strategy-container h4 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.strategy-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 15px;
+}
+
+.strategy-card {
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.strategy-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.12);
+}
+
+.strategy-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.strategy-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.strategy-pros-cons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.strategy-pros-cons h5 {
+    font-size: 15px;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.pros h5 {
+    color: #27ae60;
+}
+
+.cons h5 {
+    color: #e74c3c;
+}
+
+.strategy-pros-cons ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.strategy-pros-cons li {
+    margin-bottom: 5px;
+    font-size: 13px;
+}
+
+/* Hoja de ruta */
+.roadmap-container {
+    margin-bottom: 30px;
+}
+
+.roadmap-container h4 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    bottom: 0;
+    left: 10px;
+    width: 2px;
+    background-color: #9b59b6;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 25px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -30px;
+    width: 20px;
+    height: 20px;
+    background-color: #9b59b6;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.timeline-content {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.timeline-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.timeline-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 8px;
+}
+
+.timeline-time {
+    font-size: 12px;
+    color: #777;
+    font-style: italic;
+}
+
+/* Próximos pasos */
+.next-steps {
+    margin-bottom: 30px;
+}
+
+.next-steps h4 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.next-steps ul {
+    padding-left: 20px;
+}
+
+.next-steps li {
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+/* Advertencias */
+.warning-container {
+    background-color: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+.warning-container h4 {
+    color: #856404;
+    display: flex;
+    align-items: center;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.warning-container h4 i {
+    margin-right: 10px;
+}
+
+.warning-container ul {
+    margin: 0;
+    padding-left: 20px;
+}
+
+.warning-container li {
+    color: #856404;
+    margin-bottom: 5px;
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    .asesor-header {
+        border-bottom-color: #333;
+    }
+    
+    .asesor-header h2 {
+        color: #e0e0e0;
+    }
+    
+    .asesor-message {
+        background-color: #252A41;
+    }
+    
+    .asesor-message p {
+        color: #e0e0e0;
+    }
+    
+    .user-options h3 {
+        color: #e0e0e0;
+    }
+    
+    .option-btn {
+        background-color: #1a1c2d;
+        color: #b39ddb;
+        border-color: #b39ddb;
+    }
+    
+    .option-btn:hover {
+        background-color: #b39ddb;
+        color: #1a1c2d;
+    }
+    
+    .asesor-questionnaire h3 {
+        color: #e0e0e0;
+    }
+    
+    .question-group label {
+        color: #ccc;
+    }
+    
+    .preguntas-adicionales {
+        background-color: #252A41;
+    }
+    
+    .results-header {
+        border-bottom-color: #333;
+    }
+    
+    .results-header h3 {
+        color: #e0e0e0;
+    }
+    
+    .results-summary {
+        background-color: #252A41;
+    }
+    
+    .strategy-container h4,
+    .roadmap-container h4,
+    .next-steps h4 {
+        color: #e0e0e0;
+    }
+    
+    .strategy-card {
+        background-color: #1a1c2d;
+    }
+    
+    .strategy-title {
+        color: #e0e0e0;
+    }
+    
+    .strategy-description {
+        color: #ccc;
+    }
+    
+    .timeline-content {
+        background-color: #252A41;
+    }
+    
+    .timeline-title {
+        color: #e0e0e0;
+    }
+    
+    .timeline-description {
+        color: #ccc;
+    }
+    
+    .warning-container {
+        background-color: #3d3004;
+        border-left-color: #ffc107;
+    }
+    
+    .warning-container h4,
+    .warning-container li {
+        color: #ffc107;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .option-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .strategy-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .strategy-pros-cons {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+}

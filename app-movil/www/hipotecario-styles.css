@@ -1,0 +1,1102 @@
+/* Estilos para la Calculadora de Préstamos Hipotecarios con Subsidios - Diseño Moderno */
+
+/* Botón del simulador hipotecario */
+.btn-hipotecario {
+    background: linear-gradient(135deg, #3498db, #1a5276);
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+    margin-bottom: 10px;
+    width: 100%;
+    color: white;
+    border: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    padding: 12px 15px;
+    font-size: 15px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-hipotecario:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a5276, #3498db);
+    transition: all 0.4s ease;
+    z-index: -1;
+}
+
+.btn-hipotecario:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 7px 20px rgba(52, 152, 219, 0.5);
+}
+
+.btn-hipotecario:hover:before {
+    left: 0;
+}
+
+.btn-hipotecario i {
+    margin-right: 8px;
+    font-size: 16px;
+}
+
+/* Estilos del modal */
+#hipotecario-modal.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s, opacity 0.3s;
+    overflow-y: auto;
+    padding: 20px;
+}
+
+#hipotecario-modal.modal.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.3s, opacity 0.3s;
+}
+
+.hipotecario-content {
+    max-width: 900px;
+    width: 95%;
+    max-height: 85vh;
+    overflow-y: auto;
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    animation: slideUp 0.3s ease-out forwards;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.hipotecario-content h2 {
+    margin-top: 0;
+    margin-bottom: 25px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #2c3e50;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.hipotecario-content h2:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70px;
+    height: 3px;
+    background: linear-gradient(to right, #3498db, #1a5276);
+    border-radius: 3px;
+}
+
+/* Estilos para tabs */
+.tabs {
+    display: flex;
+    margin-bottom: 30px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    padding: 5px;
+    gap: 5px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.tab {
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    color: #7f8c8d;
+    white-space: nowrap;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.tab:hover {
+    color: #3498db;
+    background-color: rgba(52, 152, 219, 0.05);
+}
+
+.tab.active {
+    color: #fff;
+    background: linear-gradient(135deg, #3498db, #1a5276);
+    box-shadow: 0 3px 8px rgba(52, 152, 219, 0.3);
+}
+
+/* Contenido de los tabs */
+.tab-content {
+    position: relative;
+}
+
+.tab-pane {
+    display: none;
+    animation: fadeIn 0.4s ease-in-out;
+}
+
+.tab-pane.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.tab-description {
+    color: #7f8c8d;
+    margin-bottom: 25px;
+    font-size: 15px;
+    line-height: 1.6;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    border-left: 4px solid #3498db;
+}
+
+/* Layout en filas y columnas */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -12px;
+    gap: 10px;
+}
+
+.col {
+    flex: 1;
+    padding: 0 12px;
+    min-width: 0;
+}
+
+/* Estilos para inputs, select, radio y checkbox */
+.form-group {
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.hipotecario-content input[type="number"],
+.hipotecario-content input[type="text"],
+.hipotecario-content select {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+    color: #2c3e50;
+}
+
+.hipotecario-content input[type="number"]:focus,
+.hipotecario-content input[type="text"]:focus,
+.hipotecario-content select:focus {
+    border-color: #3498db;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    background-color: #fff;
+}
+
+.hipotecario-content select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%233498db' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+    padding-right: 35px;
+}
+
+.input-icon {
+    position: relative;
+}
+
+.input-icon span {
+    position: absolute;
+    left: 15px;
+    top: 12px;
+    color: #7f8c8d;
+    font-weight: 600;
+}
+
+.input-icon .currency-symbol {
+    font-weight: 600;
+    color: #3498db;
+}
+
+.input-icon input {
+    padding-left: 35px !important;
+}
+
+/* Estilos para radio y checkbox */
+.radio-group {
+    display: flex;
+    gap: 20px;
+    margin-top: 8px;
+}
+
+.radio-group label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 0;
+    font-weight: 500;
+    transition: color 0.2s;
+}
+
+.radio-group label:hover {
+    color: #3498db;
+}
+
+.radio-group input[type="radio"] {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid #bdc3c7;
+    border-radius: 50%;
+    margin-right: 8px;
+    transition: all 0.2s;
+    position: relative;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.radio-group input[type="radio"]:checked {
+    border-color: #3498db;
+    background-color: #fff;
+}
+
+.radio-group input[type="radio"]:checked:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #3498db;
+    transform: translate(-50%, -50%);
+}
+
+/* Categoría de vivienda */
+.categoria-vivienda {
+    margin-top: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 6px;
+    background-color: #f8f9fa;
+    display: inline-block;
+}
+
+/* Rate type */
+.rate-type {
+    display: flex;
+    gap: 15px;
+    margin-top: 8px;
+}
+
+/* Switch para subsidio */
+.switch-container {
+    display: flex;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 52px;
+    height: 26px;
+    margin-right: 12px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #dfe6e9;
+    transition: .3s;
+    border-radius: 26px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .3s;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+input:checked + .slider {
+    background: linear-gradient(135deg, #3498db, #1a5276);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #3498db;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.switch-label {
+    font-weight: 600;
+    color: #2c3e50;
+    transition: color 0.3s;
+}
+
+input:checked ~ .switch-label {
+    color: #3498db;
+}
+
+/* Subsidio options */
+.subsidio-options {
+    background-color: #f0f8ff;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 15px;
+    border-left: 4px solid #3498db;
+    box-shadow: 0 3px 10px rgba(52, 152, 219, 0.1);
+    animation: fadeIn 0.5s ease-out;
+}
+
+.subsidio-info {
+    margin-top: 12px;
+    font-size: 14px;
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.subsidio-info p {
+    margin: 8px 0;
+    line-height: 1.5;
+}
+
+.subsidio-info strong {
+    color: #3498db;
+}
+
+/* Botón de calcular */
+.btn-full {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #3498db, #1a5276);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.btn-full:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #1a5276, #3498db);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+}
+
+.btn-full:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(52, 152, 219, 0.4);
+}
+
+.btn-full:hover:before {
+    opacity: 1;
+}
+
+.btn-full:active {
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(52, 152, 219, 0.4);
+}
+
+/* Resultados */
+#resultado-hipotecario {
+    padding-top: 10px;
+}
+
+#resultado-hipotecario h3 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-top: 40px;
+    margin-bottom: 30px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 12px;
+}
+
+#resultado-hipotecario h3:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(to right, #3498db, #1a5276);
+    border-radius: 3px;
+}
+
+.result-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin: 30px 0;
+}
+
+.result-card {
+    background-color: #f8f9fa;
+    border-radius: 16px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+    position: relative;
+}
+
+.result-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.result-card.highlight {
+    background: linear-gradient(135deg, #f0f8ff, #e1f0fd);
+    border: none;
+}
+
+.result-card.highlight:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, #3498db, #1a5276);
+    border-radius: 4px 4px 0 0;
+}
+
+.result-card-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.result-card-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #3498db;
+    margin-bottom: 10px;
+    line-height: 1.2;
+}
+
+.result-card.highlight .result-card-value {
+    color: #2980b9;
+    font-size: 32px;
+}
+
+.result-card-subtitle {
+    font-size: 13px;
+    color: #95a5a6;
+    font-weight: 500;
+}
+
+/* Detalles de resultado */
+.result-details {
+    background-color: #f8f9fa;
+    border-radius: 16px;
+    padding: 25px;
+    margin: 30px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.result-item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #ecf0f1;
+    padding: 12px 0;
+}
+
+.result-item:last-child {
+    border-bottom: none;
+}
+
+.result-label {
+    font-weight: 600;
+    color: #7f8c8d;
+}
+
+.result-value {
+    font-weight: 700;
+    color: #2c3e50;
+}
+
+/* Contenedor de gráfico */
+.chart-container {
+    height: 350px;
+    margin: 35px 0;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 16px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    border: 1px solid #ecf0f1;
+}
+
+/* Análisis de capacidad de pago */
+.affordability-analysis {
+    background-color: #f8f9fa;
+    border-radius: 16px;
+    padding: 25px;
+    margin: 35px 0;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+}
+
+.affordability-analysis h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #2c3e50;
+    font-weight: 700;
+    position: relative;
+    padding-bottom: 10px;
+}
+
+.affordability-analysis h4:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(to right, #3498db, #1a5276);
+    border-radius: 3px;
+}
+
+.capacidad-meter-container {
+    margin: 25px 0;
+}
+
+.capacidad-meter {
+    height: 10px;
+    background-color: #ecf0f1;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.capacidad-indicator {
+    height: 100%;
+    width: 0;
+    background: linear-gradient(to right, #2ecc71, #e74c3c);
+    transition: width 0.8s ease, background-color 0.8s ease;
+    border-radius: 5px;
+}
+
+.capacidad-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #7f8c8d;
+    font-weight: 600;
+}
+
+.capacidad-mensaje {
+    margin-top: 20px;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    padding: 15px;
+    border-radius: 10px;
+    background-color: #f0f8ff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* Botones de acción */
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 35px;
+}
+
+.btn-secondary {
+    padding: 12px 18px;
+    background-color: #fff;
+    border: 2px solid #3498db;
+    color: #3498db;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    flex: 1;
+    text-align: center;
+}
+
+.btn-secondary:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+.btn-outline {
+    padding: 12px 18px;
+    background: transparent;
+    border: 2px solid #3498db;
+    color: #3498db;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    flex: 1;
+    text-align: center;
+}
+
+.btn-outline:hover {
+    background: rgba(52, 152, 219, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+}
+
+/* Tab de subsidios */
+.subsidios-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.subsidio-card {
+    background-color: #f8f9fa;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.4s ease;
+}
+
+.subsidio-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.subsidio-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.subsidio-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.subsidio-badge {
+    background-color: #3498db;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.subsidio-description {
+    margin-bottom: 20px;
+    color: #7f8c8d;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.subsidio-details {
+    margin-bottom: 25px;
+}
+
+.subsidio-item {
+    margin-bottom: 12px;
+}
+
+.subsidio-label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.subsidio-value {
+    color: #2c3e50;
+    font-size: 15px;
+}
+
+.subsidio-details ul {
+    margin: 8px 0;
+    padding-left: 25px;
+}
+
+.subsidio-details li {
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.subsidio-footer {
+    text-align: center;
+}
+
+.btn-link {
+    display: inline-block;
+    color: #3498db;
+    text-decoration: none;
+    padding: 10px 18px;
+    border: 2px solid #3498db;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+}
+
+.btn-link:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+/* Tab de requisitos */
+.accordion {
+    margin-bottom: 30px;
+}
+
+.accordion-item {
+    margin-bottom: 12px;
+    border: 1px solid #ecf0f1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.accordion-header {
+    background-color: #f8f9fa;
+    padding: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.accordion-header:hover {
+    background-color: #e9ecef;
+}
+
+.accordion-header span {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.accordion-header i {
+    color: #7f8c8d;
+    transition: transform 0.3s ease;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.accordion-item.active .accordion-content {
+    max-height: 500px;
+}
+
+.requirements-list {
+    padding: 18px;
+    margin: 0;
+    list-style-type: none;
+}
+
+.requirements-list li {
+    position: relative;
+    padding: 10px 0 10px 30px;
+    border-bottom: 1px dashed #ecf0f1;
+}
+
+.requirements-list li:last-child {
+    border-bottom: none;
+}
+
+.requirements-list li:before {
+    content: "\f00c";
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: #3498db;
+}
+
+.note-container {
+    margin-top: 35px;
+}
+
+.note {
+    background-color: #f8f9fa;
+    border-left: 4px solid #3498db;
+    padding: 18px;
+    border-radius: 6px;
+    display: flex;
+    align-items: flex-start;
+}
+
+.note i {
+    color: #3498db;
+    margin-right: 18px;
+    margin-top: 2px;
+}
+
+.note-content p {
+    margin: 0;
+    color: #7f8c8d;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    .hipotecario-content {
+        background-color: #1a1c2d;
+        color: #e0e0e0;
+    }
+    
+    .hipotecario-content h2 {
+        color: #e0e0e0;
+    }
+    
+    .tabs {
+        background-color: #252A41;
+    }
+    
+    .tab {
+        color: #aaa;
+    }
+    
+    .tab:hover {
+        color: #64b5f6;
+        background-color: rgba(52, 152, 219, 0.15);
+    }
+    
+    .tab-description {
+        color: #bbb;
+        background-color: #252A41;
+        border-left-color: #64b5f6;
+    }
+    
+    .form-group label {
+        color: #e0e0e0;
+    }
+    
+    .hipotecario-content input[type="number"],
+    .hipotecario-content input[type="text"],
+    .hipotecario-content select {
+        background-color: #252A41;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+    
+    .hipotecario-content input[type="number"]:focus,
+    .hipotecario-content input[type="text"]:focus,
+    .hipotecario-content select:focus {
+        border-color: #64b5f6;
+        box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
+        background-color: #2A3153;
+    }
+    
+    .input-icon span {
+        color: #aaa;
+    }
+    
+    .result-card, .subsidio-card, .result-details, 
+    .affordability-analysis, .subsidio-options,
+    .accordion-header, .note {
+        background-color: #252A41;
+    }
+    
+    .result-card.highlight {
+        background: linear-gradient(to bottom right, rgba(52, 152, 219, 0.2), rgba(52, 152, 219, 0.3));
+        border-color: rgba(52, 152, 219, 0.4);
+    }
+    
+    .result-card-title, .subsidio-header h3,
+    .affordability-analysis h4, #resultado-hipotecario h3 {
+        color: #e0e0e0;
+    }
+    
+    .result-label {
+        color: #bbb;
+    }
+    
+    .result-value, .subsidio-value {
+        color: #e0e0e0;
+    }
+    
+    .result-item {
+        border-bottom-color: #333;
+    }
+    
+    .slider {
+        background-color: #444;
+    }
+    
+    .subsidio-header {
+        border-bottom-color: #333;
+    }
+    
+    .subsidio-description, .note-content p {
+        color: #bbb;
+    }
+    
+    .subsidio-label {
+        color: #aaa;
+    }
+    
+    .accordion-header:hover {
+        background-color: #2A3153;
+    }
+    
+    .accordion-header span {
+        color: #e0e0e0;
+    }
+    
+    .requirements-list li {
+        border-bottom-color: #333;
+    }
+    
+    .btn-link {
+        color: #64b5f6;
+        border-color: #64b5f6;
+    }
+    
+    .btn-link:hover {
+        background-color: #64b5f6;
+        color: #1a1c2d;
+    }
+    
+    .btn-outline {
+        border-color: #64b5f6;
+        color: #64b5f6;
+    }
+    
+    .btn-outline:hover {
+        background: rgba(100, 181, 246, 0.1);
+    }
+    
+    .capacidad-meter {
+        background-color: #444;
+    }
+    
+    .capacidad-labels {
+        color: #aaa;
+    }
+    
+    .btn-secondary {
+        background-color: #252A41;
+        border-color: #64b5f6;
+        color: #64b5f6;
+    }
+    
+    .btn-secondary:hover {
+        background-color: rgba(100, 181, 246, 0.1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .result-cards {
+        grid-template-columns: 1fr;
+    }
+    
+    .subsidios-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+    }
+    
+    .row {
+        flex-direction: column;
+    }
+    
+    .col {
+        padding: 5px 0;
+    }
+    
+    .radio-group, .rate-type {
+        flex-direction: column;
+        gap: 8px;
+    }
+}

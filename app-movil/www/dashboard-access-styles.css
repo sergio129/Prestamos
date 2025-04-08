@@ -1,0 +1,378 @@
+/* Estilos para el menú de acceso al Dashboard Financiero */
+
+/* Botón de acceso al dashboard */
+.btn-dashboard-access {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+    color: white;
+    border: none;
+    border-radius: 30px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-dashboard-access:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+.btn-dashboard-access i {
+    font-size: 16px;
+}
+
+/* Modal de acceso */
+#dashboard-access-modal.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 0s, opacity 0.3s;
+}
+
+#dashboard-access-modal.modal.hidden {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s 0.3s, opacity 0.3s;
+}
+
+.access-content {
+    max-width: 500px;
+    width: 95%;
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 30px;
+    position: relative;
+    animation: slideUp 0.3s ease-out forwards;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(60px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.access-content h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 24px;
+    font-weight: 700;
+    color: #1a2a6c;
+    text-align: center;
+}
+
+.access-description {
+    text-align: center;
+    color: #7f8c8d;
+    margin-bottom: 25px;
+    font-size: 14px;
+}
+
+/* Formularios */
+#login-form,
+#setup-form {
+    display: none;
+}
+
+#login-form.active,
+#setup-form.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 14px;
+}
+
+.form-hint {
+    font-size: 12px;
+    color: #95a5a6;
+    margin-top: 6px;
+    margin-bottom: 0;
+}
+
+.input-with-icon {
+    position: relative;
+}
+
+.input-with-icon i {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #7f8c8d;
+}
+
+.input-with-icon input {
+    width: 100%;
+    padding: 12px 15px 12px 45px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.input-with-icon input:focus {
+    border-color: #1a2a6c;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+    background-color: #fff;
+}
+
+/* Botones */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(26, 42, 108, 0.2);
+}
+
+.btn-outline {
+    padding: 10px 15px;
+    background-color: transparent;
+    border: 1px solid #1a2a6c;
+    color: #1a2a6c;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background-color: rgba(26, 42, 108, 0.05);
+    transform: translateY(-2px);
+}
+
+.btn-text {
+    background: none;
+    border: none;
+    padding: 5px 10px;
+    color: #1a2a6c;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-text:hover {
+    color: #b21f1f;
+    text-decoration: underline;
+}
+
+.login-options {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+/* Tabs de formulario */
+.form-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.tab-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #1a2a6c, #b21f1f);
+    color: white;
+    box-shadow: 0 3px 8px rgba(26, 42, 108, 0.2);
+}
+
+.tab-btn:hover:not(.active) {
+    background-color: rgba(26, 42, 108, 0.05);
+    color: #1a2a6c;
+}
+
+/* Contenido de los tabs */
+.tab-pane {
+    display: none;
+}
+
+.tab-pane.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Acciones de formulario */
+.form-actions {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+    .access-content {
+        background-color: #1a1c2d;
+        color: #e0e0e0;
+    }
+    
+    .access-content h2 {
+        color: #64b5f6;
+    }
+    
+    .access-description {
+        color: #bbb;
+    }
+    
+    .form-group label {
+        color: #e0e0e0;
+    }
+    
+    .form-hint {
+        color: #95a5a6;
+    }
+    
+    .input-with-icon i {
+        color: #95a5a6;
+    }
+    
+    .input-with-icon input {
+        background-color: #252A41;
+        border-color: #444;
+        color: #e0e0e0;
+    }
+    
+    .input-with-icon input:focus {
+        border-color: #64b5f6;
+        box-shadow: 0 0 0 3px rgba(100, 181, 246, 0.2);
+        background-color: #2A3153;
+    }
+    
+    .btn-outline {
+        border-color: #64b5f6;
+        color: #64b5f6;
+    }
+    
+    .btn-outline:hover {
+        background-color: rgba(100, 181, 246, 0.1);
+    }
+    
+    .btn-text {
+        color: #64b5f6;
+    }
+    
+    .btn-text:hover {
+        color: #90caf9;
+    }
+    
+    .form-tabs {
+        background-color: #252A41;
+    }
+    
+    .tab-btn {
+        color: #bbb;
+    }
+    
+    .tab-btn:hover:not(.active) {
+        background-color: rgba(100, 181, 246, 0.1);
+        color: #64b5f6;
+    }
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .btn-dashboard-access {
+        font-size: 12px;
+        padding: 8px 15px;
+        top: 10px;
+        right: 10px;
+    }
+    
+    .btn-dashboard-access i {
+        font-size: 14px;
+    }
+    
+    .access-content {
+        padding: 20px;
+        max-width: 95%;
+    }
+    
+    .access-content h2 {
+        font-size: 20px;
+        margin-bottom: 10px;
+    }
+    
+    .form-tabs {
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .login-options {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+}

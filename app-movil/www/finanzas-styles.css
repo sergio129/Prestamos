@@ -1,0 +1,764 @@
+/**
+ * Estilos para el módulo de finanzas avanzadas
+ */
+
+/* Estilos para el botón principal */
+.btn-finance {
+  background: linear-gradient(to right, #6352c2, #4a1e9e) !important;
+  color: white;
+  box-shadow: 0 4px 15px rgba(99, 82, 194, 0.4);
+}
+
+.btn-finance:hover {
+  background: linear-gradient(to right, #5847b2, #3a0f8e) !important;
+  box-shadow: 0 7px 20px rgba(99, 82, 194, 0.5);
+  transform: translateY(-2px);
+}
+
+.btn-finance i {
+  margin-right: 8px;
+}
+
+/* Dashboard financiero */
+.finance-dashboard {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.finance-dashboard.hidden {
+  display: none;
+}
+
+.dashboard-header {
+  background: linear-gradient(to right, #6352c2, #4a1e9e);
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.dashboard-header h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.close-dashboard {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  opacity: 0.8;
+  transition: all 0.2s ease;
+}
+
+.close-dashboard:hover {
+  opacity: 1;
+}
+
+/* Pestañas del dashboard */
+.dashboard-tabs {
+  display: flex;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+}
+
+.dashboard-tab {
+  padding: 15px 20px;
+  cursor: pointer;
+  font-weight: 500;
+  color: #555;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.dashboard-tab:hover {
+  background-color: #e9e9e9;
+  color: #333;
+}
+
+.dashboard-tab.active {
+  color: #6352c2;
+  font-weight: 600;
+}
+
+.dashboard-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(to right, #6352c2, #4a1e9e);
+}
+
+/* Contenido del dashboard */
+.dashboard-content {
+  flex: 1;
+  background-color: white;
+  overflow-y: auto;
+  padding: 0;
+  position: relative;
+}
+
+.dashboard-pane {
+  display: none;
+  padding: 20px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.dashboard-pane.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Estilos comunes para encabezados de sección */
+.analysis-header,
+.projection-header,
+.optimization-header,
+.scenarios-header {
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.analysis-header h3,
+.projection-header h3,
+.optimization-header h3,
+.scenarios-header h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.analysis-header p,
+.projection-header p,
+.optimization-header p,
+.scenarios-header p {
+  font-size: 14px;
+  color: #777;
+  margin: 0;
+}
+
+/* Grid para análisis */
+.analysis-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.analysis-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.analysis-card.wide {
+  grid-column: 1 / -1;
+}
+
+.card-header {
+  background: linear-gradient(to right, rgba(99, 82, 194, 0.1), rgba(74, 30, 158, 0.1));
+  padding: 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.card-header i {
+  font-size: 18px;
+  color: #6352c2;
+}
+
+.card-header h4 {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  font-weight: 600;
+}
+
+.card-content {
+  padding: 15px;
+}
+
+/* Indicador de porcentaje para carga financiera */
+.percentage-indicator {
+  margin: 15px 0;
+}
+
+.percentage-bar {
+  height: 10px;
+  background-color: #f0f0f0;
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+
+.percentage-value {
+  height: 100%;
+  background-color: #27ae60;
+  width: 0;
+  transition: width 0.5s ease-in-out;
+}
+
+.percentage-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.percentage-message {
+  font-size: 14px;
+  color: #555;
+  margin-top: 8px;
+}
+
+/* Opciones de ahorro */
+.savings-options {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.option label {
+  margin-bottom: 0;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Resultados de ahorro */
+.saving-result {
+  margin-top: 15px;
+  background-color: rgba(99, 82, 194, 0.05);
+  padding: 12px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.saving-amount {
+  font-size: 24px;
+  font-weight: 700;
+  color: #6352c2;
+  margin-bottom: 5px;
+}
+
+.saving-detail {
+  display: flex;
+  justify-content: space-around;
+  font-size: 13px;
+  color: #555;
+}
+
+/* Gráfico de línea temporal */
+.timeline-chart-container {
+  height: 250px;
+  margin-bottom: 15px;
+}
+
+.timeline-legend {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  color: #555;
+}
+
+.color-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+}
+
+.color-dot.principal {
+  background-color: #6e8efb;
+}
+
+.color-dot.interest {
+  background-color: #a777e3;
+}
+
+.color-dot.balance {
+  background-color: #e74c3c;
+}
+
+/* Proyección financiera */
+.projection-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.setting-group {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.setting-group h4 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 15px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
+}
+
+/* Optimización */
+.optimization-settings {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.priority-slider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.priority-slider span {
+  font-size: 13px;
+  color: #666;
+  min-width: 80px;
+}
+
+.priority-value {
+  text-align: center;
+  font-weight: 600;
+  color: #6352c2;
+  margin-top: 10px;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.option-card {
+  position: relative;
+  background-color: white;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+}
+
+.option-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.option-card.recommended {
+  border: 2px solid #6352c2;
+}
+
+.option-badge {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  background: linear-gradient(to right, #6352c2, #4a1e9e);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.option-card h5 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  color: #333;
+  font-size: 16px;
+}
+
+.option-details {
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 15px 0;
+}
+
+.option-details li {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+.option-details span {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Escenarios */
+.scenario-selector {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.scenario-option {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.scenario-option:hover {
+  background-color: #e9e9e9;
+}
+
+.scenario-option.active {
+  background-color: rgba(99, 82, 194, 0.1);
+  border: 1px solid #6352c2;
+}
+
+.scenario-option i {
+  font-size: 24px;
+  color: #6352c2;
+}
+
+.scenario-option span {
+  font-size: 14px;
+  color: #333;
+  text-align: center;
+}
+
+.scenario-config {
+  display: none;
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.scenario-config.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.scenario-note {
+  background-color: rgba(99, 82, 194, 0.05);
+  padding: 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: #555;
+  margin-top: 15px;
+}
+
+.scenario-note.warning {
+  background-color: rgba(231, 76, 60, 0.05);
+}
+
+.scenario-note i {
+  color: #6352c2;
+  margin-right: 5px;
+}
+
+.scenario-note.warning i {
+  color: #e74c3c;
+}
+
+/* Resultados de escenarios */
+.scenario-conclusions {
+  margin-top: 25px;
+}
+
+.conclusion-card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.conclusion-indicator {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.conclusion-indicator.safe {
+  color: #27ae60;
+}
+
+.conclusion-indicator.warning {
+  color: #f39c12;
+}
+
+.conclusion-indicator.danger {
+  color: #e74c3c;
+}
+
+.conclusion-indicator i {
+  font-size: 24px;
+}
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.metric {
+  background-color: #f5f5f5;
+  padding: 15px;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.metric-label {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.metric-value {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.recomendaciones {
+  margin-top: 20px;
+}
+
+.recomendaciones h5 {
+  font-size: 16px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.recomendaciones ul {
+  padding-left: 20px;
+  margin: 0;
+}
+
+.recomendaciones li {
+  margin-bottom: 8px;
+  color: #555;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Estilos para pantallas pequeñas */
+@media (max-width: 768px) {
+  .dashboard-tab {
+    padding: 10px 15px;
+    font-size: 14px;
+  }
+  
+  .analysis-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .projection-settings, 
+  .optimization-settings {
+    grid-template-columns: 1fr;
+  }
+  
+  .scenario-selector {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Estilos para modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .finance-dashboard {
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+  
+  .dashboard-tabs {
+    background-color: #252A41;
+    border-bottom-color: #333;
+  }
+  
+  .dashboard-tab {
+    color: #aaa;
+  }
+  
+  .dashboard-tab:hover {
+    background-color: #1a1c2d;
+    color: #e0e0e0;
+  }
+  
+  .dashboard-content {
+    background-color: #1E2235;
+    color: #e0e0e0;
+  }
+  
+  .analysis-header h3,
+  .projection-header h3,
+  .optimization-header h3,
+  .scenarios-header h3,
+  .card-header h4 {
+    color: #e0e0e0;
+  }
+  
+  .analysis-card,
+  .option-card,
+  .conclusion-card {
+    background-color: #252A41;
+    border-color: #333;
+  }
+  
+  .card-header {
+    background: linear-gradient(to right, rgba(99, 82, 194, 0.2), rgba(74, 30, 158, 0.2));
+    border-bottom-color: #333;
+  }
+  
+  .percentage-bar {
+    background-color: #333;
+  }
+  
+  .percentage-text {
+    color: #e0e0e0;
+  }
+  
+  .percentage-message {
+    color: #bbb;
+  }
+  
+  .saving-result {
+    background-color: rgba(99, 82, 194, 0.1);
+  }
+  
+  .saving-detail {
+    color: #bbb;
+  }
+  
+  .legend-item {
+    color: #bbb;
+  }
+  
+  .setting-group,
+  .scenario-config,
+  .metric {
+    background-color: #1a1c2d;
+  }
+  
+  .setting-group h4 {
+    color: #e0e0e0;
+    border-bottom-color: #333;
+  }
+  
+  .priority-slider span {
+    color: #bbb;
+  }
+  
+  .scenario-option {
+    background-color: #1a1c2d;
+  }
+  
+  .scenario-option:hover {
+    background-color: #252A41;
+  }
+  
+  .scenario-option.active {
+    background-color: rgba(99, 82, 194, 0.2);
+    border-color: #6352c2;
+  }
+  
+  .scenario-option span {
+    color: #e0e0e0;
+  }
+  
+  .scenario-note {
+    background-color: rgba(99, 82, 194, 0.1);
+    color: #bbb;
+  }
+  
+  .scenario-note.warning {
+    background-color: rgba(231, 76, 60, 0.1);
+  }
+  
+  .option-details li {
+    color: #bbb;
+  }
+  
+  .option-details span {
+    color: #e0e0e0;
+  }
+  
+  .metric-label {
+    color: #bbb;
+  }
+  
+  .metric-value {
+    color: #e0e0e0;
+  }
+  
+  .recomendaciones li {
+    color: #bbb;
+  }
+  
+  input, select {
+    background-color: #1a1c2d;
+    border-color: #333;
+    color: #e0e0e0;
+  }
+  
+  input:focus, select:focus {
+    background-color: #1a1c2d;
+  }
+}
