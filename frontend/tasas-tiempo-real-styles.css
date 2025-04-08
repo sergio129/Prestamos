@@ -231,10 +231,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 25px;
-    clear: both; /* Asegura que el elemento no flote junto a elementos anteriores */
-    position: relative; /* Permite posicionamiento relativo */
-    z-index: 10; /* Asegura que esté por encima de otros elementos pero no interfiere con gráficas */
+    margin-top: 15px;
 }
 
 .tasas-info-item {
