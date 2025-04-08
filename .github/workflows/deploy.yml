@@ -56,9 +56,19 @@ jobs:
             rm -rf ~/Prestamos/*
             cp -r ~/temp_update/* ~/Prestamos/
 
+            # Ya no es necesario liberar puertos porque usaremos puertos diferentes
+            # que no deberían entrar en conflicto con los servicios existentes
+            echo "Usando puertos alternativos (8080 en lugar de 80) para evitar conflictos..."
+
             echo "Reconstruyendo contenedores Docker..."
             cd ~/Prestamos
-            docker-compose down
+            docker-compose down --remove-orphans
             docker-compose up -d --build
+            
+            echo "=============================================================="
+            echo "🚀 Despliegue completado!"
+            echo "La aplicación ahora está disponible en: http://$HOSTNAME:8080"
+            echo "=============================================================="
+            
             docker ps
           EOF
