@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulador de Préstamos</title>
+    <!-- Meta tags para PWA -->
+    <meta name="description" content="Simulador de préstamos con funcionalidad offline. Calcula cuotas, plazos y amortizaciones de forma rápida y sencilla.">
+    <meta name="theme-color" content="#4285f4">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Simulador Préstamos">
+    
+    <!-- Icono para dispositivos Apple -->
+    <link rel="apple-touch-icon" href="img/icons/icon-192x192.png">
+    
+    <!-- Manifest para PWA -->
+    <link rel="manifest" href="manifest.json">
+    
+    <!-- Estilos CSS -->
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="buttons.css">
     <link rel="stylesheet" href="finanzas-styles.css">
@@ -24,6 +38,84 @@
     <link rel="stylesheet" href="notificaciones-styles.css">
     <link rel="stylesheet" href="pagos-anticipados-styles.css">
     <link rel="stylesheet" href="tasas-tiempo-real-styles.css">
+    
+    <!-- Estilos para PWA y notificaciones -->
+    <style>
+        .actualizacion-notificacion {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: #4285f4;
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .actualizacion-notificacion p {
+            margin: 0 15px 0 0;
+        }
+        
+        .actualizacion-notificacion button {
+            background-color: white;
+            color: #4285f4;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        #offline-banner {
+            transition: all 0.3s ease;
+        }
+        
+        .pwa-install-prompt {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 15px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            max-width: 320px;
+        }
+        
+        .pwa-install-prompt h3 {
+            margin-top: 0;
+            color: #4285f4;
+        }
+        
+        .pwa-install-prompt .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .pwa-install-prompt button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .pwa-install-prompt .install-btn {
+            background-color: #4285f4;
+            color: white;
+        }
+        
+        .pwa-install-prompt .cancel-btn {
+            background-color: #f1f1f1;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -320,5 +412,18 @@
     <script src="contact-panel.js"></script>
     <script src="notificaciones.js"></script>
     <script src="pagos-anticipados.js"></script>
+
+    <!-- Scripts esenciales -->
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/bootstrap.min.js" defer></script>
+    <script src="fixer.js" defer></script>
+    <script src="init.js" defer></script>
+    <script src="simulador.js" defer></script>
+    <script src="format-helper.js" defer></script>
+    <script src="offline.js" defer></script>
+    <script src="pwa.js" defer></script>
+    <!-- Otros scripts de la aplicación -->
+    <script src="analisis-financiero.js" defer></script>
+    <script src="comparador-tasas.js" defer></script>
 </body>
 </html>

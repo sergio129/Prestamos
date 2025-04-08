@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sin conexión - Simulador de Préstamos</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        .offline-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+        }
+        h1 {
+            color: #4285f4;
+            margin-bottom: 20px;
+        }
+        p {
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        .offline-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            color: #4285f4;
+        }
+        .btn {
+            background-color: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        .btn:hover {
+            background-color: #3367d6;
+        }
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 30px;
+        }
+        .feature {
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px;
+            flex-basis: calc(50% - 20px);
+            box-sizing: border-box;
+        }
+        .feature h3 {
+            margin-top: 0;
+            color: #4285f4;
+        }
+        @media (max-width: 600px) {
+            .feature {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="offline-container">
+        <div class="offline-icon">⚠️</div>
+        <h1>Sin conexión a Internet</h1>
+        <p>Parece que no tienes conexión a internet. Algunas funciones del simulador de préstamos están disponibles sin conexión.</p>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>Simulaciones básicas</h3>
+                <p>Puedes realizar cálculos de préstamos básicos sin conexión.</p>
+            </div>
+            <div class="feature">
+                <h3>Consultas guardadas</h3>
+                <p>Accede a las simulaciones que guardaste anteriormente.</p>
+            </div>
+        </div>
+        
+        <a href="index.html" class="btn">Ir a la página principal</a>
+    </div>
+</body>
+</html>
