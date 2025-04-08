@@ -37,10 +37,10 @@ function buscarSimulacionesDirecto() {
     searchResultsContainer.classList.remove('hidden');
     
     // Realizar la búsqueda
-    fetch(`http://localhost:3000/buscar-simulaciones?id=${identificacion}`)
+    fetch(`/buscar-simulaciones?id=${identificacion}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`Error ${response.status}: ${response.statusText}`);
+                throw new Error(`Error en la respuesta del servidor: ${response.status}`);
             }
             return response.json();
         })
@@ -94,15 +94,14 @@ function buscarSimulacionesDirecto() {
             }
         })
         .catch(error => {
-            console.error("Error en la búsqueda:", error);
-            resultsTableBody.innerHTML = `
-                <tr>
-                    <td colspan="7" style="text-align:center; color:red;">
-                        Error al buscar simulaciones: ${error.message}
-                    </td>
-                </tr>
+            console.error('Error:', error);
+            const resultadoDiv = document.getElementById('resultado-busqueda');
+            resultadoDiv.innerHTML = `
+                <div class="alert alert-danger">
+                    <h4>No se pudo realizar la búsqueda</h4>
+                    <p>Hubo un problema al conectar con el servidor. Por favor intente nuevamente.</p>
+                </div>
             `;
-            mostrarMensajeToast("Error al buscar simulaciones", "error");
         });
 }
 

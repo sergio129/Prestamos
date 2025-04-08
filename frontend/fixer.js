@@ -26,7 +26,7 @@ window.buscarSimulaciones = function() {
     searchResultsContainer.classList.remove('hidden');
     
     // Realizar la búsqueda
-    fetch(`http://localhost:3000/buscar-simulaciones?id=${identificacion}`)
+    fetch(`/buscar-simulaciones?id=${identificacion}`)
         .then(response => response.json())
         .then(data => {
             resultsTable.innerHTML = '';

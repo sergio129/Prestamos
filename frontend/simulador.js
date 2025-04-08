@@ -21,7 +21,7 @@ window.buscarSimulaciones = function() {
     resultsTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">Buscando simulaciones...</td></tr>';
     searchResultsContainer.classList.remove('hidden');
     
-    fetch(`http://localhost:3000/buscar-simulaciones?id=${identificacion}`)
+    fetch(`/buscar-simulaciones?id=${identificacion}`)
         .then(response => {
             if (!response.ok) {
                 throw new Error(`Error en la respuesta: ${response.status}`);
