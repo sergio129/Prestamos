@@ -36,18 +36,6 @@ jobs:
           ssh-keyscan ${{ secrets.AWS_HOST }} >> ~/.ssh/known_hosts
           scp -v -i ssh_key.pem -o StrictHostKeyChecking=no -r ./* ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }}:~/temp_update
 
-      - name: Backup existing files on server
-        run: |
-          ssh -i "${{ github.workspace }}/key.pem" -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
-            # Crear copia de seguridad con la fecha actual
-            BACKUP_DATE=$(date +%Y%m%d%H%M%S)
-            mkdir -p ~/Prestamos_backup_$BACKUP_DATE
-            cp -r ~/Prestamos/* ~/Prestamos_backup_$BACKUP_DATE/ || true
-            
-            # Eliminar copias de seguridad antiguas, mantener solo las 5 más recientes
-            cd ~ && ls -1d Prestamos_backup_* | sort -r | tail -n +6 | xargs rm -rf
-          "
-
       - name: Run deploy commands on EC2
         run: |
           ssh -v -i ssh_key.pem -o StrictHostKeyChecking=no ${{ secrets.AWS_USER }}@${{ secrets.AWS_HOST }} << 'EOF'
@@ -56,9 +44,13 @@ jobs:
             sudo chown -R $USER:$USER ~/Prestamos || true
 
             echo "Respaldando versión actual..."
-            mkdir -p ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)
-            cp -r ~/Prestamos/* ~/Prestamos_backup_$(date +%Y%m%d%H%M%S)/ || true
-
+            BACKUP_DATE=$(date +%Y%m%d%H%M%S)
+            mkdir -p ~/Prestamos_backup_$BACKUP_DATE
+            cp -r ~/Prestamos/* ~/Prestamos_backup_$BACKUP_DATE/ || true
+            
+            # Eliminar copias de seguridad antiguas, mantener solo las 5 más recientes
+            cd ~ && ls -1d Prestamos_backup_* | sort -r | tail -n +6 | xargs rm -rf 2>/dev/null || true
+            
             echo "Actualizando archivos..."
             mkdir -p ~/Prestamos
             rm -rf ~/Prestamos/*
