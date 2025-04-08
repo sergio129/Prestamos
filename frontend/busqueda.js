@@ -96,12 +96,14 @@ function buscarSimulacionesDirecto() {
         .catch(error => {
             console.error('Error:', error);
             const resultadoDiv = document.getElementById('resultado-busqueda');
-            resultadoDiv.innerHTML = `
-                <div class="alert alert-danger">
-                    <h4>No se pudo realizar la búsqueda</h4>
-                    <p>Hubo un problema al conectar con el servidor. Por favor intente nuevamente.</p>
-                </div>
-            `;
+            if (resultadoDiv) {
+                resultadoDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <h4>No se pudo realizar la búsqueda</h4>
+                        <p>Hubo un problema al conectar con el servidor. Por favor intente nuevamente.</p>
+                    </div>
+                `;
+            }
         });
 }
 
@@ -109,7 +111,7 @@ function buscarSimulacionesDirecto() {
 function verSimulacion(id) {
     console.log("Ver simulación:", id);
     
-    fetch(`http://localhost:3000/obtener-simulacion?id=${id}`)
+    fetch(`/obtener-simulacion?id=${id}`)
         .then(response => response.json())
         .then(data => {
             if (data.simulacion) {
@@ -289,7 +291,7 @@ function eliminarSimulacion(id) {
         setTimeout(() => confirmToast.remove(), 300);
         
         // Realizar la eliminación
-        fetch(`http://localhost:3000/eliminar-simulacion?id=${id}`, {
+        fetch(`/eliminar-simulacion?id=${id}`, {
             method: 'DELETE'
         })
         .then(response => {

@@ -27,7 +27,12 @@ window.buscarSimulaciones = function() {
     
     // Realizar la búsqueda
     fetch(`/buscar-simulaciones?id=${identificacion}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Error en la respuesta del servidor: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
             resultsTable.innerHTML = '';
             

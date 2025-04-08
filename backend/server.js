@@ -13,6 +13,12 @@ app.use(cors()); // Permitir solicitudes cross-origin
 app.use(bodyParser.json()); // Parsear solicitudes JSON
 app.use(express.static(path.join(__dirname, '../frontend'))); // Servir archivos estáticos
 
+// Añadir un middleware para imprimir todas las solicitudes para diagnóstico
+app.use((req, res, next) => {
+  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+});
+
 // Rutas a los archivos de simulaciones
 const archivoSimulacionesJSON = path.join(__dirname, 'simulaciones.json');
 const archivoSimulacionesTXT = path.join(__dirname, 'simulaciones.txt');
@@ -120,6 +126,15 @@ app.get('/', (req, res) => {
 // Añadir una ruta de verificación de estado para comprobar que el servidor está funcionando
 app.get('/api/status', (req, res) => {
     res.json({ status: 'OK', message: 'El servidor está funcionando correctamente' });
+});
+
+// Añadir una ruta de verificación de estado
+app.get('/status', (req, res) => {
+    res.json({ 
+        status: 'OK', 
+        message: 'El servidor está funcionando correctamente',
+        timestamp: new Date().toISOString()
+    });
 });
 
 // Prefijo de API para todas las rutas del backend
@@ -478,8 +493,8 @@ app.get('*', (req, res) => {
 });
 
 // Iniciar el servidor
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Servidor corriendo en http://0.0.0.0:${PORT}`);
     console.log(`Archivos de simulaciones:
     - JSON: ${archivoSimulacionesJSON}
     - TXT: ${archivoSimulacionesTXT}`);

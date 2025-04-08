@@ -21,10 +21,11 @@ window.buscarSimulaciones = function() {
     resultsTable.innerHTML = '<tr><td colspan="7" style="text-align:center;">Buscando simulaciones...</td></tr>';
     searchResultsContainer.classList.remove('hidden');
     
+    // Reemplazar la URL con una ruta relativa
     fetch(`/buscar-simulaciones?id=${identificacion}`)
         .then(response => {
             if (!response.ok) {
-                throw new Error(`Error en la respuesta: ${response.status}`);
+                throw new Error(`Error en la respuesta del servidor: ${response.status}`);
             }
             return response.json();
         })
