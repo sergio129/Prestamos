@@ -297,36 +297,17 @@
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px; /* Añadido margen inferior para separar de los botones de tabla */
 }
 
-/* Tabs de amortización - Mejorados */
+/* Tabs de amortización - Mejorados y reposicionados */
 .amortizacion-tabs {
     display: flex;
     margin-bottom: 20px;
     gap: 12px;
-}
-
-.btn-tab {
-    flex: 1;
-    background-color: #e9ecef;
-    border: 1px solid #ced4da;
-    padding: 12px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    border-radius: 4px;
-    font-size: 15px;
-    font-weight: 600;
-    color: #495057;
-}
-
-.btn-tab.active {
-    background-color: #0d6efd;
-    color: white;
-    border-color: #0d6efd;
-}
-
-.btn-tab:hover:not(.active) {
-    background-color: #d2d7dc;
+    margin-top: 30px; /* Añadido margen superior para separar del gráfico */
+    position: relative; /* Asegura posicionamiento correcto */
+    clear: both; /* Asegura que esté debajo de elementos previos */
 }
 
 /* Tabla de amortización - Ampliada y mejorado el contraste */
