@@ -1,11 +1,12 @@
 /**
  * Sistema de Notificaciones para Simulador de Préstamos
  * Permite mostrar alertas, recordatorios y consejos al usuario
+ * Versión mejorada con notificaciones inteligentes
  */
 
 (function() {
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('Inicializando sistema de notificaciones mejorado...');
+        console.log('Inicializando sistema de notificaciones inteligentes...');
         
         // Crear contenedor de notificaciones con estilo mejorado
         const notificacionesContainer = document.createElement('div');
@@ -32,11 +33,16 @@
                 <button id="marcar-leidas" class="btn-marcar-leidas">
                     <i class="fas fa-check-double"></i> Marcar todas como leídas
                 </button>
+                <button id="config-notificaciones" class="btn-config-notificaciones">
+                    <i class="fas fa-cog"></i> Configuración
+                </button>
             </div>
             <div class="notificaciones-tabs">
                 <button class="tab-notificacion active" data-tab="todas">Todas</button>
                 <button class="tab-notificacion" data-tab="alertas">Alertas</button>
                 <button class="tab-notificacion" data-tab="consejos">Consejos</button>
+                <button class="tab-notificacion" data-tab="tasas">Tasas</button>
+                <button class="tab-notificacion" data-tab="pagos">Pagos</button>
             </div>
             <div class="notificaciones-lista" id="notificaciones-lista">
                 <!-- Aquí se insertarán las notificaciones dinámicamente -->
@@ -58,6 +64,69 @@
         } else {
             document.body.insertBefore(notificacionesContainer, document.body.firstChild);
         }
+        
+        // Modal de configuración de notificaciones inteligentes
+        const configModal = document.createElement('div');
+        configModal.id = 'config-notificaciones-modal';
+        configModal.className = 'modal hidden';
+        configModal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2><i class="fas fa-cog"></i> Configuración de Notificaciones</h2>
+                
+                <div class="notification-config">
+                    <h3>Activar/Desactivar Alertas</h3>
+                    <div class="config-option">
+                        <label>
+                            <input type="checkbox" id="alert-tasas" checked>
+                            Alertas de cambios en tasas de interés
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <label>
+                            <input type="checkbox" id="alert-pagos" checked>
+                            Recordatorios de pagos
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <label>
+                            <input type="checkbox" id="alert-refinanciacion" checked>
+                            Oportunidades de refinanciación
+                        </label>
+                    </div>
+                    <div class="config-option">
+                        <label>
+                            <input type="checkbox" id="alert-consejos" checked>
+                            Consejos financieros
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="notification-frequency">
+                    <h3>Frecuencia de Verificación</h3>
+                    <select id="check-frequency">
+                        <option value="daily">Diaria</option>
+                        <option value="weekly" selected>Semanal</option>
+                        <option value="monthly">Mensual</option>
+                    </select>
+                </div>
+                
+                <div class="notification-permissions">
+                    <h3>Permisos</h3>
+                    <button id="request-notification-permission" class="btn">
+                        <i class="fas fa-bell"></i> Activar notificaciones del navegador
+                    </button>
+                    <p class="permission-status" id="permission-status">
+                        Estado: Verificando...
+                    </p>
+                </div>
+                
+                <button id="save-notification-config" class="btn btn-save">Guardar Configuración</button>
+            </div>
+        `;
+        
+        // Agregar modal al DOM
+        document.body.appendChild(configModal);
         
         // Eventos para mostrar/ocultar panel con animación mejorada
         notificacionesBtn.addEventListener('click', function(e) {
@@ -89,6 +158,48 @@
                 marcarTodasComoLeidas();
                 this.classList.remove('processing');
             }, 300);
+        });
+        
+        // Configuración de notificaciones inteligentes
+        document.getElementById('config-notificaciones').addEventListener('click', function(e) {
+            e.stopPropagation(); // Evitar que se cierre el panel
+            
+            // Actualizar estado de los permisos de notificación
+            actualizarEstadoPermisosNotificacion();
+            
+            // Cerrar panel de notificaciones y abrir modal de configuración
+            notificacionesPanel.classList.remove('show');
+            configModal.classList.remove('hidden');
+        });
+        
+        // Cerrar modal de configuración
+        const closeConfigModal = configModal.querySelector('.close-modal');
+        if (closeConfigModal) {
+            closeConfigModal.addEventListener('click', function() {
+                configModal.classList.add('hidden');
+            });
+        }
+        
+        // Cerrar modal al hacer click fuera
+        window.addEventListener('click', function(event) {
+            if (event.target === configModal) {
+                configModal.classList.add('hidden');
+            }
+        });
+        
+        // Solicitar permisos de notificación
+        document.getElementById('request-notification-permission').addEventListener('click', function() {
+            solicitarPermisosNotificacion();
+        });
+        
+        // Guardar configuración de notificaciones
+        document.getElementById('save-notification-config').addEventListener('click', function() {
+            guardarConfiguracionNotificaciones();
+            configModal.classList.add('hidden');
+            
+            if (typeof window.mostrarToast === 'function') {
+                window.mostrarToast("Configuración de notificaciones guardada", "success");
+            }
         });
         
         // Cambiar tabs de notificaciones con animación suave
@@ -134,8 +245,16 @@
             // Programar notificaciones periódicas
             programarNotificacionesPeriodicas();
             
+            // Cargar configuración de notificaciones inteligentes
+            cargarConfiguracionNotificaciones();
+            
             // Actualizar contador
             actualizarContadorNotificaciones();
+            
+            // Realizar verificaciones inteligentes
+            setTimeout(() => {
+                realizarVerificacionesInteligentes();
+            }, 2000);
         }
         
         /**
@@ -168,7 +287,7 @@
                 },
                 {
                     id: 'tasas-actuales',
-                    tipo: 'alerta',
+                    tipo: 'tasas',
                     titulo: 'Tasas de interés actualizadas',
                     mensaje: 'Las tasas de referencia han cambiado. Revisa nuestro comparador de tasas para conocer las mejores opciones del mercado.',
                     fecha: ahora - 60000, // 1 minuto antes
@@ -222,7 +341,7 @@
             if (!ultimaActualizacionTasas || (ahora - parseInt(ultimaActualizacionTasas)) > 86400000) { // 24 horas
                 agregarNotificacion({
                     id: 'actualizacion-tasas-' + Date.now(),
-                    tipo: 'alerta',
+                    tipo: 'tasas',
                     titulo: 'Tasas actualizadas',
                     mensaje: 'Las tasas de interés para préstamos personales han sido actualizadas. Verifica el comparador para conocer las mejores opciones.',
                     fecha: new Date().getTime(),
@@ -244,6 +363,9 @@
                     leida: false,
                     icono: 'save'
                 });
+                
+                // Cuando se guarda una simulación, programar recordatorios de pago
+                programarRecordatoriosPago();
             });
             
             // Escuchar errores del servidor
@@ -260,6 +382,34 @@
                     });
                 }
             });
+        }
+        
+        /**
+         * Programa recordatorios de pago para los préstamos guardados
+         */
+        function programarRecordatoriosPago() {
+            // Simulaciones guardadas
+            const simulaciones = JSON.parse(localStorage.getItem('simulaciones') || '[]');
+            
+            // Fechas de pago (crear si no existe)
+            let fechasPago = JSON.parse(localStorage.getItem('fechas_pago') || '{}');
+            
+            simulaciones.forEach(sim => {
+                if (!fechasPago[sim.id]) {
+                    // Establecer fecha de pago predeterminada (el 15 del próximo mes)
+                    const fechaPago = new Date();
+                    fechaPago.setMonth(fechaPago.getMonth() + 1);
+                    fechaPago.setDate(15); // Día 15 por defecto
+                    
+                    fechasPago[sim.id] = fechaPago.toISOString();
+                }
+            });
+            
+            // Guardar fechas de pago actualizadas
+            localStorage.setItem('fechas_pago', JSON.stringify(fechasPago));
+            
+            // Verificar próximos pagos
+            verificarProximosPagos();
         }
         
         /**
@@ -374,11 +524,16 @@
             notificacionesPanel.classList.remove('show');
             
             // Acciones específicas según el contenido de la notificación
-            if (notificacion.tipo === 'alerta' && notificacion.titulo.includes('Tasas')) {
+            if ((notificacion.tipo === 'alerta' || notificacion.tipo === 'tasas') && notificacion.titulo.includes('Tasas')) {
                 // Abrir comparador de tasas
                 const comparadorBtn = document.querySelector('.btn-comparador');
                 if (comparadorBtn) {
                     setTimeout(() => comparadorBtn.click(), 300);
+                }
+            } else if (notificacion.tipo === 'pagos' || notificacion.mensaje.includes('pago')) {
+                // Mostrar información de pagos o recordatorios
+                if (typeof window.mostrarToast === 'function') {
+                    window.mostrarToast("Accediendo a información de pagos...", "info");
                 }
             } else if (notificacion.mensaje.includes('capacidad de endeudamiento')) {
                 // Abrir calculadora de capacidad
@@ -407,7 +562,7 @@
         /**
          * Filtra las notificaciones por tipo
          * @param {Array} notificaciones - Lista de notificaciones
-         * @param {string} tipo - Tipo de filtro ('todas', 'alertas', 'consejos')
+         * @param {string} tipo - Tipo de filtro ('todas', 'alertas', 'consejos', etc.)
          * @returns {Array} Notificaciones filtradas
          */
         function filtrarPorTipo(notificaciones, tipo) {
@@ -415,15 +570,7 @@
                 return notificaciones;
             }
             
-            if (tipo === 'alertas') {
-                return notificaciones.filter(n => n.tipo === 'alerta');
-            }
-            
-            if (tipo === 'consejos') {
-                return notificaciones.filter(n => n.tipo === 'consejo');
-            }
-            
-            return notificaciones;
+            return notificaciones.filter(n => n.tipo === tipo);
         }
         
         /**
@@ -438,6 +585,19 @@
             const existente = notificaciones.find(n => n.id === notificacion.id);
             if (existente) {
                 return; // No duplicar notificaciones con mismo ID
+            }
+            
+            // Obtener configuración de notificaciones inteligentes
+            const config = obtenerConfiguracionNotificaciones();
+            
+            // Verificar si el tipo de notificación está habilitado
+            if (
+                (notificacion.tipo === 'tasas' && !config.alertTasas) ||
+                (notificacion.tipo === 'pagos' && !config.alertPagos) ||
+                (notificacion.tipo === 'refinanciacion' && !config.alertRefinanciacion) ||
+                (notificacion.tipo === 'consejo' && !config.alertConsejos)
+            ) {
+                return; // Este tipo de notificación está desactivado
             }
             
             // Agregar nueva notificación
@@ -458,6 +618,9 @@
             // Reproducir sonido de notificación si está disponible
             reproducirSonidoNotificacion();
             
+            // Mostrar notificación del navegador si está permitido
+            mostrarNotificacionNavegador(notificacion.titulo, notificacion.mensaje);
+            
             // Si la notificación es crítica, mostrar toast
             if (notificacion.tipo === 'alerta') {
                 if (typeof window.mostrarToast === 'function') {
@@ -466,6 +629,322 @@
             }
         }
         
+        /**
+         * Muestra una notificación del navegador si está permitido
+         * @param {string} titulo - Título de la notificación
+         * @param {string} mensaje - Mensaje de la notificación
+         */
+        function mostrarNotificacionNavegador(titulo, mensaje) {
+            if (Notification.permission === 'granted') {
+                const notification = new Notification(titulo, {
+                    body: mensaje,
+                    icon: '/icon.png' // Ruta a un icono para la notificación
+                });
+                
+                notification.onclick = function() {
+                    window.focus();
+                    notification.close();
+                    notificacionesPanel.classList.add('show');
+                };
+            }
+        }
+        
+        /**
+         * Solicita permisos para notificaciones del navegador
+         */
+        function solicitarPermisosNotificacion() {
+            if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+                Notification.requestPermission().then(function(permission) {
+                    actualizarEstadoPermisosNotificacion();
+                    
+                    if (permission === 'granted') {
+                        if (typeof window.mostrarToast === 'function') {
+                            window.mostrarToast('Notificaciones del navegador activadas', 'success');
+                        }
+                    }
+                });
+            } else if (Notification.permission === 'denied') {
+                if (typeof window.mostrarToast === 'function') {
+                    window.mostrarToast('Las notificaciones están bloqueadas por el navegador. Cambia la configuración del sitio para permitirlas.', 'warning');
+                }
+            }
+        }
+        
+        /**
+         * Actualiza el estado visual de los permisos de notificación
+         */
+        function actualizarEstadoPermisosNotificacion() {
+            const permissionStatus = document.getElementById('permission-status');
+            if (!permissionStatus) return;
+            
+            switch (Notification.permission) {
+                case 'granted':
+                    permissionStatus.textContent = 'Estado: Permitido';
+                    permissionStatus.className = 'permission-status granted';
+                    break;
+                case 'denied':
+                    permissionStatus.textContent = 'Estado: Bloqueado';
+                    permissionStatus.className = 'permission-status denied';
+                    break;
+                default:
+                    permissionStatus.textContent = 'Estado: No configurado';
+                    permissionStatus.className = 'permission-status default';
+            }
+        }
+        
+        /**
+         * Obtiene la configuración de notificaciones inteligentes
+         * @returns {Object} Configuración de notificaciones
+         */
+        function obtenerConfiguracionNotificaciones() {
+            const configDefault = {
+                alertTasas: true,
+                alertPagos: true,
+                alertRefinanciacion: true,
+                alertConsejos: true,
+                checkFrequency: 'weekly',
+                lastCheck: 0
+            };
+            
+            const configJSON = localStorage.getItem('notification_config');
+            
+            if (configJSON) {
+                try {
+                    return JSON.parse(configJSON);
+                } catch (e) {
+                    return configDefault;
+                }
+            }
+            
+            return configDefault;
+        }
+        
+        /**
+         * Carga y aplica la configuración de notificaciones inteligentes
+         */
+        function cargarConfiguracionNotificaciones() {
+            const config = obtenerConfiguracionNotificaciones();
+            
+            // Actualizar controles del modal de configuración
+            document.getElementById('alert-tasas').checked = config.alertTasas;
+            document.getElementById('alert-pagos').checked = config.alertPagos;
+            document.getElementById('alert-refinanciacion').checked = config.alertRefinanciacion;
+            document.getElementById('alert-consejos').checked = config.alertConsejos;
+            document.getElementById('check-frequency').value = config.checkFrequency;
+            
+            // Actualizar estado de permisos
+            actualizarEstadoPermisosNotificacion();
+        }
+        
+        /**
+         * Guarda la configuración de notificaciones inteligentes
+         */
+        function guardarConfiguracionNotificaciones() {
+            const config = {
+                alertTasas: document.getElementById('alert-tasas').checked,
+                alertPagos: document.getElementById('alert-pagos').checked,
+                alertRefinanciacion: document.getElementById('alert-refinanciacion').checked,
+                alertConsejos: document.getElementById('alert-consejos').checked,
+                checkFrequency: document.getElementById('check-frequency').value,
+                lastCheck: Date.now()
+            };
+            
+            localStorage.setItem('notification_config', JSON.stringify(config));
+        }
+        
+        /**
+         * Realiza verificaciones inteligentes según la configuración
+         */
+        function realizarVerificacionesInteligentes() {
+            const config = obtenerConfiguracionNotificaciones();
+            const now = Date.now();
+            let checkInterval = 7 * 24 * 60 * 60 * 1000; // semanal (predeterminado)
+            
+            if (config.checkFrequency === 'daily') {
+                checkInterval = 24 * 60 * 60 * 1000;
+            } else if (config.checkFrequency === 'monthly') {
+                checkInterval = 30 * 24 * 60 * 60 * 1000;
+            }
+            
+            // Verificar si es necesario realizar comprobaciones
+            if (now - config.lastCheck > checkInterval) {
+                console.log('Realizando verificaciones inteligentes de notificaciones...');
+                
+                // Verificar cambios en tasas de interés
+                if (config.alertTasas) {
+                    verificarCambiosTasas();
+                }
+                
+                // Verificar oportunidades de refinanciación
+                if (config.alertRefinanciacion) {
+                    buscarOportunidadesRefinanciacion();
+                }
+                
+                // Verificar próximos pagos
+                if (config.alertPagos) {
+                    verificarProximosPagos();
+                }
+                
+                // Generar consejos financieros
+                if (config.alertConsejos) {
+                    generarConsejosFinancieros();
+                }
+                
+                // Actualizar timestamp de última comprobación
+                config.lastCheck = now;
+                localStorage.setItem('notification_config', JSON.stringify(config));
+            }
+        }
+        
+        /**
+         * Verifica si ha habido cambios significativos en las tasas de interés
+         */
+        async function verificarCambiosTasas() {
+            try {
+                // Obtener tasas actuales (simulado)
+                const tasasActuales = {
+                    'Préstamo Personal': 1.2,
+                    'Préstamo Hipotecario': 0.8,
+                    'Préstamo Automotriz': 1.0,
+                    'Tarjeta de Crédito': 2.5
+                };
+                
+                // Obtener simulaciones guardadas
+                const simulaciones = JSON.parse(localStorage.getItem('simulaciones') || '[]');
+                
+                simulaciones.forEach(sim => {
+                    // Si hay información de tipo de préstamo y la tasa actual es significativamente mejor
+                    const tipoSim = sim.tipo || 'Préstamo Personal';
+                    
+                    if (tasasActuales[tipoSim] && sim.tasa && (sim.tasa - tasasActuales[tipoSim]) > 0.5) {
+                        agregarNotificacion({
+                            id: 'tasas-cambio-' + Date.now(),
+                            tipo: 'tasas',
+                            titulo: 'Oportunidad de ahorro',
+                            mensaje: `Las tasas para préstamos ${tipoSim} han bajado de ${sim.tasa}% a ${tasasActuales[tipoSim]}%. Podrías ahorrar refinanciando tu préstamo actual.`,
+                            fecha: new Date().getTime(),
+                            leida: false,
+                            icono: 'percentage'
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error('Error al verificar cambios en tasas:', error);
+            }
+        }
+        
+        /**
+         * Busca oportunidades de refinanciación en préstamos existentes
+         */
+        function buscarOportunidadesRefinanciacion() {
+            const simulaciones = JSON.parse(localStorage.getItem('simulaciones') || '[]');
+            
+            simulaciones.forEach(sim => {
+                // Si hay información de fecha y el préstamo lleva más de 1/3 del plazo
+                if (sim.fecha && sim.plazo) {
+                    const fechaInicio = new Date(sim.fecha);
+                    const hoy = new Date();
+                    const mesesTranscurridos = Math.floor((hoy - fechaInicio) / (30 * 24 * 60 * 60 * 1000));
+                    
+                    // Si ha pasado suficiente tiempo y la tasa es relativamente alta
+                    if (mesesTranscurridos > sim.plazo / 3 && sim.tasa > 1.5) {
+                        agregarNotificacion({
+                            id: 'refinanciacion-' + sim.id + '-' + Date.now(),
+                            tipo: 'refinanciacion',
+                            titulo: 'Oportunidad de refinanciación',
+                            mensaje: `Tu préstamo de $${sim.monto?.toLocaleString() || '0'} ha completado ${mesesTranscurridos} meses de ${sim.plazo}. Podrías ahorrar refinanciando el saldo restante.`,
+                            fecha: new Date().getTime(),
+                            leida: false,
+                            icono: 'sync-alt'
+                        });
+                    }
+                }
+            });
+        }
+        
+        /**
+         * Verifica próximos pagos y envía recordatorios
+         */
+        function verificarProximosPagos() {
+            const simulaciones = JSON.parse(localStorage.getItem('simulaciones') || '[]');
+            const fechasPago = JSON.parse(localStorage.getItem('fechas_pago') || '{}');
+            
+            simulaciones.forEach(sim => {
+                if (fechasPago[sim.id]) {
+                    const fechaPago = new Date(fechasPago[sim.id]);
+                    const hoy = new Date();
+                    const diasRestantes = Math.floor((fechaPago - hoy) / (1000 * 60 * 60 * 24));
+                    
+                    // Enviar recordatorio si faltan 5 días o menos
+                    if (diasRestantes >= 0 && diasRestantes <= 5) {
+                        agregarNotificacion({
+                            id: 'pago-recordatorio-' + sim.id + '-' + Date.now(),
+                            tipo: 'pagos',
+                            titulo: 'Recordatorio de pago próximo',
+                            mensaje: `Tu próximo pago de $${sim.cuota?.toLocaleString() || '0'} vence en ${diasRestantes} días. Recuerda tener los fondos disponibles.`,
+                            fecha: new Date().getTime(),
+                            leida: false,
+                            icono: 'calendar-check'
+                        });
+                    }
+                }
+            });
+        }
+        
+        /**
+         * Genera consejos financieros personalizados basados en datos del usuario
+         */
+        function generarConsejosFinancieros() {
+            const simulaciones = JSON.parse(localStorage.getItem('simulaciones') || '[]');
+            const perfilFinanciero = JSON.parse(localStorage.getItem('perfil_financiero') || '{}');
+            
+            // Si hay simulaciones recientes
+            if (simulaciones.length > 0) {
+                const simulacionReciente = simulaciones[0];
+                
+                // Consejo sobre pagos anticipados para tasas altas
+                if (simulacionReciente.tasa > 1.5) {
+                    agregarNotificacion({
+                        id: 'consejo-pagos-anticipados-' + Date.now(),
+                        tipo: 'consejo',
+                        titulo: 'Consejo financiero: Pagos anticipados',
+                        mensaje: `Realizar pagos anticipados a tu préstamo con tasa del ${simulacionReciente.tasa}% podría ahorrarte significativamente en intereses.`,
+                        fecha: new Date().getTime(),
+                        leida: false,
+                        icono: 'piggy-bank'
+                    });
+                }
+                
+                // Consejo sobre plazos largos
+                if (simulacionReciente.plazo > 60) {
+                    agregarNotificacion({
+                        id: 'consejo-plazos-largos-' + Date.now(),
+                        tipo: 'consejo',
+                        titulo: 'Consejo financiero: Plazos largos',
+                        mensaje: `Tu préstamo a ${simulacionReciente.plazo} meses puede representar un costo significativo en intereses. Considera acortar el plazo si puedes permitirte una cuota mayor.`,
+                        fecha: new Date().getTime(),
+                        leida: false,
+                        icono: 'clock'
+                    });
+                }
+            }
+            
+            // Consejo sobre fondo de emergencia si hay datos de perfil
+            if (perfilFinanciero.ingresoMensual && perfilFinanciero.ahorroMensual) {
+                if (perfilFinanciero.ahorroMensual < 0.1 * perfilFinanciero.ingresoMensual) {
+                    agregarNotificacion({
+                        id: 'consejo-fondo-emergencia-' + Date.now(),
+                        tipo: 'consejo',
+                        titulo: 'Consejo financiero: Fondo de emergencia',
+                        mensaje: 'Tu nivel de ahorro actual podría ser insuficiente para emergencias. Considera aumentar tu ahorro mensual a al menos el 10% de tus ingresos para crear un fondo de emergencia adecuado.',
+                        fecha: new Date().getTime(),
+                        leida: false,
+                        icono: 'life-ring'
+                    });
+                }
+            }
+        }
+
         /**
          * Reproduce un sonido al recibir una notificación
          */
@@ -748,6 +1227,10 @@
             eliminar: eliminarNotificacion,
             marcarLeida: marcarComoLeida,
             marcarTodasLeidas: marcarTodasComoLeidas,
+            verificarTasas: verificarCambiosTasas,
+            verificarPagos: verificarProximosPagos,
+            verificarRefinanciacion: buscarOportunidadesRefinanciacion,
+            generarConsejos: generarConsejosFinancieros,
             obtenerNoLeidas: function() {
                 const notificaciones = obtenerNotificaciones();
                 return notificaciones.filter(n => !n.leida).length;
